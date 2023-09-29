@@ -1,0 +1,314 @@
+
+body {
+  font-family: "Abril Fatface", cursive;
+  background-color: bisque;
+  color: black;
+}
+
+a {
+  text-decoration: none;
+  color: rgb(185, 181, 181);
+}
+
+/* .nav-container{
+ margin-bottom: 80px;
+} */
+
+.dropdown-menu {
+  margin-left: -30px;
+  text-align: center;
+}
+
+.landing-container {
+}
+
+.header {
+  --bg-image: url("../public/images/house-unsplash.jpeg");
+  --bg-image-opacity: 0.8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 500px;
+  margin: 0 auto;
+  position: relative;
+  isolation: isolate;
+}
+
+.header::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  opacity: var(--bg-image-opacity);
+  background-image: var(--bg-image);
+  background-position: center;
+  background-size: cover;
+  width: 100%;
+}
+
+.main {
+  margin-bottom: 30px;
+}
+
+.slide-listing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 40px 30px;
+}
+
+.main-text h1 {
+  /* margin-bottom: 50px; */
+}
+
+.gallery-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.gallery-text {
+  margin-right: 25px;
+}
+
+.gallery {
+  display: flex;
+  align-items: center;
+  /* justify-content: center; */
+  column-gap: 20px;
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+  margin: 30px 0;
+  box-sizing: border-box;
+  height: auto;
+  flex: 1;
+}
+
+.gallery_item {
+  scroll-snap-align: start;
+  min-width: 35%;
+}
+
+.gallery_image {
+  border-top-left-radius: 200px; /* Adjust the radius as needed */
+  border-top-right-radius: 200px; /* Adjust the radius as needed */
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+}
+
+p {
+  line-height: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.cards-wrapper {
+  background-color: rgb(249, 249, 251);
+  min-height: 500px;
+  margin: 30px 0;
+}
+
+.cards {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  text-align: center;
+  color: rgb(255, 255, 255);
+  margin: 0 50px;
+  text-decoration: none;
+}
+
+.cards-link {
+  color: #ffffff;
+}
+
+.card-buy {
+  background-image: url("../public/images/house-buy.jpeg");
+  background-size: cover;
+  background-position: bottom;
+  min-height: 400px;
+  margin-top: 30px;
+  width: 25%;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.228);
+}
+
+.card-sell {
+  background-image: url("../public/images/house-sell.jpeg");
+  background-size: cover;
+  background-position: bottom;
+  min-height: 400px;
+  margin-top: 30px;
+  width: 25%;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.228);
+}
+
+.card-rent {
+  background-image: url("../public/images/house-rent.jpeg");
+  background-size: cover;
+  background-position: bottom;
+  min-height: 400px;
+  margin-top: 30px;
+  width: 25%;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.228);
+}
+
+.card-buy,
+.card-sell,
+.card-rent {
+  padding: 30px 30px 20px 30px;
+  box-sizing: border-box;
+}
+
+.main-contact-us {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* flex: 1; */
+  margin: 0 1rem;
+}
+
+.contact-us-info {
+  text-align: center;
+  margin: 0 3rem;
+}
+
+.contact-us-img > img {
+  border-radius: 170px 10px;
+}
+
+.container-houses {
+  min-height: 300px;
+  margin: 70px 20px 20px 20px  ;
+  font-family: Arial, Helvetica, sans-serif;
+  box-sizing: border-box;
+}
+
+.house-cards{
+  display: flex;
+  flex-wrap:wrap;
+  justify-content: space-between;
+  gap:16px;
+}
+
+.card-container{
+  border-radius: .5rem;
+  width: 32.5%;
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,.2);
+  overflow: hidden;
+}
+
+.card-img{
+  overflow: hidden;
+}
+
+.card-img > img{
+  display: block;
+  width: 100%;
+  max-height: 200px;
+  transition: 200ms transform ease-in-out;
+}
+
+.card-container:hover,.card-container:hover > .card-img > img{
+  transform: scale(1.025);
+}
+
+
+.card-body {
+  --padding : 0 .4rem;
+  padding-top: 1.2rem;
+}
+
+.card-body h1, .card-body p {
+  line-height: 1.3rem;
+  padding: var(--padding);
+}
+
+.card-info{
+  display: flex;
+}
+
+.card-info p{
+  padding-right: 1rem;
+}
+
+/* .container-houses {
+  min-height: 100%;
+  margin-top: 5rem;
+}
+
+.house-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  align-items: flex-start;
+  max-height: 200px;
+  margin: 0 2rem;
+}
+
+.card-container {
+  --padding: 1rem;
+  background-color: white;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  border: none;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+}
+
+.card-img {
+  padding: var(--padding);
+  padding-bottom: 0;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  padding: 0;
+  overflow: hidden;
+}
+
+.card-img > img {
+  display: block;
+  width: 100%;
+  max-height: 200px;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  object-position: center;
+  transition: 200ms transform ease-in-out;
+}
+
+.card-body {
+  font-size: 0.9rem;
+  padding: 0 var(--padding);
+}
+
+.card-info {
+  display: flex;
+} */
+
+footer {
+  background-color: rgb(249, 249, 251);
+  padding: 2em 4em;
+}
+
+.footer-container {
+  display: flex;
+  flex-direction: column;
+}
+.footer-wrapper {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  flex-direction: row;
+  flex-wrap: wrap;
+  text-align: left;
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.footer-links > a {
+  margin-top: 1rem;
+}
+
+.social-media > a {
+  margin-top: 1rem;
+}
