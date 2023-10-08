@@ -1,9 +1,11 @@
 import {configureStore} from "@reduxjs/toolkit"
-import houseSlice  from "./house/slice"
+import houseSlice  from "./houses/slice"
+import houseDetailsSlice  from "./houseDetails/slice"
 
 const store = configureStore({
     reducer:{
-        house : houseSlice
+        house : houseSlice,
+        houseDetails: houseDetailsSlice,
     }    
 })
 

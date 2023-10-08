@@ -7,9 +7,9 @@ function Footer() {
           <div className="footer-wrapper">
             <div className="footer-links">
               <h3>Quick Links</h3>
-              <Link to="/#"><p>Buy</p></Link>
+              <Link to="/houses/buy"><p>Buy</p></Link>
               <Link to="/#"><p>Sell</p></Link>
-              <Link to="/#"><p>Rent</p></Link>
+              <Link to="/houses/rent"><p>Rent</p></Link>
             </div>
             <div className="footer-links">
               <h3>Info</h3>

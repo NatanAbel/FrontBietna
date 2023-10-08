@@ -1,7 +1,6 @@
-
 body {
   font-family: "Abril Fatface", cursive;
-  background-color: bisque;
+  /* background-color: bisque; */
   color: black;
 }
 
@@ -177,57 +176,119 @@ p {
 
 .container-houses {
   min-height: 300px;
-  margin: 70px 20px 20px 20px  ;
+  margin: 70px 20px 20px 20px;
   font-family: Arial, Helvetica, sans-serif;
   box-sizing: border-box;
 }
 
-.house-cards{
+.house-cards {
   display: flex;
-  flex-wrap:wrap;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  justify-content: flex-start;
   gap:16px;
 }
 
-.card-container{
-  border-radius: .5rem;
+.card-container {
+  border-radius: 0.5rem;
   width: 32.5%;
-  box-shadow: 0 2px 5px 0 rgba(0,0,0,.2);
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
   overflow: hidden;
+  box-sizing: border-box;
 }
 
-.card-img{
-  overflow: hidden;
+.house-cards-like{
+  color: black;
 }
 
-.card-img > img{
+.card-img {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  position: relative;
+}
+
+.card-img > img {
   display: block;
   width: 100%;
   max-height: 200px;
-  transition: 200ms transform ease-in-out;
+  /* transition: 200ms transform ease-in-out; */
 }
 
-.card-container:hover,.card-container:hover > .card-img > img{
+.icon::before {
+  /* font-size: 1.5em;
+  position: absolute;
+  right: 1em;
+  top: .5em; */
+  /* color: red; */
+}
+
+.btn-faHeart{
+  font-size: 1.2rem;
+  position: absolute;
+  right: 1rem;
+  top: .5rem;
+  color:black;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.card-img-text{
+  font-size: .75rem;
+  position: absolute;
+  left: 1rem;
+  top: .5rem;
+  color: #ffffff;
+  background-color: rgba(35, 26, 26);
+  padding: .01em .3em ;
+  border-radius: 1em;
+}
+
+.for-rent-icon {
+  position: absolute;
+  left: 1em;
+}
+
+.card-img > img,
+.faHeart {
+  /* transition: 200ms transform ease-in-out; */
+}
+
+.card-container:hover {
   transform: scale(1.025);
+  box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.2);
 }
-
 
 .card-body {
-  --padding : 0 .4rem;
+  --padding: 0 0.4rem;
   padding-top: 1.2rem;
 }
 
-.card-body h1, .card-body p {
+.card-body h1,
+.card-body p {
   line-height: 1.3rem;
   padding: var(--padding);
 }
 
-.card-info{
+.card-info {
   display: flex;
 }
 
-.card-info p{
+.card-info p {
   padding-right: 1rem;
+}
+
+.form-wrapper{
+  display: flex;
+  /* justify-content: space-evenly; */
+  margin: 25px;
+}
+.input-wrapper {
+  margin-right: 25px;
+  
+}
+input[type="text"]{
+  box-sizing: border-box;
 }
 
 /* .container-houses {

@@ -1,0 +1,1 @@
+export const selectHouseDetail = (reduxState)=> reduxState.houseDetails.house

@@ -1,22 +1,36 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchedHouses } from "../store/house/thunks";
-import { selecthouses } from "../store/house/selectors";
+import { fetchedHouses } from "../store/houses/thunks";
+import { selecthouses } from "../store/houses/selectors";
 import { Link } from "react-router-dom";
+// import Search from "../component/Search";
 
 function LandingPage() {
   const dispatch = useDispatch();
-  const houses = useSelector(selecthouses);
+  const house = useSelector(selecthouses);
+  const [search, setSearch] = useState("");
+  const { houses } = house;
+
+  const searchFilter = houses.filter((house) => {
+    return search === ""
+      ? true
+      : house.address.toLowerCase().includes(search.toLowerCase());
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  };
 
   useEffect(() => {
     dispatch(fetchedHouses);
   }, [dispatch]);
+
   return (
     <div className="landing-container">
       <header className="header">
         <div className="header-left">
           <h1>Welcome to Bietna</h1>
-          <input type="text" placeholder="Put city, adress" />
+          {/* <Search houses={houses} search={search} setSearch={setSearch} handleSubmit={handleSubmit} searchFilter={searchFilter}/> */}
         </div>
       </header>
       <main className="main">
@@ -25,14 +39,18 @@ function LandingPage() {
             <h2>Buildings Ready For Sell & Rent </h2>
           </div>
           <div className="gallery-wrapper">
-          <div className="gallery-text">
-            <h2>Buildings Ready For Sell & Rent </h2>
-          </div>
+            <div className="gallery-text">
+              <h2>Buildings Ready For Sell & Rent </h2>
+            </div>
             <div className="gallery">
               {houses ? (
                 houses.map((house) => (
                   <div className="gallery_item" key={house._id}>
-                    <img src={house.images[0]} alt="" className="gallery_image" />
+                    <img
+                      src={house.images[0]}
+                      alt=""
+                      className="gallery_image"
+                    />
                   </div>
                 ))
               ) : (
@@ -40,39 +58,41 @@ function LandingPage() {
               )}
             </div>
           </div>
-          <button className="View-all-btn">View All</button>
+          <Link to="houses/allHouses" className="View-all-btn">
+            View All
+          </Link>
         </div>
         <div className="cards-wrapper">
           <div className="cards">
             <div className="card-buy">
-          <Link to='/houses/buy' className="cards-link">
-              <h4>House To Buy</h4>
-              <p>
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolore
-                amet eius sequi inventore. Neque iure quod illum officia cum est
-                nesciunt eum rerum! Aliquid, magnam.
-              </p> 
-            </Link>
+              <Link to="/houses/buy" className="cards-link">
+                <h4>House To Buy</h4>
+                <p>
+                  Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+                  Dolore amet eius sequi inventore. Neque iure quod illum
+                  officia cum est nesciunt eum rerum! Aliquid, magnam.
+                </p>
+              </Link>
             </div>
             <div className="card-sell">
-            <Link className="cards-link">
-            <h4>House To Sell</h4>
-              <p>
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolore
-                amet eius sequi inventore. Neque iure quod illum officia cum est
-                nesciunt eum rerum! Aliquid, magnam.
-              </p>
-            </Link>
+              <Link className="cards-link">
+                <h4>House To Sell</h4>
+                <p>
+                  Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+                  Dolore amet eius sequi inventore. Neque iure quod illum
+                  officia cum est nesciunt eum rerum! Aliquid, magnam.
+                </p>
+              </Link>
             </div>
             <div className="card-rent">
-            <Link to="/houses/rent" className="cards-link">
-            <h4>House To Rent</h4>
-              <p>
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolore
-                amet eius sequi inventore. Neque iure quod illum officia cum est
-                nesciunt eum rerum! Aliquid, magnam.
-              </p>
-            </Link>
+              <Link to="/houses/rent" className="cards-link">
+                <h4>House To Rent</h4>
+                <p>
+                  Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+                  Dolore amet eius sequi inventore. Neque iure quod illum
+                  officia cum est nesciunt eum rerum! Aliquid, magnam.
+                </p>
+              </Link>
             </div>
           </div>
         </div>

@@ -7,7 +7,7 @@ export const fetchedHouses = async(dispatch, getState) =>{
     try{
         dispatch(startLoading())
         const response = await axios.get(`${API_URL}/houses`)
-        console.log("response...", response.data)
+        // console.log("response...", response.data)
         dispatch(housesFetched(response.data))
     }catch(e){
         console.log(e.message)
