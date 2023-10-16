@@ -93,6 +93,7 @@ function HouseList() {
       <div className="house-cards">
         {!isLoading ? (
           searchFilterHouse.map((house) => (
+            
             <div className="card-container" key={house._id}>
               <div className="card-img">
                 <button

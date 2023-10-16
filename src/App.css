@@ -2,6 +2,7 @@ body {
   font-family: "Abril Fatface", cursive;
   /* background-color: bisque; */
   color: black;
+  background-color: rgb(237, 231, 230);
 }
 
 a {
@@ -262,6 +263,7 @@ p {
 .card-body {
   --padding: 0 0.4rem;
   padding-top: 1.2rem;
+  background-color: aliceblue;
 }
 
 .card-body h1,
@@ -276,6 +278,87 @@ p {
 
 .card-info p {
   padding-right: 1rem;
+}
+
+/* //////////////////////Details page//////////////////////////////////////// */
+.details-wrapper{
+  margin-top: 70px;
+}
+
+.house-details{
+  display: flex;
+}
+
+.house-details-img{
+  max-width: 800px;
+
+}
+
+.house-details-box{
+  width: 350px;
+  max-height: 400px;
+  margin-top: 80px;
+  margin-left: 5rem;
+  /* margin-right: 5rem; */
+  text-align: left;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 25px;
+  padding: 20px;
+  background-color: #ffffff;
+  /* flex: 1; */
+}
+
+.house-address-price{
+  border-bottom:1px solid rgba(0, 0, 0, .1);
+}
+
+.details-text{
+  font-size: 2rem;
+}
+
+.room-details-wrapper{
+  display: flex;
+  margin-top: 5rem;
+}
+
+.rooms-text{
+  padding-left: 1em;
+}
+
+.general-house-title{
+  text-align: center;
+  margin: 2rem 0 ;
+}
+.general-house-title h1{
+  line-height: .9rem;
+}
+.check .button-hide-show{
+  
+}
+
+.house-info{
+  display: flex;
+}
+
+.info-details{
+  width: 350px;
+  box-sizing: border-box;
+  /* max-height: auto; */
+  margin-top: 80px;
+  margin-left: 5rem;
+  /* margin-right: 5rem; */
+  text-align: left;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 25px;
+  padding: 20px;
+  background-color: #ffffff;
+}
+
+.button{
+    background: none;
+    border: none;
+    padding: 10px 20px; /* Add padding to create a clickable area */
+    cursor: pointer; 
 }
 
 .form-wrapper{
@@ -373,3 +456,91 @@ footer {
 .social-media > a {
   margin-top: 1rem;
 }
+
+
+/* img {
+  vertical-align: middle;
+}
+
+Position the image container (needed to position the left and right arrows)
+.containerr {
+  position: relative;
+}
+
+Hide the images by default
+.mySlides {
+  display: none;
+}
+
+Add a pointer when hovering over the thumbnail images
+.cursor {
+  cursor: pointer;
+}
+
+Next & previous buttons
+.prev,
+.next {
+  cursor: pointer;
+  position: absolute;
+  top: 40%;
+  width: auto;
+  padding: 16px;
+  margin-top: -50px;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+Position the "next button" to the right
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+On hover, add a black background color with a little bit see-through
+.prev:hover,
+.next:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+Number text (1/3 etc)
+.numbertext {
+  color: #f2f2f2;
+  font-size: 12px;
+  padding: 8px 12px;
+  position: absolute;
+  top: 0;
+}
+
+Container for image text
+.caption-container {
+  text-align: center;
+  background-color: #222;
+  padding: 2px 16px;
+  color: white;
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+Six columns side by side
+.column {
+  float: left;
+  width: 16.66%;
+}
+
+Add a transparency effect for thumnbail images
+.demo {
+  opacity: 0.6;
+}
+
+.active,
+.demo:hover {
+  opacity: 1;
+} */

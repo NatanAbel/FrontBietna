@@ -13,8 +13,8 @@ export const houseDetailsSlice = createSlice({
             state.loading = true;
         },
         houseFatchedfully : (state, action)=>{
-            // const id= action.payload
-            state.house = action.payload;
+            const id= action.payload
+            state.house = id;
             console.log("state......",state.house);
             state.loading = false;
         }
