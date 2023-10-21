@@ -281,6 +281,7 @@ p {
 }
 
 /* //////////////////////Details page//////////////////////////////////////// */
+
 .details-wrapper{
   margin-top: 70px;
 }
@@ -289,11 +290,85 @@ p {
   display: flex;
 }
 
-.house-details-img{
-  max-width: 800px;
-
+/* ////////gallary Swiper /////*/
+.gallary-swiper-img{
+  max-width: 900px;
+  max-height: 600px;
+  background: #000;
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  /* color: #000; */
+  margin: 0;
+  padding: 0;
 }
 
+.gallary-swiper-img .swiper {
+  width: 100%;
+  height: 100%;
+}
+
+.gallary-swiper-img .swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  background: #fff;
+
+  /* Center slide text vertically */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* .swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+} */
+
+.gallary-swiper-img .swiper {
+  width: 100%;
+  height: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden;
+}
+
+.gallary-swiper-img .swiper-slide {
+  background-size: cover;
+  background-position: center;
+}
+
+.gallary-swiper-img .mySwiper2 {
+  height: 80%;
+  width: 100%;
+}
+
+.gallary-swiper-img .mySwiper-gallery {
+  height: 20%;
+  box-sizing: border-box;
+  padding: 10px 0;
+}
+
+.mySwiper-gallery .swiper-slide {
+  width: 25%;
+  height: 100%;
+  opacity: 0.4;
+}
+
+.mySwiper-gallery .swiper-slide-thumb-active {
+  opacity: 1;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+
+
+/* ///////// */
 .house-details-box{
   width: 350px;
   max-height: 400px;
@@ -361,6 +436,68 @@ p {
     cursor: pointer; 
 }
 
+/* /////////Swiper/////////*/
+.cards-swiper-container{
+  background: #eee;
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  color: #000;
+  margin: 0;
+  padding: 0;
+}
+
+.cards-swiper-container .swiper {
+  width: 75%;
+  padding: 50px 0;
+}
+
+.cards-swiper-container .swiper-slide {
+  background-position: center;
+  background-size: cover;
+  max-width: 300px;
+  max-height: 300px;
+  margin: 50px 0;
+}
+
+.swiper-slide .swiper-img {
+  display: block;
+  width: 100%;
+  height: 300px;
+}
+
+.check {
+  position: relative;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 4rem;
+}
+
+.check .check2 {
+  position: absolute; /* Position the background text */
+  bottom: 0; /* At the bottom. Use top:0 to append it to the top */
+  background: rgb(0, 0, 0); /* Fallback color */
+  background: rgba(0, 0, 0, 0.5); /* Black background with 0.5 opacity */
+  color: #f1f1f1; /* Grey text */
+  width: 100%; /* Full width */ /* Some padding */
+}
+
+
+.check h2{
+
+padding-left: 10px;
+line-height: .3em;
+
+}
+
+.check p{
+  padding-left: 10px;
+
+}
+
+
+
+/* ///////////////////////////------From------////////////////// */
 .form-wrapper{
   display: flex;
   /* justify-content: space-evenly; */

@@ -42,6 +42,7 @@ function HouseList() {
       ? house.availability.forRent
       : house.availability.forSale
   );
+  
   const searchFilterHouse = filteredHouse.filter((house) => {
     return search === ""
       ? true
