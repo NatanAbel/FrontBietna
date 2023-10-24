@@ -5,6 +5,8 @@ import { Route, Routes } from 'react-router-dom'
 import Footer from './component/Footer'
 import HouseList from './pages/houseList'
 import DetailsPage from './pages/detailsPage'
+import UpdatePage from './pages/updatePage'
+import NewHousePage from './pages/NewHousePage'
 
 function App() {
 
@@ -19,6 +21,10 @@ function App() {
           <Route path='buy' element={<HouseList/>}   />
         </Route>
         <Route path='/housesDetails/:houseId' element={<DetailsPage/>}/>
+        <Route path='/update/:houseId' element={<UpdatePage/>}/>
+        <Route path='/house/new' element={<NewHousePage/>}/>
+
+
       </Routes>
       <Footer/>
     </>

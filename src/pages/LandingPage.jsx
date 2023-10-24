@@ -38,18 +38,18 @@ function LandingPage() {
           <div className="main-text">
             <h2>Buildings Ready For Sell & Rent </h2>
           </div>
-          <div className="gallery-wrapper">
-            <div className="gallery-text">
+          <div className="landing-gallery-wrapper">
+            <div className="landing-gallery-text">
               <h2>Buildings Ready For Sell & Rent </h2>
             </div>
-            <div className="gallery">
+            <div className="landing-gallery">
               {houses ? (
                 houses.map((house) => (
-                  <div className="gallery_item" key={house._id}>
+                  <div className="landing-gallery_item" key={house._id}>
                     <img
                       src={house.images[0]}
                       alt=""
-                      className="gallery_image"
+                      className="landing-gallery_image"
                     />
                   </div>
                 ))

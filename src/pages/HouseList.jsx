@@ -32,8 +32,6 @@ function HouseList() {
   // sorting houses based in the compare_name function above the component function
   const sortedHouses = [...houses].sort(compare_name);
 
-  console.log("sortedHouses......", sortedHouses);
-
   // filtering sorted houses based on conditions
   const filteredHouse = sortedHouses.filter((house) =>
     location === "/houses/allHouses"
@@ -48,8 +46,6 @@ function HouseList() {
       ? true
       : house.address.toLowerCase().includes(search.toLowerCase());
   });
-
-  console.log("filteredHouse...1", filteredHouse);
 
   // const handleSubmit =(e)=>{
   //   e.preventDefault();
@@ -92,7 +88,9 @@ function HouseList() {
           <button type="submit">Apply</button>
         </form> */}
       <div className="house-cards">
-        {!isLoading ? (
+        {isLoading ? (
+          <p>Loading....</p>
+        ):(
           searchFilterHouse.map((house) => (
             
             <div className="card-container" key={house._id}>
@@ -124,8 +122,6 @@ function HouseList() {
               </div>
             </div>
           ))
-        ) : (
-          <p>Loading....</p>
         )}
       </div>
     </div>

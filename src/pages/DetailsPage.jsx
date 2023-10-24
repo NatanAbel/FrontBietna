@@ -48,7 +48,6 @@ function DetailsPage() {
 
   const { houses, favorites } = Allhouses;
 
-  console.log("houses.......5", houses);
   // const containerStyles = {
   //   width: "500px",
   //   height: '200px',
@@ -101,12 +100,12 @@ function DetailsPage() {
                 modules={[FreeMode, Navigation, Thumbs, EffectCube]}
                 className="mySwiper2"
               >
-                {house.images.map((image, index) =>
-                <div className="" key={index}>
-                  <SwiperSlide>
-                    <img src={image} />
+                {house.images.map((image,index) =>
+                
+                  <SwiperSlide key={index}>
+                    <img src={image} alt={`Image-index ${index}`}/>
                   </SwiperSlide>
-                </div>
+
                 )}
               </Swiper>
               <Swiper
@@ -120,11 +119,9 @@ function DetailsPage() {
                 className="mySwiper-gallery"
               >
                 {house.images.map((image, index) =>
-                <div className="" key={index}>
-                  <SwiperSlide>
-                    <img src={image} />
+                  <SwiperSlide key={index}>
+                    <img src={image} alt={`Image-index ${index}`}/>
                   </SwiperSlide>
-                </div>
                 )}
               </Swiper>
             </div>
@@ -206,7 +203,6 @@ function DetailsPage() {
             </div>
           </div>
           <div className="cards-swiper-container">
-            swiper
             <Swiper
               effect={"coverflow"}
               grabCursor={true}
