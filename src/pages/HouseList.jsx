@@ -10,6 +10,8 @@ import { faHeartbeat } from "@fortawesome/free-solid-svg-icons";
 import { toggleFavorites } from "../store/houses/slice";
 // import Search from "../component/Search";
 
+const API_URL = "http://localhost:5005/images";
+
 const compare_name = (player_a, player_b) => {
   return player_a.address.localeCompare(player_b.address);
 };
@@ -87,6 +89,7 @@ function HouseList() {
           </div>
           <button type="submit">Apply</button>
         </form> */}
+        
       <div className="house-cards">
         {isLoading ? (
           <p>Loading....</p>
@@ -104,7 +107,12 @@ function HouseList() {
                 <p className="card-img-text">
                   {house.availability.forRent ? "For rent" : "For Seal"}
                 </p>
-                <img src={house.images[0]} alt="House image" />
+                <button
+                  className=""
+                >
+                  <Link to={`/update/${house._id}`}>update</Link>
+                </button>
+                <img src={`${API_URL}/${house.images[0]}`} alt="House image" />
               </div>
 
               <div className="card-body">

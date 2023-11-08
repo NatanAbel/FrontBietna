@@ -26,7 +26,7 @@ import "swiper/css/pagination";
 import "swiper/css/free-mode";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
-import 'swiper/css/effect-cube';
+import "swiper/css/effect-cube";
 
 // import required modules
 import {
@@ -38,6 +38,8 @@ import {
   EffectCube,
 } from "swiper/modules";
 
+const API_URL = "http://localhost:5005/images";
+
 function DetailsPage() {
   const house = useSelector(selectHouseDetail);
   const Allhouses = useSelector(selecthouses);
@@ -47,14 +49,6 @@ function DetailsPage() {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
   const { houses, favorites } = Allhouses;
-
-  // const containerStyles = {
-  //   width: "500px",
-  //   height: '200px',
-  //   overflowY: 'auto',
-  //   border: '1px solid #ccc',
-  //   padding: '10px',
-  // };
 
   const detailsToggle = () => {
     setShowDetails(!showDetails);
@@ -86,13 +80,13 @@ function DetailsPage() {
                   "--swiper-navigation-color": "#fff",
                   "--swiper-pagination-color": "#fff",
                 }}
-                effect={'cube'}
-        cubeEffect={{
-          shadow: true,
-          slideShadows: true,
-          shadowOffset: 20,
-          shadowScale: 0.94,
-        }}
+                effect={"cube"}
+                cubeEffect={{
+                  shadow: true,
+                  slideShadows: true,
+                  shadowOffset: 20,
+                  shadowScale: 0.94,
+                }}
                 loop={true}
                 spaceBetween={10}
                 navigation={true}
@@ -100,13 +94,15 @@ function DetailsPage() {
                 modules={[FreeMode, Navigation, Thumbs, EffectCube]}
                 className="mySwiper2"
               >
-                {house.images.map((image,index) =>
-                
+                {house.images.map((image, index) => (
                   <SwiperSlide key={index}>
-                    <img src={image} alt={`Image-index ${index}`}/>
+                    <img
+                      src={`${API_URL}/${image}`}
+                      alt={`Image-index ${index}`}
+                      loading="lazy"
+                    />
                   </SwiperSlide>
-
-                )}
+                ))}
               </Swiper>
               <Swiper
                 onSwiper={setThumbsSwiper}
@@ -118,11 +114,15 @@ function DetailsPage() {
                 modules={[FreeMode, Navigation, Thumbs]}
                 className="mySwiper-gallery"
               >
-                {house.images.map((image, index) =>
+                {house.images.map((image, index) => (
                   <SwiperSlide key={index}>
-                    <img src={image} alt={`Image-index ${index}`}/>
+                    <img
+                      src={`${API_URL}/${image}`}
+                      alt={`Image-index ${index}`}
+                      loading="lazy"
+                    />
                   </SwiperSlide>
-                )}
+                ))}
               </Swiper>
             </div>
             <div className="house-details-box">
@@ -155,6 +155,7 @@ function DetailsPage() {
           </div>
           <div className="general-house-info">
             <div className="general-house-title">
+              
               <h1>house details</h1>
               <button className="button-hide-show" onClick={detailsToggle}>
                 {showDetails ? (
@@ -224,7 +225,12 @@ function DetailsPage() {
                 <SwiperSlide key={house._id}>
                   <div className="check">
                     <Link to={`/housesDetails/${house._id}`}>
-                      <img src={house.images[0]} alt="images" className="swiper-img"/>
+                      <img
+                        src={`${API_URL}/${house.images[0]}`}
+                        alt="images"
+                        className="swiper-img"
+                        loading="lazy"
+                      />
                       <div className="check2">
                         <h2>heyy</h2>
                         <p> hidfhidug</p>
