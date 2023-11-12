@@ -50,18 +50,16 @@ function DetailsPage() {
 
   const { houses, favorites } = Allhouses;
 
+
   const detailsToggle = () => {
     setShowDetails(!showDetails);
   };
+  console.log("housessssssss", house)
 
   useEffect(() => {
     dispatch(fetchDetailsPage(houseId));
     dispatch(fetchedHouses);
   }, [dispatch, houseId]);
-
-  // useEffect(() => {
-  //   showSlides(slideIndex);
-  // }, [slideIndex]);
 
   return (
     <div className="details-container">
@@ -69,12 +67,6 @@ function DetailsPage() {
         <div className="details-wrapper">
           <div className="house-details">
             <div className="gallary-swiper-img">
-              {/*house.images.map((image, index) =>
-    <div className="carousel-item active" key={index}>
-      <img src={image} width= "800px" height="592px" className="d-block" alt="..."/>
-    </div>
-
-)*/}
               <Swiper
                 style={{
                   "--swiper-navigation-color": "#fff",
@@ -199,6 +191,7 @@ function DetailsPage() {
                       </ul>
                     ))}
                   </div>
+                  <p>Description : {house.description}</p>
                 </div>
               </div>
             </div>

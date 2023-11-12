@@ -1,4 +1,3 @@
-import { getType } from "@reduxjs/toolkit";
 import axios from "axios";
 import React, { useState } from "react";
 import { useEffect } from "react";
@@ -46,9 +45,11 @@ function HouseForm(props) {
         // Convert the FileList to an array and update the state
         const updatedImages = Array.from(selectedFiles);
         setImages([...images, ...updatedImages]);
+        
       } else {
         // If it's a new house, simply update the state with the new images
         setImages(Array.from(selectedFiles));
+        console.log('images....',images)
       }
     } catch (e) {
       console.log(e.message);
@@ -96,136 +97,171 @@ function HouseForm(props) {
       if (response.status === 201 || response.status === 200) {
         navigate(`/housesDetails/${houseData._id}`);
       }
+
+
     } catch (e) {
       console.log(e.message);
     }
   };
 
+  const handleAvailabilityChange = (forRent) => {
+    // Reset rentalPrice to zero if switching from rent to sale
+    if (availability.forRent && !forRent) {     
+      setRentalPrice(0);     
+    }
+    // Reset price to zero if switching from sale to rent
+    if (availability.forSale && forRent) {
+      setPrice(0);
+    }
+    console.log("price...", price)
+    // Update the availability state
+    setAvailability({ forRent, forSale: !forRent });
+  };
+
+
   return (
-    <div style={{ marginTop: "90px", marginLeft: "70px" }}>
-      <h1>{heading}</h1>
-      <form onSubmit={hundelSubmit}>
-        <div>
-          <label>Address:</label>
-          <input
-            type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-          />
+    <div  className="checkllll">
+      <div className="form-container" >
+        <div className="house-form-heading">
+          <h1>{heading}</h1>
         </div>
-        <div>
-          <label>Price :</label>
-          <input
-            type="number"
-            value={price}
-            onChange={(e) => setPrice(parseInt(e.target.value))}
-          />
-        </div>
-        <div>
-          <label>Bedrooms:</label>
-          <input
-            type="number"
-            value={bedrooms}
-            onChange={(e) => setBedrooms(parseInt(e.target.value))}
-          />
-        </div>
-        <div>
-          <label>bathrooms:</label>
-          <input
-            type="number"
-            value={bathrooms}
-            onChange={(e) => setBathrooms(parseInt(e.target.value))}
-          />
-        </div>
-        <div>
-          <label>sqm:</label>
-          <input
-            type="number"
-            value={sqm}
-            onChange={(e) => setSqm(parseInt(e.target.value))}
-          />
-        </div>
-        <div>
-          <label>rentalPrice:</label>
-          <input
-            type="number"
-            value={rentalPrice}
-            onChange={(e) => setRentalPrice(parseInt(e.target.value))}
-          />
-        </div>
-        <div>
-          <label>description:</label>
-          <input
-            type="text"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>features:</label>
-          <input
-            type="text"
-            value={features}
-            onChange={(e) => setFeatures(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>images:</label>
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleFileChange}
-            name="image"
-          />
-          <ul>
-            {images.map((image, index) => (
-              <li key={index}>
-                <img
-                  style={{ width: "50px" }}
-                  src={`${API_URL}/images/${image}`}
-                  alt=""
+        <form onSubmit={hundelSubmit} className="form-wrapper">
+          <div className="inputwrapper">
+            <label>Address:</label>
+            <div>
+            <input
+              type="text"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
+            </div>
+          </div>
+          <div className="inputwrapper-numbers">
+            <div className="inputwrapper">
+              <label>Bedrooms:</label>
+              <div>
+              <input
+                type="number"
+                value={bedrooms}
+                onChange={(e) => setBedrooms(parseInt(e.target.value))}
+              />
+              </div>
+            </div>
+            <div className="inputwrapper">
+              <label>Bathrooms:</label>
+              <div>
+              <input
+                type="number"
+                value={bathrooms}
+                onChange={(e) => setBathrooms(parseInt(e.target.value))}
+              />
+              </div>
+            </div>
+            <div className="inputwrapper">
+              <label>Sqm:</label>
+              <div>
+              <input
+                type="number"
+                value={sqm}
+                onChange={(e) => setSqm(parseInt(e.target.value))}
+              />
+              </div>
+            </div>
+            <div className="inputwrapper">
+              <label>Availability:</label>
+              <div className="inputwrapper-radio">
+              <div>
+                <input
+                  type="radio"
+                  id="rent"
+                  value="forRent"
+                  name="availability"
+                  checked={availability.forRent}
+                  onChange={() =>
+                    handleAvailabilityChange(true)
+                  }
                 />
-              </li>
-            ))}
-          </ul>
-          {/* <button type="button" onClick={handleUpload}></button> */}
-        </div>
-        <div>
-          <label>availability:</label>
-          <div>
+                <label htmlFor="rent" className="text-radio">Rent</label>
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  id="sale"
+                  value="forSale"
+                  name="availability"
+                  checked={availability.forSale}
+                  onChange={() =>handleAvailabilityChange(false)}
+                />
+                <label htmlFor="sale" className="text-radio">Sale</label>
+              </div>
+              </div>
+            </div>
+              {availability.forSale ? (<div className="inputwrapper">
+                <label>Price :</label>
+                <div>
+                <input
+                  type="number"
+                  value={price}
+                  onChange={(e) => setPrice(parseInt(e.target.value))}
+                />
+                </div>
+              </div>) : (<div className="inputwrapper">
+                <label>RentalPrice:</label>
+                <div>
+                  <input
+                    type="number"
+                    value={rentalPrice}
+                    onChange={(e) => setRentalPrice(parseInt(e.target.value))}
+                  />
+                </div>
+              </div>)}
+            <div className="inputwrapper">
+            <label>Features:</label>
+            <div>
             <input
-              type="radio"
-              id="rent"
-              value="forRent"
-              name="availability"
-              checked={availability.forRent}
-              onChange={() =>
-                setAvailability({ forRent: true, forSale: false })
-              }
+              type="text"
+              value={features}
+              onChange={(e) => setFeatures(e.target.value)}
             />
-            <label htmlFor="rent">Rent</label>
+            </div>
           </div>
-          <div>
+          </div>
+          <div className="inputwrapper">
+            <label htmlFor="description">Description</label>
+                <textarea maxLength="250" className="form-control" id="description" placeholder="Enter a detailed description of your house!" value={description} onChange={(event) => setDescription(event.target.value)}></textarea>
+          </div>
+          <div className="inputwrapper">
+            <label>Images:</label>
+            <div>
             <input
-              type="radio"
-              id="sale"
-              value="forSale"
-              name="availability"
-              checked={availability.forSale}
-              onChange={() =>
-                setAvailability({ forRent: false, forSale: true })
-              }
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleFileChange}
+              name="image"
             />
-            <label htmlFor="sale">Sale</label>
+            </div>
+
+            <ul>
+            {isUpdating && <div  className="uploaded-img" >
+              {images.map((image, index) => (
+                <li key={index}>
+                    <img
+                      src={`${API_URL}/images/${image}`}
+                      alt="uploaded-img"
+                    />
+                  </li>
+              ))}
+              </div> }
+            </ul> 
           </div>
-        </div>
-        <div>
-          <button type="submit">
-            {isUpdating ? <p>update</p> : <p>create</p>}
-          </button>
-        </div>
-      </form>
+          <div className="button-house-form">
+            <button type="submit">
+              {isUpdating ? <p>Update</p> : <p>Create</p>}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

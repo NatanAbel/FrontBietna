@@ -107,12 +107,7 @@ function HouseList() {
                 <p className="card-img-text">
                   {house.availability.forRent ? "For rent" : "For Seal"}
                 </p>
-                <button
-                  className=""
-                >
-                  <Link to={`/update/${house._id}`}>update</Link>
-                </button>
-                <img src={`${API_URL}/${house.images[0]}`} alt="House image" />
+                <img src={`${API_URL}/${house.images[0]}`} alt="House image" loading="lazy"/>
               </div>
 
               <div className="card-body">

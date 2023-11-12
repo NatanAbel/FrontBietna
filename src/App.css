@@ -206,6 +206,7 @@ p {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  height: 200px;
   position: relative;
 }
 
@@ -281,6 +282,12 @@ p {
 }
 
 /* //////////////////////Details page//////////////////////////////////////// */
+
+.details-container{
+  width: 100%;
+  height: 100%;
+  margin: 0 10px;
+}
 
 .details-wrapper{
   margin-top: 70px;
@@ -496,20 +503,119 @@ line-height: .3em;
 
 
 
-/* ///////////////////////////------From------////////////////// */
-.form-wrapper{
+/* ///////////////////////////------houseFrom-input------////////////////// */
+
+.checkllll{
   display: flex;
-  /* justify-content: space-evenly; */
-  margin: 25px;
-}
-.input-wrapper {
-  margin-right: 25px;
-  
-}
-input[type="text"]{
-  box-sizing: border-box;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 80px 0 ;
+  font-family: "Roboto", sans-serif;
 }
 
+.house-form-heading {
+  width: 100%;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.607);
+  text-align: center;
+}
+
+
+
+.form-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 700px;
+  min-height:600px;
+  background-color: #f4d6d6;
+}
+
+.form-wrapper {
+  width: 500px;
+  margin: 20px 0;
+  /* background-color: #0e0101; */
+
+}
+
+.inputwrapper{
+  margin: .5rem 3rem 0 0;
+}
+
+.inputwrapper-numbers{
+  display: flex;
+  flex-wrap: wrap;
+
+}
+
+input[type="text"], textarea{
+  width: 100%;
+  padding-left: .4rem;
+  border-radius: .3rem;
+}
+
+.inputwrapper-radio{
+  display: flex;
+}
+
+input[type="radio"] {
+  /* margin-left: 10px; */
+  margin: 0 .5em;
+}
+
+/* .text-radio {
+  padding: 0 .5em;
+} */
+
+input[type="number"]{
+  width: 75%;
+  padding-left: .4rem;
+  border-radius: .3rem;
+}
+
+.uploaded-img{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  list-style: none;
+  padding-top: .5em ;
+  max-width: 400px;
+}
+
+.uploaded-img > li >img{
+  width: 60px;
+  height:40px;
+  margin-right: .4em;
+  margin-top: .2em;
+  border-radius: .4em;
+
+}
+
+.button-house-form{
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  border-top: 1px solid rgba(0, 0, 0, 0.607);
+}
+
+.button-house-form > button{
+  margin-top: 1em;
+  border: 1px solid white;
+  border-radius: 1.6em;
+  padding: .7em 3.5em;
+  /* margin-left: 20px; */
+  cursor: pointer;
+}
+
+.button-house-form > button:hover{
+  background-color: rgba(85, 84, 82, 0.755);
+  transition-duration: 1s;
+}
+
+
+/* ////////////////////////////////////////////// */
 /* .container-houses {
   min-height: 100%;
   margin-top: 5rem;
@@ -593,90 +699,3 @@ footer {
   margin-top: 1rem;
 }
 
-
-/* img {
-  vertical-align: middle;
-}
-
-Position the image container (needed to position the left and right arrows)
-.containerr {
-  position: relative;
-}
-
-Hide the images by default
-.mySlides {
-  display: none;
-}
-
-Add a pointer when hovering over the thumbnail images
-.cursor {
-  cursor: pointer;
-}
-
-Next & previous buttons
-.prev,
-.next {
-  cursor: pointer;
-  position: absolute;
-  top: 40%;
-  width: auto;
-  padding: 16px;
-  margin-top: -50px;
-  color: white;
-  font-weight: bold;
-  font-size: 20px;
-  border-radius: 0 3px 3px 0;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-Position the "next button" to the right
-.next {
-  right: 0;
-  border-radius: 3px 0 0 3px;
-}
-
-On hover, add a black background color with a little bit see-through
-.prev:hover,
-.next:hover {
-  background-color: rgba(0, 0, 0, 0.8);
-}
-
-Number text (1/3 etc)
-.numbertext {
-  color: #f2f2f2;
-  font-size: 12px;
-  padding: 8px 12px;
-  position: absolute;
-  top: 0;
-}
-
-Container for image text
-.caption-container {
-  text-align: center;
-  background-color: #222;
-  padding: 2px 16px;
-  color: white;
-}
-
-.row:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-Six columns side by side
-.column {
-  float: left;
-  width: 16.66%;
-}
-
-Add a transparency effect for thumnbail images
-.demo {
-  opacity: 0.6;
-}
-
-.active,
-.demo:hover {
-  opacity: 1;
-} */
