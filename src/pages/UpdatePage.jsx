@@ -14,7 +14,6 @@ function UpdatePage() {
   const fetchupdates = async()=>{
     const response = await axios.get(`${API_URL}/houses/${houseId}`)
     const houseToUpdate = response.data
-    // console.log("house....",house)
     setHouse(houseToUpdate)
     setIsLoading(false)
   }

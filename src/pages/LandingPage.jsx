@@ -5,6 +5,8 @@ import { selecthouses } from "../store/houses/selectors";
 import { Link } from "react-router-dom";
 // import Search from "../component/Search";
 
+const API_URL = "http://localhost:5005/images";
+
 function LandingPage() {
   const dispatch = useDispatch();
   const house = useSelector(selecthouses);
@@ -13,7 +15,7 @@ function LandingPage() {
 
   const searchFilter = houses.filter((house) => {
     return search === ""
-      ? true
+      ? house
       : house.address.toLowerCase().includes(search.toLowerCase());
   });
 
@@ -47,7 +49,7 @@ function LandingPage() {
                 houses.map((house) => (
                   <div className="landing-gallery_item" key={house._id}>
                     <img
-                      src={house.images[0]}
+                      src={`${API_URL}/${house.images[0]}`}
                       alt=""
                       className="landing-gallery_image"
                     />

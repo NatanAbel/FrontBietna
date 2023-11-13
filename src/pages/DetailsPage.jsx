@@ -38,7 +38,7 @@ import {
   EffectCube,
 } from "swiper/modules";
 
-const API_URL = "http://localhost:5005/images";
+const API_URL = "http://localhost:5005/images" ;
 
 function DetailsPage() {
   const house = useSelector(selectHouseDetail);
@@ -54,7 +54,6 @@ function DetailsPage() {
   const detailsToggle = () => {
     setShowDetails(!showDetails);
   };
-  console.log("housessssssss", house)
 
   useEffect(() => {
     dispatch(fetchDetailsPage(houseId));
@@ -88,6 +87,7 @@ function DetailsPage() {
               >
                 {house.images.map((image, index) => (
                   <SwiperSlide key={index}>
+                    {console.log("image...", image)}
                     <img
                       src={`${API_URL}/${image}`}
                       alt={`Image-index ${index}`}

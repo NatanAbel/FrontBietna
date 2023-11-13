@@ -15,7 +15,6 @@ export const houseDetailsSlice = createSlice({
         houseFatchedfully : (state, action)=>{
             const id= action.payload
             state.house = id;
-            console.log("state......",state.house);
             state.loading = false;
         }
     }

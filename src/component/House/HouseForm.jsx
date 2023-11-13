@@ -23,16 +23,16 @@ function HouseForm(props) {
   } = props;
 
   const [address, setAddress] = useState(houseAddress || "");
-  const [price, setPrice] = useState(housePrice || 0);
-  const [bedrooms, setBedrooms] = useState(houseBedrooms || 0);
-  const [bathrooms, setBathrooms] = useState(houseBathrooms || 0);
-  const [sqm, setSqm] = useState(houseSqm || 0);
-  const [rentalPrice, setRentalPrice] = useState(houseRentalPrice || 0);
+  const [price, setPrice] = useState(housePrice ||0);
+  const [bedrooms, setBedrooms] = useState(houseBedrooms ||0);
+  const [bathrooms, setBathrooms] = useState(houseBathrooms ||0);
+  const [sqm, setSqm] = useState(houseSqm ||0);
+  const [rentalPrice, setRentalPrice] = useState(houseRentalPrice ||0);
   const [description, setDescription] = useState(houseDescription || "");
   const [features, setFeatures] = useState(houseFeatures || []);
   const [images, setImages] = useState(houseImages || []);
   const [availability, setAvailability] = useState(
-    houseAvailability || { forRent: true, forSale: false }
+    houseAvailability || { forRent:true , forSale: false }
   );
 
   const navigate = useNavigate();
@@ -41,6 +41,7 @@ function HouseForm(props) {
     try {
       // Get the selected files from the input element
       const selectedFiles = e.target.files;
+
       if (isUpdating) {
         // Convert the FileList to an array and update the state
         const updatedImages = Array.from(selectedFiles);
@@ -49,7 +50,12 @@ function HouseForm(props) {
       } else {
         // If it's a new house, simply update the state with the new images
         setImages(Array.from(selectedFiles));
-        console.log('images....',images)
+
+        // checking if for rent is false and update the state in order to send input rental field to the backend
+        // if (!availability.forRent) {
+        //   setRentalPrice(0)     
+        // }
+        
       }
     } catch (e) {
       console.log(e.message);
@@ -89,16 +95,13 @@ function HouseForm(props) {
               "Content-Type": "multipart/form-data",
             }, // Set the content type to handle file uploads
           });
-      // const houseCreated = responsePost.data;
-      // console.log("houseCreated......", houseCreated)
-      const houseData = response.data;
-      console.log("houseData......", houseData);
 
+      const houseData = response.data;
+      console.log(houseData)
       if (response.status === 201 || response.status === 200) {
         navigate(`/housesDetails/${houseData._id}`);
       }
-
-
+      
     } catch (e) {
       console.log(e.message);
     }
@@ -106,14 +109,13 @@ function HouseForm(props) {
 
   const handleAvailabilityChange = (forRent) => {
     // Reset rentalPrice to zero if switching from rent to sale
-    if (availability.forRent && !forRent) {     
-      setRentalPrice(0);     
+    if (availability.forRent && !forRent) {
+      setRentalPrice(0)     
     }
     // Reset price to zero if switching from sale to rent
     if (availability.forSale && forRent) {
-      setPrice(0);
+      setPrice(0);     
     }
-    console.log("price...", price)
     // Update the availability state
     setAvailability({ forRent, forSale: !forRent });
   };
@@ -133,6 +135,8 @@ function HouseForm(props) {
               type="text"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
+              required
+              placeholder="Address"
             />
             </div>
           </div>
@@ -144,6 +148,8 @@ function HouseForm(props) {
                 type="number"
                 value={bedrooms}
                 onChange={(e) => setBedrooms(parseInt(e.target.value))}
+                required
+                placeholder="Bedrooms"
               />
               </div>
             </div>
@@ -154,6 +160,8 @@ function HouseForm(props) {
                 type="number"
                 value={bathrooms}
                 onChange={(e) => setBathrooms(parseInt(e.target.value))}
+                required
+                placeholder="Bathrooms"
               />
               </div>
             </div>
@@ -164,6 +172,8 @@ function HouseForm(props) {
                 type="number"
                 value={sqm}
                 onChange={(e) => setSqm(parseInt(e.target.value))}
+                required
+                placeholder="Sqm"
               />
               </div>
             </div>
@@ -203,6 +213,8 @@ function HouseForm(props) {
                   type="number"
                   value={price}
                   onChange={(e) => setPrice(parseInt(e.target.value))}
+                  required
+                  placeholder="Price" 
                 />
                 </div>
               </div>) : (<div className="inputwrapper">
@@ -212,6 +224,8 @@ function HouseForm(props) {
                     type="number"
                     value={rentalPrice}
                     onChange={(e) => setRentalPrice(parseInt(e.target.value))}
+                    required
+                    placeholder="RentalPrice" 
                   />
                 </div>
               </div>)}
@@ -222,13 +236,14 @@ function HouseForm(props) {
               type="text"
               value={features}
               onChange={(e) => setFeatures(e.target.value)}
+              placeholder="Features"
             />
             </div>
           </div>
           </div>
           <div className="inputwrapper">
             <label htmlFor="description">Description</label>
-                <textarea maxLength="250" className="form-control" id="description" placeholder="Enter a detailed description of your house!" value={description} onChange={(event) => setDescription(event.target.value)}></textarea>
+                <textarea maxLength="250" className="form-control" id="description" placeholder="Enter a detailed description of your house!" value={description} onChange={(event) => setDescription(event.target.value)}  required></textarea>
           </div>
           <div className="inputwrapper">
             <label>Images:</label>
@@ -239,6 +254,7 @@ function HouseForm(props) {
               multiple
               onChange={handleFileChange}
               name="image"
+              required
             />
             </div>
 
