@@ -1,6 +1,8 @@
 module.exports = {
   root: true,
   env: { browser: true, es2020: true },
+  // The babel-eslint parser is used here for parsing JavaScript with modern ECMAScript features.
+  parser: 'babel-eslint', // Use babel-eslint for parsing JavaScript
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',

@@ -25,8 +25,12 @@ import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
 import "swiper/css/free-mode";
 import "swiper/css/navigation";
-import "swiper/css/thumbs";
-import "swiper/css/effect-cube";
+import "swiper/css/thumbs"
+
+// import 'swiper/swiper.scss';
+// import 'swiper/components/navigation/navigation.scss';
+// import 'swiper/components/pagination/pagination.scss';
+// import 'swiper/components/thumbs/thumbs.scss';
 
 // import required modules
 import {
@@ -34,8 +38,7 @@ import {
   Pagination,
   Navigation,
   FreeMode,
-  Thumbs,
-  EffectCube,
+  Thumbs
 } from "swiper/modules";
 
 const API_URL = "http://localhost:5005/images" ;
@@ -66,61 +69,53 @@ function DetailsPage() {
         <div className="details-wrapper">
           <div className="house-details">
             <div className="gallary-swiper-img">
-              <Swiper
-                style={{
-                  "--swiper-navigation-color": "#fff",
-                  "--swiper-pagination-color": "#fff",
-                }}
-                effect={"cube"}
-                cubeEffect={{
-                  shadow: true,
-                  slideShadows: true,
-                  shadowOffset: 20,
-                  shadowScale: 0.94,
-                }}
-                loop={true}
-                spaceBetween={10}
-                navigation={true}
-                thumbs={{ swiper: thumbsSwiper }}
-                modules={[FreeMode, Navigation, Thumbs, EffectCube]}
-                className="mySwiper2"
-              >
-                {house.images.map((image, index) => (
-                  <SwiperSlide key={index}>
-                    {console.log("image...", image)}
-                    <img
-                      src={`${API_URL}/${image}`}
-                      alt={`Image-index ${index}`}
-                      loading="lazy"
-                    />
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-              <Swiper
-                onSwiper={setThumbsSwiper}
-                loop={true}
-                spaceBetween={10}
-                slidesPerView={4}
-                freeMode={true}
-                watchSlidesProgress={true}
-                modules={[FreeMode, Navigation, Thumbs]}
-                className="mySwiper-gallery"
-              >
-                {house.images.map((image, index) => (
-                  <SwiperSlide key={index}>
-                    <img
-                      src={`${API_URL}/${image}`}
-                      alt={`Image-index ${index}`}
-                      loading="lazy"
-                    />
-                  </SwiperSlide>
-                ))}
-              </Swiper>
+                <Swiper
+                    style={{
+                      '--swiper-navigation-color': '#fff',
+                      '--swiper-pagination-color': '#fff',
+                    }}
+                    loop={true}
+                    spaceBetween={10}
+                    navigation={true}
+                    thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null}}
+                    modules={[FreeMode, Navigation, Thumbs]}
+                    className="mySwiper2"
+                  >
+                    {house.images.map((image, index) => (
+                    <SwiperSlide key={index}>
+                      <img
+                        src={`${API_URL}/${image}`}
+                        alt={`Image-index ${index}`}
+                        loading="lazy"
+                      />
+                    </SwiperSlide>
+                    ))}
+                  </Swiper>
+                  <Swiper
+                    onSwiper={setThumbsSwiper}
+                    loop={true}
+                    spaceBetween={10}
+                    slidesPerView={4}
+                    freeMode={true}
+                    watchSlidesProgress={true}
+                    modules={[FreeMode, Navigation, Thumbs]}
+                    className="mySwiper-gallery"
+                  >
+                    {house.images.map((image, index) => (
+                      <SwiperSlide key={index}>
+                        <img
+                          src={`${API_URL}/${image}`}
+                          alt={`Image-index ${index}`}
+                          loading="lazy"
+                        />
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
             </div>
             <div className="house-details-box">
               <div className="house-address-price">
                 <h1>{house.address}</h1>
-                <p className="details-text">${house.rentalPrice}</p>
+                <p className="details-text">${house.availability.forRent ? house.rentalPrice :house.price}</p>
               </div>
 
               <div className="room-details-wrapper">
@@ -137,7 +132,7 @@ function DetailsPage() {
                 <div className="room-details">
                   <p className="rooms-text">
                     {" "}
-                    {<FontAwesomeIcon icon={faRulerCombined} />} sqm:{" "}
+                    {<FontAwesomeIcon icon={faRulerCombined} />} sqm:{""}
                     {house.sqm}
                   </p>
                 </div>
@@ -216,7 +211,7 @@ function DetailsPage() {
             >
               {houses.map((house) => (
                 <SwiperSlide key={house._id}>
-                  <div className="check">
+                  <div className="details-card-wrapper">
                     <Link to={`/housesDetails/${house._id}`}>
                       <img
                         src={`${API_URL}/${house.images[0]}`}
@@ -224,9 +219,9 @@ function DetailsPage() {
                         className="swiper-img"
                         loading="lazy"
                       />
-                      <div className="check2">
-                        <h2>heyy</h2>
-                        <p> hidfhidug</p>
+                      <div className="details-card">
+                        <h2>{house.address}</h2>
+                        <p> ${house.availability.forRent ? house.rentalPrice : house.price}</p>
                       </div>
                     </Link>
                   </div>

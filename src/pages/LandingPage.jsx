@@ -2,27 +2,72 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchedHouses } from "../store/houses/thunks";
 import { selecthouses } from "../store/houses/selectors";
-import { Link } from "react-router-dom";
-// import Search from "../component/Search";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import Search from "../component/Search";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+
+
+// import required modules
+import {
+  EffectCoverflow,
+  Pagination,
+  Navigation,
+  FreeMode,
+  Thumbs,
+  EffectCube,
+} from "swiper/modules";
+import HouseList from "./HouseList";
 
 const API_URL = "http://localhost:5005/images";
 
-function LandingPage() {
+function LandingPage({forRent,setForRent,forSale,setForSale, handleAvailabilityClick}) {
   const dispatch = useDispatch();
   const house = useSelector(selecthouses);
   const [search, setSearch] = useState("");
+  // const [forSale, setForSale] = useState(false);
+  // const [forRent, setForRent] = useState(false);
+  const [landingResult, setLandingResult] = useState([]);
   const { houses } = house;
+  const navigate = useNavigate()
+  const location = useLocation().pathname
+  // const searchFilter = search && houses.filter((house) => {
+  //   return search === ""
+  //     ? true
+  //     :  house.address.toLowerCase().includes(search.toLowerCase());
+  // });
+  
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();  
+  //       console.log("searchFilter..", searchFilter)
+  //   if(location === "/" ){
+  //     searchFilter.length > 0 ? searchFilter[0] : null;
+  //     navigate(`/houses`)
+  //   }     
+  // };
 
-  const searchFilter = houses.filter((house) => {
-    return search === ""
-      ? house
-      : house.address.toLowerCase().includes(search.toLowerCase());
-  });
+  // const onSubmit = (e) => {
+  //   e.preventDefault();
+  //   if (search.length > 0) {
+  //     const searchFilter = search
+  //       ? houses.filter((house) =>
+  //           house.address.toLowerCase().includes(search.toLowerCase())
+  //         )
+  //       : [];
+  //       console.log("searchFilter....llll", searchFilter)
+  //     // Navigate to HouseList and pass search input and results as state
+  //     // navigate("/houses/allHouses", { state: { search, results: searchFilter } });
+  //   }
+  // };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+ 
+  
+  const handleSearch = (searchInput, searchResults) => {
+    setSearch(searchInput);
+    // Navigate to the HouseList page with the search input
+    navigate("/houses/allHouses", { state: { search: searchInput, results: searchResults} });
   };
-
+  
   useEffect(() => {
     dispatch(fetchedHouses);
   }, [dispatch]);
@@ -32,33 +77,66 @@ function LandingPage() {
       <header className="header">
         <div className="header-left">
           <h1>Welcome to Bietna</h1>
-          {/* <Search houses={houses} search={search} setSearch={setSearch} handleSubmit={handleSubmit} searchFilter={searchFilter}/> */}
+          {/* <div className="header-button">
+              <a className="my-button">
+                Rent
+              </a>
+              <a className="my-button">
+                Sell
+              </a>
+          </div> */}
+          <Search houses={houses} search={search} setSearch={setSearch} handleSearch={handleSearch} forRent ={forRent} setForRent={setForRent} forSale={forSale} setForSale={setForSale}/>
         </div>
       </header>
       <main className="main">
         <div className="slide-listing">
           <div className="main-text">
-            <h2>Buildings Ready For Sell & Rent </h2>
+            <h2>Houses Ready For Sell & Rent </h2>
           </div>
           <div className="landing-gallery-wrapper">
-            <div className="landing-gallery-text">
-              <h2>Buildings Ready For Sell & Rent </h2>
-            </div>
-            <div className="landing-gallery">
-              {houses ? (
-                houses.map((house) => (
-                  <div className="landing-gallery_item" key={house._id}>
-                    <img
-                      src={`${API_URL}/${house.images[0]}`}
-                      alt=""
-                      className="landing-gallery_image"
-                    />
-                  </div>
-                ))
-              ) : (
-                <p>loading...</p>
-              )}
-            </div>
+            <div className="cards-swiper-container">
+            <Swiper
+              effect={"coverflow"}
+              grabCursor={true}
+              centeredSlides={true}
+              slidesPerView={"auto"}
+              coverflowEffect={{
+                rotate: 50,
+                stretch: 0,
+                depth: 100,
+                modifier: 1,
+                slideShadows: true,
+              }}
+              pagination={true}
+              navigation={true}
+              modules={[EffectCoverflow, Pagination, Navigation]}
+              className="mySwiper"
+            >
+              
+              
+                {houses.map((house) => (
+                  <SwiperSlide key={house._id}>
+                    <div className="details-card-wrapper">
+                      <Link to={`/housesDetails/${house._id}`}>
+                        <img
+                          src={`${API_URL}/${house.images[0]}`}
+                          alt="images"
+                          className="swiper-img"
+                          loading="lazy"
+                        />
+                        <div className="details-card">
+                          <div>
+                            <h2>{house.address}</h2>
+                            <p> ${house.availability.forRent ? house.rentalPrice : house.price}</p>
+                          </div>
+                        </div>
+                      </Link>
+                    </div>
+                  </SwiperSlide>
+                ))}
+            
+            </Swiper>
+          </div>
           </div>
           <Link to="houses/allHouses" className="View-all-btn">
             View All
@@ -66,15 +144,15 @@ function LandingPage() {
         </div>
         <div className="cards-wrapper">
           <div className="cards">
-            <div className="card-buy">
-              <Link to="/houses/buy" className="cards-link">
+            <div className="card-buy" onClick={() => handleAvailabilityClick('forSale')}>
+              {/* <Link to="/houses/buy" className="cards-link"> */}
                 <h4>House To Buy</h4>
                 <p>
                   Lorem ipsum dolor, sit amet consectetur adipisicing elit.
                   Dolore amet eius sequi inventore. Neque iure quod illum
                   officia cum est nesciunt eum rerum! Aliquid, magnam.
                 </p>
-              </Link>
+              {/* </Link> */}
             </div>
             <div className="card-sell">
               <Link className="cards-link">
@@ -86,15 +164,15 @@ function LandingPage() {
                 </p>
               </Link>
             </div>
-            <div className="card-rent">
-              <Link to="/houses/rent" className="cards-link">
+            <div className="card-rent" onClick={() => handleAvailabilityClick('forRent')}>
+              {/* <Link to="/houses/rent" className="cards-link"> */}
                 <h4>House To Rent</h4>
                 <p>
                   Lorem ipsum dolor, sit amet consectetur adipisicing elit.
                   Dolore amet eius sequi inventore. Neque iure quod illum
                   officia cum est nesciunt eum rerum! Aliquid, magnam.
                 </p>
-              </Link>
+              {/* </Link> */}
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -41,7 +41,6 @@ function HouseForm(props) {
     try {
       // Get the selected files from the input element
       const selectedFiles = e.target.files;
-
       if (isUpdating) {
         // Convert the FileList to an array and update the state
         const updatedImages = Array.from(selectedFiles);
@@ -254,7 +253,6 @@ function HouseForm(props) {
               multiple
               onChange={handleFileChange}
               name="image"
-              required
             />
             </div>
 
