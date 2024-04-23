@@ -1,25 +1,24 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-function FilterAvailability({ forRent, setForRent, forSale, setForSale }) {
+function FilterAvailability({ forRent, forSale, handleAvailabilityClick, calculateMinPrice}) {
   const navigate = useNavigate();
-  const location = useLocation() 
+  const location = useLocation(); 
   const [selectedOption, setSelectedOption] = useState("");
-  const{pathname} = location
-
+  const{pathname} = location 
+  
   const handleAvailabilityChange = (availabilityType) => {
     if (availabilityType === "forRent" && !forRent ) {
-      console.log("forRenttttttttt...11111", forRent);
-      setForRent(true);
-      setForSale(false);
+      handleAvailabilityClick(availabilityType)
       setSelectedOption("forRent");
+      calculateMinPrice(availabilityType);
       localStorage.setItem("availabilityType", "forRent"); // Store in local storage
       navigate("/houses/rent");
     } else if (availabilityType === "forSale" && !forSale) {
       console.log("forRenttttttttt...2222", forRent);
-      setForSale(true);
-      setForRent(false);
+      handleAvailabilityClick(availabilityType)
       setSelectedOption("forSale");
+      calculateMinPrice(availabilityType);
       localStorage.setItem("availabilityType", "forSale");
       navigate("/houses/buy");
     }
@@ -27,9 +26,7 @@ function FilterAvailability({ forRent, setForRent, forSale, setForSale }) {
 
   useEffect(() => {
     const value = localStorage.getItem("availabilityType");
-    setSelectedOption(value || "");
-    // console.log("setSelectedOption......33333", value);
-    // console.log("setSelectedOption......-1-1--1", selectedOption);
+    setSelectedOption(value||"");
   }, [forRent, forSale]);
 
   return (

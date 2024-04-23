@@ -4,7 +4,11 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import FilterAvailability from "./House/FilterAvailability";
 import PriceFilter from "./House/PriceFilter";
-("./House/FilterAvailability");
+import Roomfilter from "./House/Roomfilter";
+import AreaFilter from "./House/AreaFilter";
+import CitiesFilter from "./House/CitiesFilter";
+import HouseType from "./House/HouseType";
+import FeatureFilter from "./House/FeatureFilter";
 
 function Search({
   search = "",
@@ -27,6 +31,20 @@ function Search({
   setMinPrice,
   maxPrice,
   setMaxPrice,
+  bedRoom,
+  setBedRoom,
+  bathRoom,
+  setBathRoom,
+  area,
+  filterArea,
+  city,
+  filterCity,
+  handleAvailabilityClick,
+  houseType,
+  houseTypeFilter,
+  features,
+  featureHouseFilter,
+  calculateMinPrice,
 }) {
   const [searchForm, setSearchForm] = useState("");
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -72,11 +90,11 @@ function Search({
   const resultsToDisplay = searchFilter.slice(0, 5);
 
   // filter results if they have duplicate addresses
+  const resultToCheck = searchForm && resultsToDisplay.map((house) => house.address.toLowerCase())
+  // console.log("resultToCheck..........19999999999",resultToCheck)
   const uniqueAddresses =
     searchForm &&
-    resultsToDisplay
-      .map((house) => house.address.toLowerCase())
-      .filter((address, index, array) => array.indexOf(address) === index);
+    resultToCheck.filter((address, index, array) => array.indexOf(address) === index);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -153,10 +171,10 @@ function Search({
         {shouldShow && (
           <div className="filter-wrapper">
             <FilterAvailability
+            calculateMinPrice={calculateMinPrice}
               forRent={forRent}
-              setForRent={setForRent}
               forSale={forSale}
-              setForSale={setForSale}
+              handleAvailabilityClick ={handleAvailabilityClick}
             />
             <PriceFilter
               minPrice={minPrice}
@@ -165,6 +183,36 @@ function Search({
               setMaxPrice={setMaxPrice}
               forRent = {forRent}
             />
+            <Roomfilter 
+              bedRoom = {bedRoom}
+              setBedRoom = {setBedRoom}
+              bathRoom = {bathRoom}
+              setBathRoom ={setBathRoom}
+              />
+
+            <AreaFilter
+              area = {area}
+              filterArea = {filterArea}
+              forSale={forSale}
+              forRent = {forRent}
+            />
+            <CitiesFilter
+              city = {city}
+              filterCity = {filterCity}
+              forSale={forSale}
+              forRent = {forRent}
+            />
+            <HouseType 
+              forSale={forSale}
+              forRent = {forRent}
+              houseList = {houseList}
+              houseType = {houseType}
+              houseTypeFilter={houseTypeFilter}
+              />
+            <FeatureFilter
+              features = {features}
+              featureHouseFilter = {featureHouseFilter}
+              />
           </div>
         )}
       </div>

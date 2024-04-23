@@ -27,6 +27,7 @@ function PriceFilter({
   };
   const handleMaxPriceChange = (e) => {
     e.preventDefault();
+    e.stopPropagation()
     //parseInt function is used to convert the entered value to an int number.
     const enteredValue = parseInt(e.target.value);
 
@@ -45,7 +46,18 @@ function PriceFilter({
   const dropdownBuyMinPrices = [50000, 100000, 150000, 200000, 250000, 300000];
   const dropdownBuyMaxPrices = [400000, 450000, 500000, 550000, 600000, 700000];
 
-  console.log("displayPrice.......", displayMinPrice, displayMaxPrice);
+  const handlePriceChange = (value, isMin)=>{
+    if(isMin === "minPrice"){
+      setMinPrice(value);
+      setMinLocalPrice(value)
+      setDisplayMinPrice(value > 0)
+    }else{
+      setMaxPrice(value);
+      setMaxLocalPrice(value)
+      setDisplayMaxPrice(value > 0)
+    }
+  }
+
   useEffect(() => {
     // Update the local state only when the external state changes
     setMinLocalPrice(minPrice);
@@ -59,7 +71,7 @@ function PriceFilter({
       setMaxPrice(0);
     }
   }, [minPrice, maxPrice]);
-  console.log("forRent.......", forRent)
+  
   return (
     <div className="price-filter">
       {/* <button>Price</button> */}
@@ -93,7 +105,7 @@ function PriceFilter({
                       <p
                         className="range-list"
                         key={value}
-                        // onClick={() => handlePriceChange(value, true)}
+                        onClick={() => handlePriceChange(value, "minPrice")}
                       >
                         ${value}
                       </p>
@@ -101,7 +113,7 @@ function PriceFilter({
                   </div>
                 </div>
               </div>
-              {/* <div className="price-range">-</div>  */}
+              <div >-</div> 
               <div className="price-range">
                 <input
                   type="number"
@@ -115,7 +127,7 @@ function PriceFilter({
                       <p
                         className="range-list"
                         key={value}
-                        // onClick={() => handlePriceChange(value, false)}
+                        onClick={() => handlePriceChange(value, "maxPrice")}
                       >
                         ${value}
                       </p>
@@ -139,7 +151,7 @@ function PriceFilter({
                       <p
                         className="range-list"
                         key={value}
-                        // onClick={() => handlePriceChange(value, true)}
+                        onClick={() => handlePriceChange(value, "minPrice")}
                       >
                         ${value}
                       </p>
@@ -161,7 +173,7 @@ function PriceFilter({
                       <p
                         className="range-list"
                         key={value}
-                        // onClick={() => handlePriceChange(value, false)}
+                        onClick={() => handlePriceChange(value, maxPrice)}
                       >
                         ${value}
                       </p>

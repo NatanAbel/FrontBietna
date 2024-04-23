@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { selectFavs, selecthouses } from "../store/houses/selectors";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState,useMemo } from "react";
 import { fetchedHouses } from "../store/houses/thunks";
 // import HouseCards from "../component/HouseCards"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -34,9 +34,16 @@ function HouseList({
   const [result, setResult] = useState([]);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
-  const [beds, setBeds] = useState(0);
-  const [bath, setBath] = useState(0);
+  const [beds, setBeds] = useState(1);
+  const [bath, setBath] = useState(1);
   const [maxHousePrice, setMaxHousePrice] = useState(false);
+  const [area, setArea] = useState("");
+  const [city, setCity] = useState("");
+  const [houseType, setHouseType] = useState([])
+  const [noResults, setNoResults] = useState("")
+  const [features, setFeatures] = useState([])
+
+
 
   const { houses, favorites } = house;
   const { pathname } = location;
@@ -44,7 +51,7 @@ function HouseList({
   const sortedHouses = [...houses].sort(compare_name);
 
   // handeling price range of the houses
-  const housePriceInRange = (house, min, max) => {
+  const housePriceRange = (house, min, max) => {
     const housePrice = house.availability.forRent
       ? house.rentalPrice
       : house.price;
@@ -55,25 +62,85 @@ function HouseList({
       return housePrice >= min && housePrice <= max;
     }
   };
-  console.log("forRent..........45",forRent)
+
+  const bedRoomRange = (house, beds) => {
+    return house.bedrooms >= beds
+  };
+
+  const bathRoomRange = (house,bath)=>{
+    return house.bathrooms >= bath
+  }
+
+  const filterArea = (chosenArea) => {
+      // checking if the selected area by removing all spaces from the string
+        const areaResult = sortedHouses.filter((house) => house.address.replace(/\s/g, "") === chosenArea.replace(/\s/g, ""))
+        if (areaResult.length > 0){
+          setArea(chosenArea)
+          return areaResult
+        }
+  
+  }
+
+  const filterCity = (chosenCity) => {
+    // checking if the selected area by removing all spaces from the string
+      const cityResult = sortedHouses.filter((house) => house.city.replace(/\s/g, "") === chosenCity.replace(/\s/g, ""))
+      if (cityResult.length > 0){
+        setCity(chosenCity)
+        return cityResult
+      }
+
+}
+
+  const houseTypeFilter = (selectedType) => {
+     // Check if the clicked feature is already in the enumHouseType array
+     
+     const isHouseTypeSelected = houseType.includes(selectedType);
+  
+     if (!isHouseTypeSelected) {
+       // If the feature is not selected, add it to the enumHouseType array
+       setHouseType([...houseType, selectedType]);
+     } else {
+       // If the feature is already selected, remove it from the enumHouseType array
+       setHouseType(
+         houseType.filter((type) => type !== selectedType)
+       );
+     }
+    }
+
+
+  const featureHouseFilter = (selectedFeature) => {
+     // Check if the clicked feature is already in the enumHouseType array
+     const isFeatureSelected = features.includes(selectedFeature);
+
+     if (!isFeatureSelected) {
+       // If the feature is not selected, add it to the enumHouseType array
+       setFeatures([...features, selectedFeature]);
+     } else {
+       // If the feature is already selected, remove it from the enumHouseType array
+       setFeatures(
+        features.filter((feature) => feature !== selectedFeature)
+       );
+     }
+     console.log("selectedFeature...........", selectedFeature)
+    }
+    console.log("Features...........", features)
+   
   // function that checks if the house price range is above the highest price
   const checkHighestPrice = () => {
     // storring all house prices in a variable
     let allHousesPrice = [];
 
     // filtering based on the status of houses and store its price to allHousesPrice array
-    const availabilitiesPrice = sortedHouses.filter((hou) => {
-      if (forRent && hou.availability.forRent) {
-        return allHousesPrice.push(hou.rentalPrice);
-      } else if (forSale && hou.availability.forSale) {
-        return allHousesPrice.push(hou.price);
+    const availabilitiesPrice = sortedHouses.filter((house) => {
+      if (forRent && house.availability.forRent) {
+        return allHousesPrice.push(house.rentalPrice);
+      } else if (forSale && house.availability.forSale) {
+        return allHousesPrice.push(house.price);
       }
     });
-
     // A condition that checks if allHousesPrice array is not empty and avoids Math.max() from having infinity result
     if (allHousesPrice.length > 0) {
       const highestPrice = Math.max(...allHousesPrice);
-      // console.log("minPrice,,,,,,,,,,,,", minPrice);
       // Check if the condition for setting maxHousePrice is met
       if (minPrice > highestPrice) {
         setMaxHousePrice(true);
@@ -90,7 +157,6 @@ function HouseList({
   const calculateMinPrice = (availability) => {
     const availableHouses = sortedHouses.filter((house) => {
       if (availability === "forRent") {
-        // setMaxPrice(0)
         return house.availability.forRent;
       } else if (availability === "forSale") {
         return house.availability.forSale;
@@ -106,71 +172,167 @@ function HouseList({
       );
 
       setMinPrice(houseMinPrice);
-      setMaxPrice(0)
+      setMaxPrice(0);
+      setBath(1)
+      setBeds(1)
+      setArea("")
+      setCity("")
     }
   };
 
-  // filtering sorted houses based on conditions
-  const filteredHouse = sortedHouses.filter((house) => {
-    // condditions to display search results or houses based on the current location.
-    if (pathname === "/houses/allHouses") {
-      setForRent(false);
-      setForSale(false);
-      return search !== "" && result.length > 0
-        ? result.includes(house)
-        : true && housePriceInRange(house, minPrice, maxPrice);
-    } else if (pathname === "/houses/rent" || forRent) {
-      if (minPrice >= 0 && maxPrice >= 0) {
-        return (
-          house.availability.forRent &&
-          housePriceInRange(house, minPrice, maxPrice)
-        );
-      } else {
-        return house.availability.forRent;
-      }
-    } else if (pathname === "/houses/buy" || forSale) {
-      if (minPrice >= 0 && maxPrice >= 0) {
-        return (
-          house.availability.forSale &&
-          housePriceInRange(house, minPrice, maxPrice)
-        );
-      } else {
-        return house.availability.forSale;
-      }
-    } else {
-      console.log("Could not find");
-    }
-  });
-  console.log("filteredHouse,,,,,,,,,,,,", filteredHouse);
-  // const filterHouses = () => {
+  // // filtering sorted houses based on conditions
+  // const filteredHouse = sortedHouses.filter((house) => {
+  //   // condditions to display search results or houses based on the current location.
   //   if (pathname === "/houses/allHouses") {
+  //     setForRent(false);
+  //     setForSale(false);
   //     return search !== "" && result.length > 0
-  //       ? sortedHouses.filter((house) => result.includes(house))
-  //       : sortedHouses;
-  //   }else if (pathname === "/houses/rent" || forRent) {
-  //     return sortedHouses.filter((house) => house.availability.forRent);
+  //       ? result.includes(house)
+  //       : true && housePriceRange(house, minPrice, maxPrice);
+  //   } else if (pathname === "/houses/rent" || forRent) {
+  //     if (minPrice >= 0 && maxPrice >= 0) {
+  //       return (
+  //         house.availability.forRent &&
+  //         housePriceRange(house, minPrice, maxPrice) && bedRoomRange(house, beds) && bathRoomRange(house, bath)  && filterArea(house)
+  //       );
+  //     } else if (beds > 1 || bath > 1) {
+  //       return house.availability.forRent && bedRoomRange(house, beds) && bathRoomRange(house, bath);
+  //     } else if(house.address === area){
+  //       return house.availability.forRent && filterArea(house)
+  //     }else {
+  //       return house.availability.forRent;
+  //     }
   //   } else if (pathname === "/houses/buy" || forSale) {
-  //     return sortedHouses.filter((house) => house.availability.forSale);
+  //     if (minPrice >= 0 && maxPrice >= 0) {
+  //       return (
+  //         house.availability.forSale &&
+  //         housePriceRange(house, minPrice, maxPrice) && bedRoomRange(house, beds) && bathRoomRange(house, bath) && filterArea(house)
+  //       );
+  //     } else if (beds > 1 || bath > 1) {
+  //       return house.availability.forSale && bedRoomRange(house, beds) && bathRoomRange(house, bath);
+  //     } else if(house.address === area){
+  //       return house.availability.forSale && filterArea(house)
+  //     }else {
+  //       return house.availability.forSale;
+  //     }
   //   } else {
   //     console.log("Could not find");
   //   }
-  // };
+  // });
+  // console.log("filteredHouse,,,,,,,,,,,,", filteredHouse);
+ 
 
-  // const filteredHouse = filterHouses();
 
+  // Define filter functions
+const filterAllHouses = (house) => {
+  setForRent(false);
+  setForSale(false);
+  return (
+    search !== "" && result.length > 0
+    ? result.includes(house)
+    : true && housePriceRange(house, minPrice, maxPrice) &&
+    (area === "" || house.address === area) && (city === "" || house.city === city) && (houseType.length === 0 || houseType.includes(house.homeType)) && (features.length === 0 || features.every(feature => house.features.includes(feature)))
+  );
+};
 
+const filterRentHouses = (house) => {
+  if (minPrice >= 0 && maxPrice >= 0) {
+    return (
+      house.availability.forRent &&
+      housePriceRange(house, minPrice, maxPrice) &&
+      bedRoomRange(house, beds) &&
+      bathRoomRange(house, bath) &&
+      (area === "" || house.address === area) && (city === "" || house.city === city) && (houseType.length === 0 || houseType.includes(house.homeType)) && (features.length === 0 || features.every(feature => house.features.includes(feature)))
+    );
+  } else if (beds > 1 || bath > 1) {
+    return (
+      house.availability.forRent && bedRoomRange(house, beds) && bathRoomRange(house, bath) &&
+    (area === "" || house.address === area) && (city === "" || house.city === city) && (houseType.length === 0 || houseType.includes(house.homeType)) && (features.length === 0 || features.every(feature => house.features.includes(feature)))
+  );
+  } else if (area === "" || house.address === area) {
+    return house.availability.forRent 
+  }else if (city === "" || house.city === city) {
+    return house.availability.forRent 
+  }else if (houseType.length === 0 || houseType.includes(house.homeType)) {
+    return house.availability.forRent 
+  }else {
+    return house.availability.forRent;
+  }
+};
+
+const filterBuyHouses = (house) => {
+  
+  if (minPrice >= 0 && maxPrice >= 0 ) {
+    return (
+      house.availability.forSale &&
+      housePriceRange(house, minPrice, maxPrice) &&
+      bedRoomRange(house, beds) &&
+      bathRoomRange(house, bath) &&
+      (area === "" || house.address === area) && (city === "" || house.city === city) && (houseType.length === 0 || houseType.includes(house.homeType)) && (features.length === 0 || features.every(feature => house.features.includes(feature)))
+    );
+  } else if (beds > 1 || bath > 1) {
+    return (
+      house.availability.forSale && bedRoomRange(house, beds) && bathRoomRange(house, bath) &&
+    (area === "" || house.address === area) && (city === "" || house.city === city) && (houseType.length === 0 || houseType.includes(house.homeType)) && (features.length === 0 || features.every(feature => house.features.includes(feature)))
+  );
+
+  } else if (area === "" || house.address === area) {
+    return house.availability.forSale 
+  } else if (city === "" || house.city === city) {
+    return house.availability.forSale 
+  }else if (houseType.length === 0 || houseType.includes(house.homeType)) {
+    return house.availability.forSale 
+  }else {
+    return house.availability.forSale;
+  }
+};
+
+// Memoize the filteredHouse variable using useMemo hook use to memoize the filtered house data based on the dependencies that cause the filtering to change.
+const filteredHouse = useMemo(() => {
+  return sortedHouses.filter((house) => {
+    if (pathname === "/houses/allHouses") {
+      return filterAllHouses(house);
+    } else if (pathname === "/houses/rent" || forRent) {
+      return filterRentHouses(house);
+    } else if (pathname === "/houses/buy" || forSale) {
+      return filterBuyHouses(house);
+    } else {
+      // console.error("Couldn't find")
+      return false;
+    }   
+  });
+}, [sortedHouses, pathname, forRent, forSale, minPrice, maxPrice, beds, bath, area, city, favorites]);
+
+// console.log("noResults.....",noResults)
   useEffect(() => {
     dispatch(fetchedHouses);
     setIsLoading(false);
     checkHighestPrice();
-    const { state } = location;
+  }, [dispatch]);
+console.log("filteredhouseees.....",filteredHouse)
+  useEffect(() => {
+    // Check if filteredHouse is empty and set noResults accordingly
+    if (filteredHouse.length === 0) {
+      setNoResults("No results found for the selected criteria.");
+    } else {
+      setNoResults(""); // Clear the message if there are results
+    }
+  }, [filteredHouse]);
+
+  useEffect(()=>{
+    const { state, pathname } = location;
+
+    // if (pathname === "/houses/rent" && forRent){
+    //   calculateMinPrice("forRent");
+    // }else if (pathname === "/houses/buy" && forSale){
+    //   calculateMinPrice("forSale");
+    // }  
     // Check for location state to set initial search and results
     if (state && state.search && state.results) {
       setSearch(state.search);
       setResult(state.results);
-      console.log("state....", state);
     }
-  }, [dispatch, location, minPrice, maxPrice]);
+  },[location, minPrice, maxPrice])
 
   return (
     <div className="container-houses">
@@ -183,40 +345,28 @@ function HouseList({
         result={result}
         forRent={forRent}
         forSale={forSale}
-        // setForRent={setForRent}
-        // setForSale = {setForSale}
-        setForRent={(value) => {
-          setForRent(value);
-          if (value) {
-            calculateMinPrice("forRent");
-          }
-        }}
-        // forSale={forSale}
-        setForSale={(value) => {
-          setForSale(value);
-          if (value) {
-            calculateMinPrice("forSale");
-          }
-        }}
         handleAvailabilityClick={handleAvailabilityClick}
         minPrice={minPrice}
         setMinPrice={setMinPrice}
         maxPrice={maxPrice}
         setMaxPrice={setMaxPrice}
+        calculateMinPrice={calculateMinPrice} 
+        bedRoom = {beds}
+        setBedRoom={setBeds}
+        bathRoom = {bath}
+        setBathRoom={setBath}
+        area = {area}
+        filterArea = {filterArea}
+        city = {city}
+        filterCity = {filterCity}
+        houseType = {houseType}
+        houseTypeFilter={houseTypeFilter}
+        features = {features}
+        featureHouseFilter = {featureHouseFilter}
       />
 
       <div className="house-cards">
-        {maxHousePrice ? (
-          <div className="">
-            {" "}
-            <h1>No houses found within the specified price range. Please adjust your search criteria.</h1>{" "}
-          </div>
-        ) : !isLoading ? 
-          filteredHouse.length === 0 ? (
-            <div className="">
-              <h1>No houses found within the specified price range. Please adjust your maximum price.</h1>
-            </div>
-          ):(
+        { noResults? <div><h4>{noResults}</h4></div>:(
           filteredHouse.map((house) => (
             <div className="card-container" key={house._id}>
               <div className="card-img">
@@ -259,8 +409,6 @@ function HouseList({
               </div>
             </div>
           ))
-        ) : (
-          <p>Loading....</p>
         )}
       </div>
     </div>

@@ -18,22 +18,20 @@ function App() {
   // checking the availability of houses
   const handleAvailabilityClick = (availabilityType) => {
     if (availabilityType === 'forRent') {
-      setForRent(!forRent);
-      setForSale(forSale);
+      setForRent(true);
+      setForSale(false);
       // setting key and value to localStorage
       console.log("forRent..........appppp", forRent)
       console.log("forSSSSSale..........appppp", forSale)
       localStorage.setItem("availabilityType", forRent ? "" : "forRent");
       navigate("/houses/rent")
     } else if (availabilityType === 'forSale') {
-      setForSale(!forSale);
-      setForRent(forRent);
+      setForSale(true);
+      setForRent(false);
       localStorage.setItem("availabilityType", forSale ? "" : "forSale");
       navigate("/houses/buy")
     }
   };
-  console.log("forSSSSSale..........appppp", forSale)
-  console.log("forRent..........appppp", forRent)
   
     // Set initial availability based on local storage
   useEffect(() => {
@@ -62,15 +60,20 @@ function App() {
               setForRent={setForRent}
               forSale={forSale}
               setForSale={setForSale}
+              handleAvailabilityClick ={handleAvailabilityClick}
               />} />
           <Route path='rent' element={<HouseList forRent={forRent}
               setForRent={setForRent}
               forSale={forSale}
-              setForSale={setForSale}/>} />
+              setForSale={setForSale}
+              handleAvailabilityClick ={handleAvailabilityClick}
+              />} />
           <Route path='buy' element={<HouseList forRent={forRent}
               setForRent={setForRent}
               forSale={forSale}
-              setForSale={setForSale}/>}   />
+              setForSale={setForSale}
+              handleAvailabilityClick ={handleAvailabilityClick}
+              />}   />
         </Route>
         <Route path='/housesDetails/:houseId' element={<DetailsPage/>}/>
         <Route path='/update/:houseId' element={<UpdatePage/>}/>

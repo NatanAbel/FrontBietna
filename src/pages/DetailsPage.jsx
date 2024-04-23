@@ -52,7 +52,7 @@ function DetailsPage() {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
   const { houses, favorites } = Allhouses;
-
+  
 
   const detailsToggle = () => {
     setShowDetails(!showDetails);
@@ -146,9 +146,9 @@ function DetailsPage() {
               <h1>house details</h1>
               <button className="button-hide-show" onClick={detailsToggle}>
                 {showDetails ? (
-                  <FontAwesomeIcon icon={faAnglesDown} />
-                ) : (
                   <FontAwesomeIcon icon={faAnglesUp} />
+                  ) : (
+                  <FontAwesomeIcon icon={faAnglesDown} />
                 )}
               </button>
             </div>
