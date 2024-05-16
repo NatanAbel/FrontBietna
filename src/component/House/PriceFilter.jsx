@@ -13,6 +13,10 @@ function PriceFilter({
   const [displayMinPrice, setDisplayMinPrice] = useState(false);
   const [displayMaxPrice, setDisplayMaxPrice] = useState(false);
 
+  const toggleDropdown = ()=>{
+    setShowDropdown(!showDropdown)
+  }
+
   const handleMinPriceChange = (e) => {
     e.preventDefault();
     const enteredValue = parseInt(e.target.value);
@@ -87,7 +91,8 @@ function PriceFilter({
           <p>Price</p>
         )}
       </div>
-      <div className="price-dropdown-menu">
+      <button className="filter-area-btn" onClick={toggleDropdown}>{showDropdown ? "🔼" : "🔽"}</button>
+      {showDropdown && <div className="price-dropdown-menu">
         <p className="price-title">Price Range</p>
         <div className="price-min-dropdown">
           {forRent ? (
@@ -184,7 +189,7 @@ function PriceFilter({
             </>
           )}
         </div>
-      </div>
+      </div>}
     </div>
   );
 }

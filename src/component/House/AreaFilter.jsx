@@ -35,8 +35,19 @@ function AreaFilter({ area, filterArea, forRent,forSale}) {
     };
 
   const handleAreaSelection = (selectedArea) => {
-    filterArea(selectedArea);
+    const areaToFilter = selectedArea === "none" ? "none" : selectedArea
+    console.log("seelectedArea..........",areaToFilter)
+    filterArea(areaToFilter);
     setShowAreaDropdown(false);
+    // Check if "None" is selected
+  // if (selectedArea === "none") {
+  //   // Pass a special value to indicate "display all"
+  //   filterArea("displayAll");
+  // } else {
+  //   // Pass the selected area as usual
+  //   filterArea(selectedArea);
+  // }
+  // setShowAreaDropdown(false);
   };
 
   useEffect(() => {
@@ -66,8 +77,9 @@ function AreaFilter({ area, filterArea, forRent,forSale}) {
           {showAreaDropdown ? <p>🔼</p>:<p>🔽</p> }
         </button>
         <ul className="filter-area-dropdown-display">
+        
           {showAreaDropdown &&  
-            availableAreas.map((homeArea) => {
+            availableAreas.map((homeArea) => { 
               return (
                 <li key={homeArea}>
                   <p
@@ -79,7 +91,17 @@ function AreaFilter({ area, filterArea, forRent,forSale}) {
                   </p>
                 </li>
               );
-            })}
+            })
+            }
+            {/* <li >
+                  <p
+                    onClick={() => handleAreaSelection("none")}
+                    className="dropdown-item"
+                    value={"none"}
+                  >
+                    None
+                  </p>
+                </li> */}
         </ul>
       </div>
     </div>

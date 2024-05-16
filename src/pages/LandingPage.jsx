@@ -114,7 +114,7 @@ function LandingPage({forRent,setForRent,forSale,setForSale, handleAvailabilityC
             >
               
               
-                {houses.map((house) => (
+                {houses.slice(0, 8).map((house) => (
                   <SwiperSlide key={house._id}>
                     <div className="details-card-wrapper">
                       <Link to={`/housesDetails/${house._id}`}>

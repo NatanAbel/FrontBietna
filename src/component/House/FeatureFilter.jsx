@@ -7,10 +7,8 @@ function FeatureFilter({features,
     featureHouseFilter}) {
     const [showDropdown, setShowDropdown] = useState(false);
     const [localFeature, setLocalFeature] = useState([]);
-    // const [enumHouseType,setEnumHouseType] = useState([])
 
 const hundelFeature = ( clickedFeature) => {
-    // e.preventDefault();
     featureHouseFilter(clickedFeature);   
   };
 

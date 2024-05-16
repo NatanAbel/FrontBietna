@@ -9,6 +9,7 @@ import AreaFilter from "./House/AreaFilter";
 import CitiesFilter from "./House/CitiesFilter";
 import HouseType from "./House/HouseType";
 import FeatureFilter from "./House/FeatureFilter";
+import SquareAreaFilter from "./House/SquareAreaFilter";
 
 function Search({
   search = "",
@@ -45,6 +46,9 @@ function Search({
   features,
   featureHouseFilter,
   calculateMinPrice,
+  squareAreaMin,
+  squareAreaMax,
+  squareAreaRange
 }) {
   const [searchForm, setSearchForm] = useState("");
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -213,6 +217,11 @@ function Search({
               features = {features}
               featureHouseFilter = {featureHouseFilter}
               />
+            <SquareAreaFilter
+              squareAreaMin = {squareAreaMin}
+              squareAreaMax = {squareAreaMax}
+              squareAreaRange = {squareAreaRange}
+            />
           </div>
         )}
       </div>

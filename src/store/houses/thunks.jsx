@@ -1,5 +1,6 @@
 import axios from "axios"
 import { housesFetched, startLoading } from "./slice"
+import { current } from "@reduxjs/toolkit"
 
 const API_URL = "http://localhost:5005"
 
@@ -12,4 +13,5 @@ export const fetchedHouses = async(dispatch, getState) =>{
     }catch(e){
         console.log(e.message)
     }
-} 
+
+}

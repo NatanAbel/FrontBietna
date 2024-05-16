@@ -8,9 +8,15 @@ import UpdatePage from './pages/updatePage'
 import NewHousePage from './pages/NewHousePage'
 import HouseList from './pages/HouseList'
 import { useEffect, useState } from 'react'
+import SignupPage from './pages/SignupPage'
+import LoginPage from './pages/LoginPage'
+import { useDispatch, useSelector } from 'react-redux'
+import { bootstrapThunkLogin } from './store/auth/thunks'
+import { selectLoginToken } from './store/auth/selectors'
 
 function App() {
-
+  const dispatch = useDispatch();
+  const token = useSelector(selectLoginToken);
   const [forSale, setForSale] = useState(false);
   const [forRent, setForRent] = useState(false);
   const navigate = useNavigate()
@@ -32,6 +38,10 @@ function App() {
       navigate("/houses/buy")
     }
   };
+
+  useEffect(() => {
+    dispatch(bootstrapThunkLogin);
+  }, [dispatch]);
   
     // Set initial availability based on local storage
   useEffect(() => {
@@ -78,6 +88,8 @@ function App() {
         <Route path='/housesDetails/:houseId' element={<DetailsPage/>}/>
         <Route path='/update/:houseId' element={<UpdatePage/>}/>
         <Route path='/house/new' element={<NewHousePage/>}/>
+        <Route path='/signup' element={<SignupPage/>}/>
+        <Route path='/login' element={<LoginPage/>}/>
 
 
       </Routes>

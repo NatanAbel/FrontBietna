@@ -4,6 +4,7 @@ const initialState = {
     loading: true,
     houses: [],
     favorites: [],
+    pageCount: 0,
 }
 
 export const houseSlice = createSlice({

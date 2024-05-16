@@ -18,6 +18,7 @@ import { fetchedHouses } from "../store/houses/thunks";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Link } from "react-router-dom";
+import ModalDetailsPage from "../component/House/ModalDetailsPage";
 
 // Import Swiper styles
 import "swiper/css";
@@ -50,22 +51,42 @@ function DetailsPage() {
   const { houseId } = useParams();
   const [showDetails, setShowDetails] = useState(false);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const [selectedThumbnailIndex, setSelectedThumbnailIndex] = useState(null);
 
   const { houses, favorites } = Allhouses;
-  
 
   const detailsToggle = () => {
     setShowDetails(!showDetails);
   };
+
+
+  const handleModalImage =(index)=>{
+    setSelectedThumbnailIndex(index)
+  }
 
   useEffect(() => {
     dispatch(fetchDetailsPage(houseId));
     dispatch(fetchedHouses);
   }, [dispatch, houseId]);
 
+
+  useEffect(()=>{
+    // avoiding scrolling while modal is open
+    if(selectedThumbnailIndex !== null ){
+      document.body.classList.add("active-modal")
+    }else{
+      document.body.classList.remove("active-modal")
+    }
+  },[selectedThumbnailIndex])
+
   return (
     <div className="details-container">
-      {house ? (
+      {selectedThumbnailIndex !== null &&
+        <div className="modal">
+         <ModalDetailsPage house = {house} toggleModal={handleModalImage} selectedThumbnailIndex={selectedThumbnailIndex}/>
+        </div> }
+      {house ?
+      (
         <div className="details-wrapper">
           <div className="house-details">
             <div className="gallary-swiper-img">
@@ -74,8 +95,8 @@ function DetailsPage() {
                       '--swiper-navigation-color': '#fff',
                       '--swiper-pagination-color': '#fff',
                     }}
-                    loop={true}
                     spaceBetween={10}
+                    loop={true}
                     navigation={true}
                     thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null}}
                     modules={[FreeMode, Navigation, Thumbs]}
@@ -87,15 +108,16 @@ function DetailsPage() {
                         src={`${API_URL}/${image}`}
                         alt={`Image-index ${index}`}
                         loading="lazy"
+                        onClick={()=>handleModalImage(index)}
                       />
                     </SwiperSlide>
                     ))}
                   </Swiper>
                   <Swiper
                     onSwiper={setThumbsSwiper}
-                    loop={true}
                     spaceBetween={10}
                     slidesPerView={4}
+                    loop={true}
                     freeMode={true}
                     watchSlidesProgress={true}
                     modules={[FreeMode, Navigation, Thumbs]}
@@ -120,19 +142,20 @@ function DetailsPage() {
 
               <div className="room-details-wrapper">
                 <div className="room-details">
-                  <FontAwesomeIcon icon={faBed} />
-                  <p>bedrooms: {house.bedrooms}</p>
-                </div>
-                <div className="room-details">
-                  <p className="rooms-text">
-                    <FontAwesomeIcon icon={faBathtub} />
-                    bathrooms: {house.bathrooms}
+                <p className="rooms-text">
+                  <FontAwesomeIcon icon={faBed}/>
+                  {house.bedrooms}
                   </p>
                 </div>
                 <div className="room-details">
                   <p className="rooms-text">
-                    {" "}
-                    {<FontAwesomeIcon icon={faRulerCombined} />} sqm:{""}
+                    <FontAwesomeIcon icon={faBathtub} />
+                    {house.bathrooms}
+                  </p>
+                </div>
+                <div className="room-details">
+                  <p className="rooms-text">
+                    {<FontAwesomeIcon icon={faRulerCombined} />}
                     {house.sqm}
                   </p>
                 </div>
@@ -142,7 +165,7 @@ function DetailsPage() {
           </div>
           <div className="general-house-info">
             <div className="general-house-title">
-              
+
               <h1>house details</h1>
               <button className="button-hide-show" onClick={detailsToggle}>
                 {showDetails ? (
@@ -209,7 +232,7 @@ function DetailsPage() {
               modules={[EffectCoverflow, Pagination, Navigation]}
               className="mySwiper"
             >
-              {houses.map((house) => (
+              {houses.slice(0, 8).map((house) => (
                 <SwiperSlide key={house._id}>
                   <div className="details-card-wrapper">
                     <Link to={`/housesDetails/${house._id}`}>
@@ -229,10 +252,8 @@ function DetailsPage() {
               ))}
             </Swiper>
           </div>
-        </div>
-      ) : (
-        <p>Loading...</p>
-      )}
+        </div>) :<p>Loading.....</p>
+      }
     </div>
   );
 }

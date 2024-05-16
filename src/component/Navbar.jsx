@@ -1,7 +1,7 @@
 
 function Navbar() {
   return (
-    <div className="container nav-container">
+    <div className="container nav-container ">
         <nav className="navbar navbar-expand-lg navbar-light bg-dark nav fixed-top">
           <div className="container-fluid">
         <a className="navbar-brand ms-5 text-light" href="/">Bietna</a>
