@@ -13,6 +13,8 @@ import LoginPage from './pages/LoginPage'
 import { useDispatch, useSelector } from 'react-redux'
 import { bootstrapThunkLogin } from './store/auth/thunks'
 import { selectLoginToken } from './store/auth/selectors'
+import ProfilePage from './pages/ProfilePage'
+import PrivateRoute from './component/user/PrivateRoute'
 
 function App() {
   const dispatch = useDispatch();
@@ -91,6 +93,7 @@ function App() {
         <Route path='/signup' element={<SignupPage/>}/>
         <Route path='/login' element={<LoginPage/>}/>
 
+        <Route path='/profile' element={<PrivateRoute><ProfilePage/></PrivateRoute>}/>
 
       </Routes>
       <Footer handleAvailabilityClick ={handleAvailabilityClick}/>

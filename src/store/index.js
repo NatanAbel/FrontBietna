@@ -8,7 +8,10 @@ const store = configureStore({
         house : houseSlice,
         houseDetails: houseDetailsSlice,
         auth: loginSlice,
-    }    
+    },
+    middleware:(getDefaultMiddleware)=> getDefaultMiddleware({
+        serializableCheck: false
+    }), 
 })
 
 export default store;

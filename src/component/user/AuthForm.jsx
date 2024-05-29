@@ -11,7 +11,7 @@ function AuthForm({handleSubmit, setPassword,setUserName, setEmail}) {
   const location = useLocation().pathname
 
   const handleGoogleClick = async() => {
-    dispatch(fetchlogin())
+    dispatch(fetchlogin("googleContinue"))
     navigate("/")
   }
   

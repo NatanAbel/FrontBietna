@@ -126,7 +126,7 @@ function HouseList({
      } else {
        // If the feature is already selected, remove it from the enumHouseType array
        const disselectedFeatures = features.filter((feature) => feature !== selectedFeature)
-       setFeatures(disselected);
+       setFeatures(disselectedFeatures);
      }
     }
 
