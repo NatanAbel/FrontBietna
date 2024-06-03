@@ -41,27 +41,10 @@ function AccountForm({
           Authorization: `Bearer ${token}`,
         },
       });
-
-    //   const {
-    //     userName: updatedUserName,
-    //     email: updatedEmail,
-    //     firstName: updatedFirstName,
-    //     lastName: updatedLastName,
-    //     phoneNumber: updatedPhoneNumber,
-    //   } = res.data;
       console.log("res.data......", res.data);
       
       if(res.status === 200){
-        // const updatedUser ={
-        //     userName: updatedUserName,
-        //     email: updatedEmail,
-        //     firstName: updatedFirstName,
-        //     lastName: updatedLastName,
-        //     phoneNumber: updatedPhoneNumber,
-        //   }
-        
-        dispatch(updateUser(res.data))
-          
+        dispatch(updateUser(res.data))         
       }
     } catch (error) {
       console.error("Error updating profile:", error);

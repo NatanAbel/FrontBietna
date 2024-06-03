@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "../store/auth/selectors";
 import AccountForm from "../component/user/AccountForm";
 import axios from "axios";
+import PostedHouses from "../component/user/postedHouses";
+import { toggleFavorites } from "../store/auth/slice";
+import Favourites from "../component/user/Favourites";
 
 const API_URL = import.meta.env.VITE_BACK_URL;
 
 function ProfilePage() {
-  // const user = useSelector(selectUser);
+  // const currentUser = useSelector(selectUser);
+  const dispatch = useDispatch();
+  const [user, setUser] = useState({});
   const [username, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [editBio, setEditBio] = useState("");
@@ -19,8 +24,8 @@ function ProfilePage() {
   const [publishedPosts, setPublishedPosts] = useState([]);
   const [savedSearches, setSavedSearches] = useState([]);
   const [account, setAccount] = useState(true);
-  const [favs, setfavs] = useState(false);
-  const [posted, setPosted] = useState(false);
+  const [posted, setPosted] = useState(true);
+  const [favs, setfavs] = useState(true);
   const [saved, setSaved] = useState(false);
 
   // const handleAccount = (username, email, firstName, lastName, telNumber) => {
@@ -42,9 +47,8 @@ function ProfilePage() {
         });
 
         if (res.status === 200) {
-          const user = res.data.user
-          console.log("userChecking.......", user.profilePicture)
-          console.log("userProfile", user)
+          const user = res.data.user;
+          setUser(user);
           setUserName(user.userName);
           setUserEmail(user.email);
           setEditBio(user.bio);
@@ -55,16 +59,16 @@ function ProfilePage() {
           setProfilePhoto(user.profilePicture);
           setPublishedPosts(user.published);
           setSavedSearches(user.savedSearches);
-          
         }
       } catch (error) {
         console.error("Error updating profile:", error);
       }
     };
+
     fetchProfile();
-    
   }, []);
-    
+
+
   return (
     <div className="profile-container">
       <div className="profile-header">
@@ -91,7 +95,7 @@ function ProfilePage() {
             {account && (
               <AccountForm
                 username={username}
-                setUserName = {setUserName}
+                setUserName={setUserName}
                 emailUser={userEmail}
                 setUserEmail={setUserEmail}
                 userFirstName={userFirstName}
@@ -102,6 +106,8 @@ function ProfilePage() {
                 setTelNumber={setTelNumber}
               />
             )}
+            {posted && <PostedHouses user={user} />}
+            {favs && <Favourites user={user} />}
           </div>
         </div>
       </div>

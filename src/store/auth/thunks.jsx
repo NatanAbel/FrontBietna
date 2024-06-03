@@ -1,5 +1,5 @@
 import axios from "axios";
-import { startLoading, userLogedIn } from "./slice";
+import { startLoading, statusResponse, userLogedIn } from "./slice";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { app } from "../../firebase";
 
@@ -19,7 +19,6 @@ export const bootstrapThunkLogin = async (dispatch, getState) => {
         },
       });
       const userVerified = verifyMe.data.verifyUser;
-      console.log("userVerified....",userVerified)
       dispatch(
         userLogedIn({
           token: token,
@@ -79,7 +78,9 @@ export const fetchlogin = (userName, password) => {
         );
 
         const token = tokenResponse.data.token;
+
         localStorage.setItem("token", token); // sets the token to localStorage
+        dispatch(statusResponse(tokenResponse.status))
         const verifyMe = await axios.get(`${API_BACK_URL}/auth/verify`, {
           headers: {
             Authorization: `Bearer ${token}`,

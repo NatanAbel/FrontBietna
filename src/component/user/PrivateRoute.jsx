@@ -1,12 +1,15 @@
 import React, { Children, useEffect } from "react";
 import { useSelector } from "react-redux";
-import {selectUser, selectloading} from "../../store/auth/selectors";
+import {selectIsAuthenticated, selectUser, selectloading} from "../../store/auth/selectors";
 import { Navigate, Outlet, useNavigate } from "react-router-dom";
 
 function PrivateRoute({children}) {
   const currentUser = useSelector(selectUser);
   const isLoading = useSelector(selectloading);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+
   const navigate = useNavigate();
+  
 
   useEffect(() => {
     const token = localStorage.getItem('token');

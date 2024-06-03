@@ -1,7 +1,9 @@
 import axios from "axios";
 import { useState } from "react";
 import { useEffect } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { selectUser } from "../../store/auth/selectors";
 
 const API_URL = "http://localhost:5005";
 
@@ -24,6 +26,8 @@ function HouseForm(props) {
     homeType,
     homeCity,
   } = props;
+
+  const user = useSelector(selectUser)
 
   const [address, setAddress] = useState(houseAddress || "");
   const [price, setPrice] = useState(housePrice || 0);
@@ -72,6 +76,7 @@ function HouseForm(props) {
 
   const hundelSubmit = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem("token")
     try {
       // Create a FormData object
       const formData = new FormData();
@@ -99,12 +104,15 @@ function HouseForm(props) {
         ? await axios.put(`${API_URL}/houses/${houseId}/update`, formData, {
             headers: {
               "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
             }, // Set the content type to handle file uploads
           })
         : await axios.post(`${API_URL}/houses/new`, formData, {
             headers: {
               "Content-Type": "multipart/form-data",
-            }, // Set the content type to handle file uploads
+              Authorization: `Bearer ${token}`,
+            },
+              // Set the content type to handle file uploads
           });
 
       const houseData = response.data;

@@ -3,7 +3,6 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     loading: true,
     houses: [],
-    favorites: [],
     pageCount: 0,
 }
 
@@ -18,23 +17,11 @@ export const houseSlice = createSlice({
             state.houses = action.payload
             state.loading = false
         },
-        toggleFavorites : (state, action)=>{
-            const idToAdd = action.payload
-            // check if the user has already favorited
-            const newFav = state.favorites.includes(idToAdd) ?
-            // if it's already favorited remove it 
-            state.favorites.filter(fav => fav !== idToAdd) : 
-            // if it's not add to favorites
-            [...state.favorites, idToAdd];
-             
-            state.favorites = newFav
-
-            console.log("state.......",state.favorites)
-        }
+        
 
     }
 })
 
-export const{startLoading,housesFetched, toggleFavorites} = houseSlice.actions
+export const{startLoading,housesFetched} = houseSlice.actions
 
 export default houseSlice.reducer
