@@ -21,10 +21,10 @@ function Navbar() {
   }, [user]);
   
   return (
-    <div className="container nav-container ">
-      <nav className="navbar navbar-expand-lg navbar-light bg-dark nav fixed-top">
+    <div className="container">
+      <nav className="navbar navbar-expand-lg navbar-light nav-container fixed-top">
         <div className="container-fluid">
-          <a className="navbar-brand ms-5 text-light" href="/">
+          <a className="navbar-brand ms-5 text-dark" href="/">
             Bietna
           </a>
           <button
@@ -42,7 +42,7 @@ function Navbar() {
             <ul className="navbar-nav ms-auto ">
               <li className="nav-item">
                 <a
-                  className="nav-link active text-light"
+                  className="nav-link active text-dark"
                   aria-current="page"
                   href="/"
                 >
@@ -50,18 +50,18 @@ function Navbar() {
                 </a>
               </li>
               <li className="nav-item ">
-                <a className="nav-link text-light" href="#">
+                <a className="nav-link text-dark" href="#">
                   Features
                 </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link text-light" href="#">
+                <a className="nav-link text-dark" href="#">
                   Pricing
                 </a>
               </li>
               <li className="nav-item dropdown ">
                 <a
-                  className="nav-link dropdown-toggle text-light"
+                  className="nav-link dropdown-toggle text-dark"
                   href="#"
                   id="navbarDropdownMenuLink"
                   role="button"
@@ -96,7 +96,7 @@ function Navbar() {
                 <>
                 <li className="nav-item dropdown ">
                   <a
-                  className="nav-link dropdown-toggle text-light"
+                  className="nav-link dropdown-toggle text-dark"
                   href="#"
                   id="navbarDropdownMenuLink"
                   role="button"
@@ -127,7 +127,7 @@ function Navbar() {
                 </>
               ) : (
                 <li className="nav-item ">
-                <a className="nav-link text-light" href="/login">
+                <a className="nav-link text-dark" href="/login">
                   Login
                 </a>
                 </li>

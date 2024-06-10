@@ -1,50 +1,24 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { toggleFavorites } from '../../store/auth/slice';
 import axios from 'axios';
+import { selectIsAuthenticated } from '../../store/auth/selectors';
 
 const API_URL_IMG = "http://localhost:5005/images";
 const API_URL = import.meta.env.VITE_BACK_URL;
 
-function Favourites({user}) {
+function Favourites({user,favourites,handleFavBtn}) {
     const [isLoading, setIsLoading] = useState(true);
-    const [favorites, setFavorites] = useState([]);
-    const dispatch = useDispatch()
+    const isAuthenticated = useSelector(selectIsAuthenticated)
 
-    const handleFavourites = async (houseId) => {
-      const token = localStorage.getItem("token");
-  
-      const body = { favourites: houseId };
-  
-      try {
-        const res = await axios.put(`${API_URL}/auth/profile`, body, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        
-        if (res.status === 200) {
-          dispatch(toggleFavorites(houseId));
-          // A condition to remove from favorites if it's already added or add to favorites if it doesn't.
-          const updatedFavs = favorites.some((house) => house._id === houseId)
-          ? favorites.filter((prev) => prev._id !== houseId)
-          : [...favorites, res.data]
-
-          setFavorites(updatedFavs);
-          
-        }
-      } catch (error) {
-        console.error("Error updating profile:", error);
-      }
-    };
+    console.log("user.favorites......",user.favorites)
 
     useEffect(() => {
-      if (user) {
-        setFavorites(user.favorites || []);
+      if (isAuthenticated) {
           setIsLoading(false);
       }
-  }, [user]);
+  }, [isAuthenticated, favourites]);
 
   if (isLoading) {
     return <p>loading.....</p>;
@@ -52,16 +26,16 @@ function Favourites({user}) {
 
   return (
     <div className="house-cards">
-      {/* Optional chaining (user?.favorites?.map) to safely access favorites only if user and user.favorites are defined. */}
-      {favorites?.length > 0 ? (
-        favorites.map((house) => (
+      {/* Optional chaining (user?.favourites?.map) to safely access favourites only if user and user.favourites are defined. */}
+      {favourites.length > 0 ? (
+        favourites.map((house) => (
           <div className="card-container" key={house._id}>
             <div className="card-img">
             <button
                     className="btn-faHeart"
-                    onClick={() =>handleFavourites(house._id)}
+                    onClick={() =>handleFavBtn(house._id)}
                   >
-                    {favorites.includes(house._id) ? "🤍":"🖤" }
+                    {favourites.includes(house._id) ? "🤍":"🖤" }
                   </button>
               <p className="card-img-text">
                 {house?.availability?.forRent ? "For rent" : "For Sale"}
@@ -100,4 +74,4 @@ function Favourites({user}) {
   )
 }
 
-export default Favourites
+export default Favourites;

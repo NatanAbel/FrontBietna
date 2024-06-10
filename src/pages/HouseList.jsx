@@ -207,47 +207,6 @@ function HouseList({
     }
   };
 
-  // // filtering sorted houses based on conditions
-  // const filteredHouse = sortedHouses.filter((house) => {
-  //   // condditions to display search results or houses based on the current location.
-  //   if (pathname === "/houses/allHouses") {
-  //     setForRent(false);
-  //     setForSale(false);
-  //     return search !== "" && result.length > 0
-  //       ? result.includes(house)
-  //       : true && housePriceRange(house, minPrice, maxPrice);
-  //   } else if (pathname === "/houses/rent" || forRent) {
-  //     if (minPrice >= 0 && maxPrice >= 0) {
-  //       return (
-  //         house.availability.forRent &&
-  //         housePriceRange(house, minPrice, maxPrice) && bedRoomRange(house, beds) && bathRoomRange(house, bath)  && filterArea(house)
-  //       );
-  //     } else if (beds > 1 || bath > 1) {
-  //       return house.availability.forRent && bedRoomRange(house, beds) && bathRoomRange(house, bath);
-  //     } else if(house.address === area){
-  //       return house.availability.forRent && filterArea(house)
-  //     }else {
-  //       return house.availability.forRent;
-  //     }
-  //   } else if (pathname === "/houses/buy" || forSale) {
-  //     if (minPrice >= 0 && maxPrice >= 0) {
-  //       return (
-  //         house.availability.forSale &&
-  //         housePriceRange(house, minPrice, maxPrice) && bedRoomRange(house, beds) && bathRoomRange(house, bath) && filterArea(house)
-  //       );
-  //     } else if (beds > 1 || bath > 1) {
-  //       return house.availability.forSale && bedRoomRange(house, beds) && bathRoomRange(house, bath);
-  //     } else if(house.address === area){
-  //       return house.availability.forSale && filterArea(house)
-  //     }else {
-  //       return house.availability.forSale;
-  //     }
-  //   } else {
-  //     console.log("Could not find");
-  //   }
-  // });
-  // console.log("filteredHouse,,,,,,,,,,,,", filteredHouse);
-
   // Define filter functions
   const filterAllHouses = (house) => {
     setForRent(false);
@@ -402,6 +361,32 @@ function HouseList({
     squareAreaMax,
   ]);
 
+  console.log("filteredHouse........",filteredHouse)
+
+  const handleFavourites = async (houseId) => {
+    const token = localStorage.getItem("token");
+ 
+const body = { favourites: houseId };
+
+    try {
+      const res = await axios.put(`${API_URL}/auth/profile`, body, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("res.data......", res.data);
+
+      if (res.status === 200) {
+        dispatch(toggleFavorites(houseId));
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+  };
+
+
+
   const handlePageClick = (e) => {
     const selectedPage = e.selected + 1;
     // dispatch(fetchedHouses(selectedPage, limit));
@@ -442,50 +427,7 @@ function HouseList({
     }
   }, [location, minPrice, maxPrice]);
 
-  const handleFavourites = async (houseId) => {
-    const token = localStorage.getItem("token");
-    // const favs = user.favourites
-
-  //    // Update the local favorites array
-  //    console.log("updatedFavorites......",favs);
-  // const updatedFavorites = favs.includes(houseId)
-  // ? favs.filter(id => id !== houseId)
-  // : [...favs, houseId];
-
-
-const body = { favourites: houseId };
-
-    try {
-      const res = await axios.put(`${API_URL}/auth/profile`, body, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      //   const {
-      //     userName: updatedUserName,
-      //     email: updatedEmail,
-      //     firstName: updatedFirstName,
-      //     lastName: updatedLastName,
-      //     phoneNumber: updatedPhoneNumber,
-      //   } = res.data;
-      console.log("res.data......", res.data);
-
-      if (res.status === 200) {
-        // const updatedUser ={
-        //     userName: updatedUserName,
-        //     email: updatedEmail,
-        //     firstName: updatedFirstName,
-        //     lastName: updatedLastName,
-        //     phoneNumber: updatedPhoneNumber,
-        //   }
-        dispatch(toggleFavorites(houseId));
-      }
-    } catch (error) {
-      console.error("Error updating profile:", error);
-    }
-  };
-
+  
   return (
     <div className="container-houses">
       <Search

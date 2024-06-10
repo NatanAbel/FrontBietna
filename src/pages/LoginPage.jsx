@@ -22,7 +22,7 @@ function LoginPage() {
       }
       
       useEffect(()=>{
-        if(status){
+        if(status===200){
           setUserName("")
           setPassword("")
         navigate("/")

@@ -39,15 +39,6 @@ function AreaFilter({ area, filterArea, forRent,forSale}) {
     console.log("seelectedArea..........",areaToFilter)
     filterArea(areaToFilter);
     setShowAreaDropdown(false);
-    // Check if "None" is selected
-  // if (selectedArea === "none") {
-  //   // Pass a special value to indicate "display all"
-  //   filterArea("displayAll");
-  // } else {
-  //   // Pass the selected area as usual
-  //   filterArea(selectedArea);
-  // }
-  // setShowAreaDropdown(false);
   };
 
   useEffect(() => {

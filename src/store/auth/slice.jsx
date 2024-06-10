@@ -38,6 +38,15 @@ export const loginSlice = createSlice({
             state.me.favorites = newFav
         }
         },
+        houseDelete : (state, action)=>{
+            const idToDelete = action.payload
+            
+            if(state.me){
+                const houseToDelete = state.me.published.includes(idToDelete) ? state.me.published.filter(id=> id !==idToDelete) :  [...state.me.published];
+                
+                state.me.published = houseToDelete
+            }
+        },
         statusResponse: (state, action)=>{
             state.status = action.payload
             
@@ -55,6 +64,6 @@ export const loginSlice = createSlice({
     }
 })
 
-export const {startLoading, userLogedIn, updateUser, toggleFavorites,statusResponse,logout} = loginSlice.actions
+export const {startLoading, userLogedIn, updateUser, toggleFavorites,statusResponse,logout,houseDelete} = loginSlice.actions
 
 export default loginSlice.reducer

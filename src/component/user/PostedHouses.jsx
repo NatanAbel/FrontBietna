@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { selectIsAuthenticated } from '../../store/auth/selectors';
 
 const API_URL_IMG = "http://localhost:5005/images";
 
-function PostedHouses({ user }) {
+function PostedHouses({publishedHouses, user, handleDeleteHouse}) {
   const [isLoading, setIsLoading] = useState(true);
+  const isAuthenticated = useSelector(selectIsAuthenticated)
 
   useEffect(() => {
-    if (user) {
+    if (isAuthenticated) {
       setIsLoading(false);
     }
-  }, [user]);
+  }, [isAuthenticated,publishedHouses]);
 
   if (isLoading) {
     return <p>loading.....</p>;
@@ -19,10 +22,16 @@ function PostedHouses({ user }) {
   return (
     <div className="house-cards">
       {/* Optional chaining (user?.published?.map) to safely access published only if user and user.published are defined. */}
-      {user?.published?.length > 0 ? (
-        user.published.map((house) => (
+      {publishedHouses.length > 0 ? (
+        publishedHouses.map((house) => (
           <div className="card-container" key={house._id}>
             <div className="card-img">
+            <button
+                    className="btn-faHeart"
+                    onClick={() =>handleDeleteHouse(house._id)}
+                  >
+                    <span>delete</span>
+                  </button>
               <p className="card-img-text">
                 {house.availability.forRent ? "For rent" : "For Sale"}
               </p>
@@ -52,7 +61,7 @@ function PostedHouses({ user }) {
           </div>
         ))
       ) : (
-        <p>You have no published house yet!</p>
+        <p>You have no posted house yet!</p>
       )}
     </div>
   );

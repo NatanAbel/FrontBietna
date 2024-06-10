@@ -123,12 +123,7 @@ function App() {
           />
         </Route>
         <Route path="/housesDetails/:houseId" element={<DetailsPage />} />
-        {!isAuthenticated ? (
-          <>
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/login" element={<LoginPage />} />
-          </>
-        ) : (
+        {isAuthenticated ? (
           <>
             <Route path="/update/:houseId" element={<UpdatePage />} />
             <Route path="/house/new" element={<NewHousePage />} />
@@ -141,6 +136,11 @@ function App() {
                 </PrivateRoute>
               }
             />
+          </>
+        ) :(
+          <>
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/login" element={<LoginPage />} />
           </>
         )}
         <Route path="*" element={<ErrorPage/>}/> 

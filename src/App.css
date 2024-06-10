@@ -9,10 +9,10 @@
 }
 
 body {
-  font-family: "Abril Fatface", cursive;
+  font-family:Arial, Helvetica, sans-serif;
   /* background-color: bisque; */
   color: black;
-  background-color: rgb(94, 76, 76);
+  background-color:rgb(117, 123, 129);
   /* background-color: hsl(0, 6%, 87%); */
   /* background-image: linear-gradient(rgb(95, 91, 91),hsl(0, 82%, 19%)); */
   background-attachment: fixed;
@@ -24,9 +24,9 @@ a {
   color: rgb(185, 181, 181);
 }
 
-/* .nav-container{
- margin-bottom: 80px;
-} */
+.nav-container{
+  background-color: #f8f5f5;
+}
 
 .dropdown-menu {
   /* min-width: 130px; */

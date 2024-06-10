@@ -10,9 +10,9 @@ export const selectFavs = (reduxState)=>{
     const houses = reduxState.house.houses
     if(token){
         const favorites = reduxState.auth.me
-        console.log("favorites...",favorites)
+        console.log("favorites...",favorites.favorites)
     const matchFavs = favorites.favorites.map(favId => 
-        houses.find(house => house.id === favId)
+        houses.find(house => house._id === favId)
         )
         // console.log("favorites......", favorites)
 

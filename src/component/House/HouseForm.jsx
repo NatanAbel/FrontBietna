@@ -209,11 +209,6 @@ function HouseForm(props) {
     console.log("enumValuesFeature......", enumValuesFeature);
   }, [enumValuesFeature]);
 
-  // const filterHouseType = homeTypeArr.filter((typeArr) =>
-  //   typeArr.toLocaleLowerCase().includes(houseType)
-  // );
-  
-
   return (
     <div className="checkllll">
       <div className="form-container">
