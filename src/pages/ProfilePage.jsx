@@ -53,9 +53,9 @@ function ProfilePage() {
     setSavedSearches(false);
   };
 
-  const handleDeleteHouse = async (house_Id) => {
+  const handleDeleteHouse = async (house_id) => {
     try {
-      const res = await axios.delete(`${API_URL}/houses/${house_Id}/delete`, {
+      const res = await axios.delete(`${API_URL}/houses/${house_id}/delete`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -64,16 +64,21 @@ function ProfilePage() {
       if (res.status === 204) {
         // Update the state to remove the deleted house
         setPublishedHouses((prevPublishedHouses) =>
-          prevPublishedHouses.filter((house) => house._id !== house_Id)
+          prevPublishedHouses.filter((house) => house._id !== house_id)
         );
-        dispatch(houseDelete(house_Id));
+
+        // Update the state to remove the deleted house from favourites
+      setFavourites((prevFavourites) =>
+        prevFavourites.filter((house) => house._id !== house_id)
+      );
+
+        dispatch(houseDelete(house_id));
+        dispatch(toggleFavorites(house_id));
       }
     } catch (e) {
       console.log(e.message);
     }
   };
-  console.log("user.published......", user.published);
-  console.log("publishedHouses......", publishedHouses);
 
   const handleFavBtn = async (houseId) => {
     const token = localStorage.getItem("token");
@@ -101,22 +106,31 @@ function ProfilePage() {
       console.error("Error updating profile:", error);
     }
   };
-  // const deleteUser = async () => {
 
-  //   const res = await axios.delete(`${API_URL}/auth/delete`, {
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   });
-  //   dispatch(logout())
-  //   navigate("/")
-  // };
+  const deleteUser = async () => {
+
+    try {
+      const res = await axios.delete(`${API_URL}/auth/delete`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.status === 200) {
+        dispatch(logout());
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
+  };
 
   useEffect(() => {
     if (!posted && !favs) {
       setAccount(true);
     }
   }, [account]);
+  
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -168,9 +182,10 @@ function ProfilePage() {
         <div className="profile-info">
           <div className="profile-options">
             <p onClick={handleAccountFrom}>Account</p>
-            <p onClick={handlePostedHouse}>posted</p>
-            <p onClick={handleFavourites}>favourites</p>
+            <p onClick={handlePostedHouse}>Posted</p>
+            <p onClick={handleFavourites}>Favourites</p>
             <p>searchSaved</p>
+            <p onClick={deleteUser}>Delete Account</p>
             {/* <p onClick={deleteUser}>Delete Account</p> */}
           </div>
           <div className="profile-to-display">

@@ -367,7 +367,7 @@ function HouseList({
     const token = localStorage.getItem("token");
  
 const body = { favourites: houseId };
-
+console.log("UsersPost......",user)
     try {
       const res = await axios.put(`${API_URL}/auth/profile`, body, {
         headers: {
