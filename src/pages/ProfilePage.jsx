@@ -68,12 +68,19 @@ function ProfilePage() {
         );
 
         // Update the state to remove the deleted house from favourites
-      setFavourites((prevFavourites) =>
-        prevFavourites.filter((house) => house._id !== house_id)
-      );
+        setFavourites((prevFavourites) =>
+          prevFavourites.filter((house) => house._id !== house_id)
+        );
 
+        // Dispatch houseDelete action
         dispatch(houseDelete(house_id));
-        dispatch(toggleFavorites(house_id));
+
+        // Check if the house is in favourites before dispatching toggleFavorites
+        const isFavourite = favourites.some((house) => house._id === house_id);
+
+        if (isFavourite) {
+          dispatch(toggleFavorites(house_id));
+        }
       }
     } catch (e) {
       console.log(e.message);
@@ -108,7 +115,6 @@ function ProfilePage() {
   };
 
   const deleteUser = async () => {
-
     try {
       const res = await axios.delete(`${API_URL}/auth/delete`, {
         headers: {
@@ -130,7 +136,6 @@ function ProfilePage() {
       setAccount(true);
     }
   }, [account]);
-  
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -168,7 +173,7 @@ function ProfilePage() {
     <div className="profile-container">
       <div className="profile-header">
         <div className="profile-picture">
-          <img src={profilePhoto ? profilePhoto : null} alt="user Image" />
+          <img src={profilePhoto ? profilePhoto : null} alt="user photo" />
           <button>change photo</button>
         </div>
         <div className="profile-username">
