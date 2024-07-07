@@ -53,7 +53,7 @@ function DetailsPage() {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [selectedThumbnailIndex, setSelectedThumbnailIndex] = useState(null);
 
-  const { houses, favorites } = Allhouses;
+  const { allHouses, favorites } = Allhouses;
 
   const detailsToggle = () => {
     setShowDetails(!showDetails);
@@ -232,7 +232,7 @@ function DetailsPage() {
               modules={[EffectCoverflow, Pagination, Navigation]}
               className="mySwiper"
             >
-              {houses.slice(0, 8).map((house) => (
+              {allHouses.slice(0, 8).map((house) => (
                 <SwiperSlide key={house._id}>
                   <div className="details-card-wrapper">
                     <Link to={`/housesDetails/${house._id}`}>

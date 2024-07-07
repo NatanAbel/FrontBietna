@@ -17,7 +17,7 @@ import {
   Thumbs,
   EffectCube,
 } from "swiper/modules";
-import HouseList from "./HouseList";
+// import HouseList from "./HouseList";
 
 const API_URL = "http://localhost:5005/images";
 
@@ -28,7 +28,7 @@ function LandingPage({forRent,setForRent,forSale,setForSale, handleAvailabilityC
   // const [forSale, setForSale] = useState(false);
   // const [forRent, setForRent] = useState(false);
   const [landingResult, setLandingResult] = useState([]);
-  const { houses } = house;
+  const { allHouses } = house;
   const navigate = useNavigate()
   const location = useLocation().pathname
   // const searchFilter = search && houses.filter((house) => {
@@ -63,7 +63,7 @@ function LandingPage({forRent,setForRent,forSale,setForSale, handleAvailabilityC
  
   
   const handleSearch = (searchInput, searchResults) => {
-    setSearch(searchInput);
+    // setSearch(searchInput);
     // Navigate to the HouseList page with the search input
     navigate("/houses/allHouses", { state: { search: searchInput, results: searchResults} });
   };
@@ -85,7 +85,7 @@ function LandingPage({forRent,setForRent,forSale,setForSale, handleAvailabilityC
                 Sell
               </a>
           </div> */}
-          <Search houses={houses} search={search} setSearch={setSearch} handleSearch={handleSearch} forRent ={forRent} setForRent={setForRent} forSale={forSale} setForSale={setForSale}/>
+          <Search houses={allHouses} search={search} setSearch={setSearch} handleSearch={handleSearch} forRent ={forRent} setForRent={setForRent} forSale={forSale} setForSale={setForSale}/>
         </div>
       </header>
       <main className="main">
@@ -114,7 +114,7 @@ function LandingPage({forRent,setForRent,forSale,setForSale, handleAvailabilityC
             >
               
               
-                {houses.slice(0, 8).map((house) => (
+                {allHouses.slice(0, 8).map((house) => (
                   <SwiperSlide key={house._id}>
                     <div className="details-card-wrapper">
                       <Link to={`/housesDetails/${house._id}`}>

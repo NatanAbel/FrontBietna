@@ -203,14 +203,14 @@ function HouseForm(props) {
   useEffect(() => {
     houseEnumValues();
     featureEnumValues();
-  }, []);
+  }, [enumValuesFeature,enumValuesType]);
 
-  useEffect(() => {
-    console.log("enumValuesFeature......", enumValuesFeature);
-  }, [enumValuesFeature]);
+  // useEffect(() => {
+  //   console.log("enumValuesFeature......", enumValuesFeature);
+  // }, [enumValuesFeature]);
 
   return (
-    <div className="checkllll">
+    <div className="house-form">
       <div className="form-container">
         <div className="house-form-heading">
           <h1>{heading}</h1>
@@ -423,7 +423,8 @@ function HouseForm(props) {
           <div className="inputwrapper">
             <label htmlFor="description">Description</label>
             <textarea
-              maxLength="250"
+              rows={description.length>113?"10":""} 
+              cols={description.length>113?"50":""}
               className="form-control"
               id="description"
               placeholder="Enter a detailed description of your house!"

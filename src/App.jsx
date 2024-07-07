@@ -1,7 +1,7 @@
 import Navbar from "./component/Navbar";
 import "./App.css";
 import LandingPage from "./pages/LandingPage";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import Footer from "./component/Footer";
 import DetailsPage from "./pages/detailsPage";
 import UpdatePage from "./pages/updatePage";
@@ -27,19 +27,16 @@ function App() {
   const [forSale, setForSale] = useState(false);
   const [forRent, setForRent] = useState(false);
   const navigate = useNavigate();
-
+  const location = useLocation().pathname
 
   const ref = useRef(isAuthenticated)
 
-  console.log("isAuthenticated.....", isAuthenticated);
   // checking the availability of houses
   const handleAvailabilityClick = (availabilityType) => {
     if (availabilityType === "forRent") {
       setForRent(true);
       setForSale(false);
       // setting key and value to localStorage
-      console.log("forRent..........appppp", forRent);
-      console.log("forSSSSSale..........appppp", forSale);
       localStorage.setItem("availabilityType", forRent ? "" : "forRent");
       navigate("/houses/rent");
     } else if (availabilityType === "forSale") {
@@ -58,14 +55,33 @@ function App() {
   useEffect(() => {
     // Retrieve availabilityType from local storage
     const availabilityType = localStorage.getItem("availabilityType");
-    if (availabilityType === "forRent") {
+    if (availabilityType === "forRent" ) {
       setForRent(true);
       setForSale(false);
     } else if (availabilityType === "forSale") {
       setForSale(true);
       setForRent(false);
     }
+
   }, [forRent, forSale]);
+
+// 
+  useEffect(() => {
+    if(location === "/houses/allHouses"){
+      setForRent(false);
+      setForSale(false);
+      localStorage.setItem("availabilityType","")
+    }else if(location === "/houses/rent"){
+      setForRent(true);
+      setForSale(false);
+      localStorage.setItem("availabilityType","forRent");
+    }else if(location === "/houses/buy"){
+      setForRent(false);
+      setForSale(true);
+      localStorage.setItem("availabilityType","forSale");
+    }
+  },[location])
+
 
   return (
     <>

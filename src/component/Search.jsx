@@ -10,6 +10,8 @@ import CitiesFilter from "./House/CitiesFilter";
 import HouseType from "./House/HouseType";
 import FeatureFilter from "./House/FeatureFilter";
 import SquareAreaFilter from "./House/SquareAreaFilter";
+import { useDispatch } from "react-redux";
+import { searchFiltersFetched } from "../store/houses/thunks";
 
 function Search({
   search = "",
@@ -37,8 +39,10 @@ function Search({
   bathRoom,
   setBathRoom,
   area,
+  setArea,
   filterArea,
   city,
+  setCity,
   filterCity,
   handleAvailabilityClick,
   houseType,
@@ -48,22 +52,38 @@ function Search({
   calculateMinPrice,
   squareAreaMin,
   squareAreaMax,
-  squareAreaRange
+  squareAreaRange,
+  handleSearchClick,
+  handlePageClick
 }) {
   const [searchForm, setSearchForm] = useState("");
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
-    setSearchForm(e.target.value);
+    const value = e.target.value;
+    setSearchForm(value);
     setDropdownVisible(true);
 
     if (check) {
-      setSearchHouses(e.target.value);
+      setSearchHouses(value);
+      if (value === "") {
+        setDropdownVisible(false);
+        setArea("");
+        setCity("");
+        setResult([]); // Clear the results when input is empty
+      } else {
+        setArea("")
+        setCity("");
+        setResult([]); // Clear the results when typing starts
+      }
     } else {
-      setSearch(e.target.value);
+      setSearch(value);
     }
+
+    
   };
   // console.log("handleAvailabilityClick......");
 
@@ -82,7 +102,7 @@ function Search({
       houses.filter((house) => {
         return search === ""
           ? true
-          : house.address.toLowerCase().includes(search.toLowerCase());
+          : house.address.toLowerCase().includes(search.toLowerCase()) ;
       })
     : searchHouses &&
       houseList.filter((house) => {
@@ -102,28 +122,25 @@ function Search({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const addressStartsWith =
       searchForm && uniqueAddresses.filter((adrs) => adrs.includes(searchForm));
 
     if (searchForm.length > 0 && addressStartsWith.length !== 0) {
       if (check) {
+        console.log("serachHouse.......",searchHouses)
         setResult(resultsToDisplay);
         // handleSearch(searchHouses, resultsToDisplay);
       } else {
         handleSearch(search, resultsToDisplay);
-
-        // console.log("search......88888",search)
-        // navigate("/houses/allHouses", {
-        //   state: { search, results: resultsToDisplay},
-        // });
       }
       setDropdownVisible(false);
     }
   };
   // console.log("searchForm....");
 
-  useEffect(() => {}, [houses, houseList]);
+  useEffect(() => {
+    
+  }, [dispatch, searchForm]);
 
   // shouldShowDropdown is hiding the filter options on a landing page
   const shouldShow = location.pathname !== "/";
@@ -175,6 +192,7 @@ function Search({
         {shouldShow && (
           <div className="filter-wrapper">
             <FilterAvailability
+            handlePageClick={handlePageClick}
             calculateMinPrice={calculateMinPrice}
               forRent={forRent}
               forSale={forSale}

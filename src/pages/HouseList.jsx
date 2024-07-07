@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selecthouses } from "../store/houses/selectors";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState, useMemo, useRef } from "react";
-import { fetchedHouses } from "../store/houses/thunks";
+import { fetchedHouses, searchFiltersFetched } from "../store/houses/thunks";
 // import HouseCards from "../component/HouseCards"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
@@ -55,11 +55,17 @@ function HouseList({
   const [features, setFeatures] = useState([]);
   const [squareAreaMin, setSquareAreaMin] = useState(0);
   const [squareAreaMax, setSquareAreaMax] = useState(0);
-  const [limit, setLimit] = useState(5);
-  const [pageCount, setPageCount] = useState(1);
-  const currentPage = useRef();
+  const [limit, setLimit] = useState(3);
+  // const currentPage = useRef(1);
+  // const [currentPage, setCurrentPage] = useState(1);
+  const[houses, setHouses] = useState([])
 
-  const { houses } = house;
+  const currentPage = useRef(1);
+  
+  const { allHouses, pageCount} = house;
+  
+  // Skip variable with 0 value uses as the first argument of silce method to display houses
+  const skip = 0
 
   const { pathname } = location;
   // sorting houses based in the compare_name function above the component function
@@ -92,9 +98,23 @@ function HouseList({
       (house) =>
         house.address.replace(/\s/g, "") === chosenArea.replace(/\s/g, "")
     );
-    if (areaResult.length > 0) {
+    // A condition used to filter area incase the user wants different area and set the search field to the chosen area to avoid confusion for the user.
+    if(chosenArea === "none"){
+      setArea("")
+      setCity("")
+    }else if (areaResult.length > 0 && search !== "") {
+      const addCity = areaResult.filter(area => area.city)
       setArea(chosenArea);
-      return areaResult;
+      setSearch(chosenArea.toLowerCase());
+      setResult(areaResult);
+      setCity(addCity[0].city);
+      // console.log("area..........", addCity[0].city)
+    }else{
+      const addCity = areaResult.filter(area => area.city)
+      setArea(chosenArea);
+      setSearch("");
+      setResult(areaResult);
+      setCity(addCity[0].city);
     }
   };
 
@@ -103,11 +123,14 @@ function HouseList({
     const cityResult = sortedHouses.filter(
       (house) => house.city.replace(/\s/g, "") === chosenCity.replace(/\s/g, "")
     );
-    if (cityResult.length > 0) {
+    if(chosenCity === "none"){
+      setCity("")
+    }else if (cityResult.length > 0) {
       setCity(chosenCity);
-      return cityResult;
     }
   };
+
+
 
   const houseTypeFilter = (selectedType) => {
     // Check if the clicked feature is already in the enumHouseType array
@@ -184,6 +207,8 @@ function HouseList({
         return house.availability.forRent;
       } else if (availability === "forSale") {
         return house.availability.forSale;
+      }else if (availability === "allHouses") {
+        return house;
       }
       return false;
     });
@@ -194,7 +219,8 @@ function HouseList({
           house.availability.forRent ? house.rentalPrice : house.price
         )
       );
-      setMinPrice(houseMinPrice);
+      // setMinPrice(houseMinPrice);
+      setMinPrice(0);
       setMaxPrice(0);
       setBath(1);
       setBeds(1);
@@ -204,6 +230,7 @@ function HouseList({
       setFeatures([]);
       setSquareAreaMin(0);
       setSquareAreaMax(0);
+      // setSearch("")
     }
   };
 
@@ -212,9 +239,10 @@ function HouseList({
     setForRent(false);
     setForSale(false);
     return search !== "" && result.length > 0
-      ? result.includes(house)
-      : true &&
-          housePriceRange(house, minPrice, maxPrice) &&
+      ? result.some(result=> result.address === house.address)
+      : true && house &&
+          housePriceRange(house, minPrice, maxPrice) && bedRoomRange(house, beds) &&
+          bathRoomRange(house, bath) &&
           (area === "" || house.address === area) &&
           (city === "" || house.city === city) &&
           (houseType.length === 0 || houseType.includes(house.homeType)) &&
@@ -225,7 +253,19 @@ function HouseList({
   };
 
   const filterRentHouses = (house) => {
-    if (minPrice >= 0 && maxPrice >= 0) {
+    
+    if(search !== "" && result.length > 0 && house.availability.forRent){
+      return (result.some(result=> result.address === house.address) && housePriceRange(house, minPrice, maxPrice) && bedRoomRange(house, beds) &&
+      bathRoomRange(house, bath) &&
+      (area === "" || house.address === area) &&
+      (city === "" || house.city === city) &&
+      (houseType.length === 0 || houseType.includes(house.homeType)) &&
+      (features.length === 0 ||
+        features.every((feature) => house.features.includes(feature))) &&
+      (squareAreaMin === 0 || house.sqm >= squareAreaMin) &&
+      (squareAreaMax === 0 || house.sqm <= squareAreaMax)
+    );      
+    }else if (minPrice >= 0 && maxPrice >= 0) {
       return (
         house.availability.forRent &&
         housePriceRange(house, minPrice, maxPrice) &&
@@ -289,7 +329,18 @@ function HouseList({
   };
 
   const filterBuyHouses = (house) => {
-    if (minPrice >= 0 && maxPrice >= 0) {
+    if(search !== "" && result.length > 0 && house.availability.forSale){
+      return (result.some(result=> result.address === house.address) && housePriceRange(house, minPrice, maxPrice) && bedRoomRange(house, beds) &&
+      bathRoomRange(house, bath) &&
+      (area === "" || house.address === area) &&
+      (city === "" || house.city === city) &&
+      (houseType.length === 0 || houseType.includes(house.homeType)) &&
+      (features.length === 0 ||
+        features.every((feature) => house.features.includes(feature))) &&
+      (squareAreaMin === 0 || house.sqm >= squareAreaMin) &&
+      (squareAreaMax === 0 || house.sqm <= squareAreaMax)
+    );      
+    }else if (minPrice >= 0 && maxPrice >= 0) {
       return (
         house.availability.forSale &&
         housePriceRange(house, minPrice, maxPrice) &&
@@ -332,10 +383,32 @@ function HouseList({
     }
   };
 
+
+  // Handle clicked favourites button
+  const handleFavourites = async (houseId) => {
+    const token = localStorage.getItem("token");
+ 
+  const body = { favourites: houseId };
+
+    try {
+      const res = await axios.put(`${API_URL}/auth/profile`, body, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.status === 200) {
+        dispatch(toggleFavorites(houseId));
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+  };
+
   // Memoize the filteredHouse variable using useMemo hook use to memoize the filtered house data based on the dependencies that cause the filtering to change.
   const filteredHouse = useMemo(() => {
-    return sortedHouses.filter((house) => {
-      if (pathname === "/houses/allHouses") {
+    return houses.filter((house) => {
+      if (pathname === "/houses/allHouses" || !forRent && !forSale) {
         return filterAllHouses(house);
       } else if (pathname === "/houses/rent" || forRent) {
         return filterRentHouses(house);
@@ -346,7 +419,7 @@ function HouseList({
       }
     });
   }, [
-    sortedHouses,
+    houses,
     pathname,
     forRent,
     forSale,
@@ -361,72 +434,54 @@ function HouseList({
     squareAreaMax,
   ]);
 
-  console.log("filteredHouse........",filteredHouse)
-
-  const handleFavourites = async (houseId) => {
-    const token = localStorage.getItem("token");
- 
-const body = { favourites: houseId };
-console.log("UsersPost......",user)
-    try {
-      const res = await axios.put(`${API_URL}/auth/profile`, body, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      console.log("res.data......", res.data);
-
-      if (res.status === 200) {
-        dispatch(toggleFavorites(houseId));
-      }
-    } catch (error) {
-      console.error("Error updating profile:", error);
-    }
-  };
-
-
+  const resetToFirstPage = () => {
+    currentPage.current = 1
+};
 
   const handlePageClick = (e) => {
-    const selectedPage = e.selected + 1;
-    // dispatch(fetchedHouses(selectedPage, limit));
+    currentPage.current = e.selected + 1
+    dispatch(searchFiltersFetched( currentPage.current, limit, search, forRent, forSale, minPrice, maxPrice, beds, bath, area, city, houseType, features, squareAreaMin, squareAreaMax));
   };
 
-  //Pagination
-  // const paginatedResult = async()=> {
-  //   try{
-  //       const response = await axios.get(`${API_URL_HOUSE}/paginatedHouse?page=${currentPage.current}&limit=${limit}`)
-  //       setPageCount(response.data.pageCount)
-  //   }catch(e){
-  //       console.log(e.message)
-  //   }
-  // }
 
-  useEffect(() => {
-    currentPage.current = 1;
-    dispatch(fetchedHouses);
+  // useEffect(() => {
+  //   currentPage.current= 1;
+  //   setIsLoading(false);
+  //   // dispatch(fetchedHouses(currentPage.current, limit));
+  //   checkHighestPrice();
+  // }, [dispatch]);
+
+useEffect(() =>{
+  resetToFirstPage()
+},[pathname])
+
+useEffect(() => {
+  dispatch(searchFiltersFetched(currentPage.current, limit, search, forRent, forSale, minPrice, maxPrice, beds, bath, area, city, houseType, features, squareAreaMin, squareAreaMax));
+  checkHighestPrice();
+}, [dispatch,search, forRent, forSale, minPrice, maxPrice, beds, bath, area, city, houseType, features, squareAreaMin, squareAreaMax]);
+
+useEffect(() => {
+  // Check if filteredHouse is empty and set noResults accordingly
+  if (allHouses.length > 0) {
+    setNoResults(""); // Clear the message if there are results  
     setIsLoading(false);
-    checkHighestPrice();
-  }, [dispatch]);
+   } else {
+     setNoResults("No results found for the selected criteria.");
+   }
+    setHouses(allHouses)
+  }, [allHouses, pageCount]);
+  
 
   useEffect(() => {
-    // Check if filteredHouse is empty and set noResults accordingly
-    if (filteredHouse.length === 0) {
-      setNoResults("No results found for the selected criteria.");
-    } else {
-      setNoResults(""); // Clear the message if there are results
-    }
-  }, [filteredHouse]);
-
-  useEffect(() => {
-    const { state } = location;
+    const { state,pathname} = location;
     // Check for location state to set initial search and results
     if (state && state.search && state.results) {
       setSearch(state.search);
       setResult(state.results);
+      // Reset the location state to avoid retaining search data
+    navigate(pathname, { replace: true, state: { search: "", results: [] } });
     }
-  }, [location, minPrice, maxPrice]);
-
+  }, [location, navigate]);
   
   return (
     <div className="container-houses">
@@ -450,8 +505,10 @@ console.log("UsersPost......",user)
         bathRoom={bath}
         setBathRoom={setBath}
         area={area}
+        setArea={setArea}
         filterArea={filterArea}
         city={city}
+        setCity={setCity}
         filterCity={filterCity}
         houseType={houseType}
         houseTypeFilter={houseTypeFilter}
@@ -460,6 +517,7 @@ console.log("UsersPost......",user)
         squareAreaMin={squareAreaMin}
         squareAreaMax={squareAreaMax}
         squareAreaRange={squareAreaRange}
+        handlePageClick={handlePageClick}
       />
 
       <div className="house-cards">
@@ -468,7 +526,7 @@ console.log("UsersPost......",user)
             <h4>{noResults}</h4>
           </div>
         ) : (
-          filteredHouse.map((house) => (
+            filteredHouse.slice(skip, skip + limit).map((house) => (
             <div className="card-container" key={house._id}>
               <div className="card-img">
                 {isAuthenticated ? (
@@ -527,6 +585,7 @@ console.log("UsersPost......",user)
         pageCount={pageCount}
         previousLabel={"< previous"}
         renderOnZeroPageCount={null}
+        forcePage={currentPage.current -1 }
         // bootstrap class names
         containerClassName={"pagination justify-content-center my-4"}
         pageClassName={"page-item"}

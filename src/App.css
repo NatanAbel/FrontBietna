@@ -1101,13 +1101,13 @@ line-height: .3em;
 
 /* ///////////////////////////------houseFrom-input------////////////////// */
 
-.checkllll {
+.house-form {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
-  margin: 80px 0;
+  margin: 150px 0;
   font-family: "Roboto", sans-serif;
 }
 
@@ -1123,16 +1123,16 @@ line-height: .3em;
   align-items: center;
   justify-content: center;
   min-width: 700px;
-  min-height: 600px;
+  min-height: 900px;
   border-radius: 15px;
   box-shadow: 0 2px 55px 0 rgba(0, 0, 0, 0.2);
   background-color: #aca8a8;
+
 }
 
 .form-wrapper {
   width: 500px;
   margin: 20px 0;
-  /* background-color: #0e0101; */
 }
 
 .inputwrapper {

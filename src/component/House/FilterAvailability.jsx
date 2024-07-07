@@ -15,7 +15,6 @@ function FilterAvailability({ forRent, forSale, handleAvailabilityClick, calcula
       localStorage.setItem("availabilityType", "forRent"); // Store in local storage
       navigate("/houses/rent");
     } else if (availabilityType === "forSale" && !forSale) {
-      console.log("forRenttttttttt...2222", forRent);
       handleAvailabilityClick(availabilityType)
       setSelectedOption("forSale");
       calculateMinPrice(availabilityType);
@@ -34,9 +33,9 @@ function FilterAvailability({ forRent, forSale, handleAvailabilityClick, calcula
       <div className="availability-input-wrapper">
         <p>
           {" "}
-          {selectedOption === "forRent" ?(
-            <span>For Rent</span>
-          ) : (
+          {selectedOption === "" ?(
+            <span>Status</span>
+          ) : selectedOption === "forRent" ? <span>For Rent</span> : (
             <span>For Sale</span>
           )}{" "}
         </p>
