@@ -29,7 +29,7 @@ const hundelFeature = ( clickedFeature) => {
 
   useEffect(() => {
     featureEnumValues()
-  },[])
+  },[features])
 
   return (
     <div className="filter-area-container">

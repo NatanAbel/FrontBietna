@@ -69,7 +69,7 @@ function LandingPage({forRent,setForRent,forSale,setForSale, handleAvailabilityC
   };
   
   useEffect(() => {
-    dispatch(fetchedHouses);
+    dispatch(fetchedHouses(1,10));
   }, [dispatch]);
 
   return (

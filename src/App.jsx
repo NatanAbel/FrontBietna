@@ -46,7 +46,8 @@ function App() {
       navigate("/houses/buy");
     }
   };
-
+  console.log("forRent.........", forRent)
+  console.log("forSale.........", forSale)
   useEffect(() => {
     dispatch(bootstrapThunkLogin);
   }, [dispatch]);

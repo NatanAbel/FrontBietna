@@ -444,21 +444,73 @@ function HouseList({
   };
 
 
-  // useEffect(() => {
-  //   currentPage.current= 1;
-  //   setIsLoading(false);
-  //   // dispatch(fetchedHouses(currentPage.current, limit));
-  //   checkHighestPrice();
-  // }, [dispatch]);
-
 useEffect(() =>{
   resetToFirstPage()
-},[pathname])
+},[pathname, search, forRent, forSale, minPrice, maxPrice, beds, bath, area, city, houseType, features, squareAreaMin, squareAreaMax])
+
+const hasFilters = () => {
+  return (
+    search ||
+    forRent ||
+    forSale ||
+    minPrice ||
+    maxPrice ||
+    beds > 1 ||
+    bath > 1 ||
+    area ||
+    city ||
+    houseType.length > 0 ||
+    features.length > 0 ||
+    squareAreaMin ||
+    squareAreaMax
+  );
+};
+
+const fetchHouses = () => {
+  if (hasFilters()) {
+    dispatch(
+      searchFiltersFetched(
+        currentPage.current,
+        limit,
+        search,
+        forRent,
+        forSale,
+        minPrice,
+        maxPrice,
+        beds,
+        bath,
+        area,
+        city,
+        houseType,
+        features,
+        squareAreaMin,
+        squareAreaMax
+      )
+    );
+  } else {
+    dispatch(fetchedHouses(currentPage.current, limit));
+  }
+};
 
 useEffect(() => {
-  dispatch(searchFiltersFetched(currentPage.current, limit, search, forRent, forSale, minPrice, maxPrice, beds, bath, area, city, houseType, features, squareAreaMin, squareAreaMax));
-  checkHighestPrice();
-}, [dispatch,search, forRent, forSale, minPrice, maxPrice, beds, bath, area, city, houseType, features, squareAreaMin, squareAreaMax]);
+  fetchHouses();
+}, [
+  search,
+  forRent,
+  forSale,
+  minPrice,
+  maxPrice,
+  beds,
+  bath,
+  area,
+  city,
+  houseType,
+  features,
+  squareAreaMin,
+  squareAreaMax,
+]);
+
+
 
 useEffect(() => {
   // Check if filteredHouse is empty and set noResults accordingly
