@@ -64,13 +64,14 @@ function LandingPage({forRent,setForRent,forSale,setForSale, handleAvailabilityC
   
   const handleSearch = (searchInput, searchResults) => {
     // setSearch(searchInput);
+    
     // Navigate to the HouseList page with the search input
     navigate("/houses/allHouses", { state: { search: searchInput, results: searchResults} });
   };
-  
-  useEffect(() => {
-    dispatch(fetchedHouses(1,10));
-  }, [dispatch]);
+  // console.log("search......",search)
+  // useEffect(() => {
+  //   // dispatch(fetchedHouses(1,10));
+  // }, [dispatch]);
 
   return (
     <div className="landing-container">

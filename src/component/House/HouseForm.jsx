@@ -52,6 +52,8 @@ function HouseForm(props) {
   const [city, setCity] = useState(homeCity || "");
   const [showDropdown, setShowDropdown] = useState(false);
   const [featureShowDropdown, setFeatureShowDropdown] = useState(false);
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
   const [isBoxchecked, setIsBoxChecked] = useState(false);
 
   const navigate = useNavigate();
@@ -74,8 +76,35 @@ function HouseForm(props) {
     }
   };
 
+  //request the user's location and set the state with the obtained latitude and longitude.
+  const getLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLatitude(position.coords.latitude);
+          setLongitude(position.coords.longitude);
+        },
+        (error) => {
+          console.error("Error obtaining location", error);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+    }
+  };
+
   const hundelSubmit = async (e) => {
     e.preventDefault();
+
+     // Get location
+  getLocation();
+
+  // Wait for location to be set
+  if (latitude === null || longitude === null) {
+    alert("Please allow location access to proceed.");
+    return;
+  }
+
     const token = localStorage.getItem("token")
     try {
       // Create a FormData object
@@ -97,6 +126,9 @@ function HouseForm(props) {
       formData.append("homeType", enumValuesType);
       formData.append("city", city);
       formData.append("availability", JSON.stringify(availability));
+      formData.append("latitude", latitude);
+      formData.append("longitude", longitude);
+      
 
       console.log("formData.................", formData);
 

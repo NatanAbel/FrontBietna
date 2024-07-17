@@ -10,10 +10,16 @@ import CitiesFilter from "./House/CitiesFilter";
 import HouseType from "./House/HouseType";
 import FeatureFilter from "./House/FeatureFilter";
 import SquareAreaFilter from "./House/SquareAreaFilter";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { searchFiltersFetched } from "../store/houses/thunks";
+import { selecthouses } from "../store/houses/selectors";
+import axios from "axios";
+
+const API_URL = "http://localhost:5005";
 
 function Search({
+  currentPage,
+  limit,
   search = "",
   setSearch,
   searchHouses = "",
@@ -54,16 +60,15 @@ function Search({
   squareAreaMax,
   squareAreaRange,
   handleSearchClick,
-  handlePageClick
+  handlePageClick,
 }) {
   const [searchForm, setSearchForm] = useState("");
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch();
+  const [searchResult, setSearchResult] = useState([]);
 
   const handleChange = (e) => {
-    const value = e.target.value;
+    const value = e.target.value.toLowerCase();
     setSearchForm(value);
     setDropdownVisible(true);
 
@@ -71,21 +76,14 @@ function Search({
       setSearchHouses(value);
       if (value === "") {
         setDropdownVisible(false);
-        setArea("");
-        setCity("");
         setResult([]); // Clear the results when input is empty
-      } else {
-        setArea("")
-        setCity("");
-        setResult([]); // Clear the results when typing starts
+        setSearchHouses("");
+        setSearchResult([]);
       }
     } else {
       setSearch(value);
     }
-
-    
   };
-  // console.log("handleAvailabilityClick......");
 
   const handleItemClick = (address) => {
     setSearchForm(address);
@@ -97,28 +95,26 @@ function Search({
     }
   };
 
-  const searchFilter = search
-    ? search &&
-      houses.filter((house) => {
-        return search === ""
-          ? true
-          : house.address.toLowerCase().includes(search.toLowerCase()) ;
-      })
-    : searchHouses &&
-      houseList.filter((house) => {
-        return searchHouses === ""
-          ? true
-          : house.address.toLowerCase().includes(searchHouses.toLowerCase());
-      });
+  const searchFilter = async () => {
+    try {
+      const response = await axios.get(
+        `${API_URL}/houses/search/result?page=${currentPage}&limit=${limit}&search=${searchForm}`
+      );
+      setSearchResult(response.data.result);
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
 
-  const resultsToDisplay = searchFilter.slice(0, 5);
+  const resultsToDisplay = searchResult.slice(0, 5);
 
-  // filter results if they have duplicate addresses
-  const resultToCheck = searchForm && resultsToDisplay.map((house) => house.address.toLowerCase())
-  // console.log("resultToCheck..........19999999999",resultToCheck)
+  const resultToCheck =
+    searchForm && resultsToDisplay.map((house) => house.address.toLowerCase());
   const uniqueAddresses =
     searchForm &&
-    resultToCheck.filter((address, index, array) => array.indexOf(address) === index);
+    resultToCheck.filter(
+      (address, index, array) => array.indexOf(address) === index
+    );
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -127,24 +123,19 @@ function Search({
 
     if (searchForm.length > 0 && addressStartsWith.length !== 0) {
       if (check) {
-        console.log("serachHouse.......",searchHouses)
         setResult(resultsToDisplay);
-        // handleSearch(searchHouses, resultsToDisplay);
       } else {
         handleSearch(search, resultsToDisplay);
       }
       setDropdownVisible(false);
     }
   };
-  // console.log("searchForm....");
 
   useEffect(() => {
-    
-  }, [dispatch, searchForm]);
+    searchFilter();
+  }, [searchForm]);
 
-  // shouldShowDropdown is hiding the filter options on a landing page
   const shouldShow = location.pathname !== "/";
-  // console.log("filteredHouse...5");
 
   return (
     <form
@@ -155,9 +146,8 @@ function Search({
         <div className="search-input">
           <input
             value={search ? search : searchHouses}
-            // value={search}
             type="search"
-            placeholder="Seacrch-houses"
+            placeholder="Search-houses"
             onChange={handleChange}
             className="input-search"
           />
@@ -173,72 +163,69 @@ function Search({
                 !shouldShow ? "dropDown-search" : "dropDown-search-small"
               }
             >
-              {searchForm &&
-                uniqueAddresses.map((address) => {
-                  return (
-                    <div key={address} className="search-list-wrapper">
-                      <li
-                        className="search-list"
-                        onClick={() => handleItemClick(address)}
-                      >
-                        {address}
-                      </li>
-                    </div>
-                  );
-                })}
+              {uniqueAddresses &&
+                uniqueAddresses.map((address) => (
+                  <div key={address} className="search-list-wrapper">
+                    <li
+                      className="search-list"
+                      onClick={() => handleItemClick(address)}
+                    >
+                      {address}
+                    </li>
+                  </div>
+                ))}
             </ul>
           )}
         </div>
         {shouldShow && (
           <div className="filter-wrapper">
             <FilterAvailability
-            handlePageClick={handlePageClick}
-            calculateMinPrice={calculateMinPrice}
+              handlePageClick={handlePageClick}
+              calculateMinPrice={calculateMinPrice}
               forRent={forRent}
               forSale={forSale}
-              handleAvailabilityClick ={handleAvailabilityClick}
+              handleAvailabilityClick={handleAvailabilityClick}
             />
             <PriceFilter
               minPrice={minPrice}
               setMinPrice={setMinPrice}
               maxPrice={maxPrice}
               setMaxPrice={setMaxPrice}
-              forRent = {forRent}
+              forRent={forRent}
             />
-            <Roomfilter 
-              bedRoom = {bedRoom}
-              setBedRoom = {setBedRoom}
-              bathRoom = {bathRoom}
-              setBathRoom ={setBathRoom}
-              />
-
+            <Roomfilter
+              bedRoom={bedRoom}
+              setBedRoom={setBedRoom}
+              bathRoom={bathRoom}
+              setBathRoom={setBathRoom}
+            />
             <AreaFilter
-              area = {area}
-              filterArea = {filterArea}
+              area={area}
+              filterArea={filterArea}
               forSale={forSale}
-              forRent = {forRent}
+              forRent={forRent}
             />
             <CitiesFilter
-              city = {city}
-              filterCity = {filterCity}
+              city={city}
+              filterCity={filterCity}
               forSale={forSale}
-              forRent = {forRent}
+              forRent={forRent}
             />
-            <HouseType 
+            <HouseType
               forSale={forSale}
-              forRent = {forRent}
-              houseList = {houseList}
-              houseType = {houseType}
+              forRent={forRent}
+              houseList={houseList}
+              houseType={houseType}
               houseTypeFilter={houseTypeFilter}
-              />
+            />
             <FeatureFilter
-              features = {features}
-              featureHouseFilter = {featureHouseFilter}
-              />
+              features={features}
+              featureHouseFilter={featureHouseFilter}
+            />
             <SquareAreaFilter
-              squareAreaMin = {squareAreaMin}
-              squareAreaMax = {squareAreaMax}
-              squareAreaRange = {squareAreaRange}
+              squareAreaMin={squareAreaMin}
+              squareAreaMax={squareAreaMax}
+              squareAreaRange={squareAreaRange}
             />
           </div>
         )}

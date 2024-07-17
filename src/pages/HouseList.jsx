@@ -42,7 +42,7 @@ function HouseList({
   const location = useLocation();
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
-  const [result, setResult] = useState([]);
+  const [searchResult, setSearchResult] = useState([]);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
   const [beds, setBeds] = useState(1);
@@ -67,7 +67,7 @@ function HouseList({
   // Skip variable with 0 value uses as the first argument of silce method to display houses
   const skip = 0
 
-  const { pathname } = location;
+  const { state ,pathname } = location;
   // sorting houses based in the compare_name function above the component function
   const sortedHouses = [...houses].sort(compare_name);
 
@@ -94,47 +94,50 @@ function HouseList({
 
   const filterArea = (chosenArea) => {
     // checking if the selected area by removing all spaces from the string
-    const areaResult = sortedHouses.filter(
-      (house) =>
-        house.address.replace(/\s/g, "") === chosenArea.replace(/\s/g, "")
-    );
+    // const areaResult = sortedHouses.filter(
+    //   (house) =>
+    //     house.address.replace(/\s/g, "") === chosenArea.replace(/\s/g, "")
+    // );
+    // console.log("area..........",areaResult)
     // A condition used to filter area incase the user wants different area and set the search field to the chosen area to avoid confusion for the user.
     if(chosenArea === "none"){
       setArea("")
       setCity("")
-    }else if (areaResult.length > 0 && search !== "") {
-      const addCity = areaResult.filter(area => area.city)
+      // setResult([]);
+    }
+    // else if (areaResult.length > 0 && search !== "") {
+      // const addCity = areaResult.filter(area => area.city)
+      // setArea(chosenArea);
+      // setSearch(chosenArea.toLowerCase());
+      // setResult(areaResult);
+      // setCity(addCity[0].city);
+    // }
+    else{
+      // const addCity = areaResult.filter(area => area.city)
       setArea(chosenArea);
-      setSearch(chosenArea.toLowerCase());
-      setResult(areaResult);
-      setCity(addCity[0].city);
-      // console.log("area..........", addCity[0].city)
-    }else{
-      const addCity = areaResult.filter(area => area.city)
-      setArea(chosenArea);
-      setSearch("");
-      setResult(areaResult);
-      setCity(addCity[0].city);
+      // setSearch("");
+      // setResult(areaResult);
+      // setCity(addCity[0].city);
     }
   };
-
+  
   const filterCity = (chosenCity) => {
     // checking if the selected area by removing all spaces from the string
-    const cityResult = sortedHouses.filter(
-      (house) => house.city.replace(/\s/g, "") === chosenCity.replace(/\s/g, "")
-    );
+    // const cityResult = sortedHouses.filter(
+    //   (house) => house.city.replace(/\s/g, "") === chosenCity.replace(/\s/g, "")
+    // );
     if(chosenCity === "none"){
       setCity("")
-    }else if (cityResult.length > 0) {
+    }else{
       setCity(chosenCity);
     }
+    // console.log("cityResult......", cityResult);
   };
 
 
 
   const houseTypeFilter = (selectedType) => {
     // Check if the clicked feature is already in the enumHouseType array
-
     const isHouseTypeSelected = houseType.includes(selectedType);
 
     if (!isHouseTypeSelected) {
@@ -207,7 +210,7 @@ function HouseList({
         return house.availability.forRent;
       } else if (availability === "forSale") {
         return house.availability.forSale;
-      }else if (availability === "allHouses") {
+      } else if (availability === "allHouses") {
         return house;
       }
       return false;
@@ -219,7 +222,6 @@ function HouseList({
           house.availability.forRent ? house.rentalPrice : house.price
         )
       );
-      // setMinPrice(houseMinPrice);
       setMinPrice(0);
       setMaxPrice(0);
       setBath(1);
@@ -236,10 +238,10 @@ function HouseList({
 
   // Define filter functions
   const filterAllHouses = (house) => {
-    setForRent(false);
-    setForSale(false);
-    return search !== "" && result.length > 0
-      ? result.some(result=> result.address === house.address)
+    // setForRent(false);
+    // setForSale(false);
+    return search !== "" && searchResult.length > 0
+      ? searchResult.some(result=> result.address === house.address)
       : true && house &&
           housePriceRange(house, minPrice, maxPrice) && bedRoomRange(house, beds) &&
           bathRoomRange(house, bath) &&
@@ -254,8 +256,8 @@ function HouseList({
 
   const filterRentHouses = (house) => {
     
-    if(search !== "" && result.length > 0 && house.availability.forRent){
-      return (result.some(result=> result.address === house.address) && housePriceRange(house, minPrice, maxPrice) && bedRoomRange(house, beds) &&
+    if(search !== "" && searchResult.length > 0 && house.availability.forRent){
+      return (searchResult.some(result=> result.address === house.address) && housePriceRange(house, minPrice, maxPrice) && bedRoomRange(house, beds) &&
       bathRoomRange(house, bath) &&
       (area === "" || house.address === area) &&
       (city === "" || house.city === city) &&
@@ -307,7 +309,7 @@ function HouseList({
       );
     } else if (city === "" || house.city === city) {
       return house.availability.forRent;
-    } else if (houseType.length === 0 || houseType.includes(house.homeType)) {
+    } else if (houseType.length === 0 || houseType.includes(house.homeType)){
       return house.availability.forRent;
     } else if (squareAreaMin >= 0 && squareAreaMax >= 0) {
       return (
@@ -329,8 +331,8 @@ function HouseList({
   };
 
   const filterBuyHouses = (house) => {
-    if(search !== "" && result.length > 0 && house.availability.forSale){
-      return (result.some(result=> result.address === house.address) && housePriceRange(house, minPrice, maxPrice) && bedRoomRange(house, beds) &&
+    if(search !== "" && searchResult.length > 0 && house.availability.forSale){
+      return (searchResult.some(result=> result.address === house.address) && housePriceRange(house, minPrice, maxPrice) && bedRoomRange(house, beds) &&
       bathRoomRange(house, bath) &&
       (area === "" || house.address === area) &&
       (city === "" || house.city === city) &&
@@ -407,7 +409,7 @@ function HouseList({
 
   // Memoize the filteredHouse variable using useMemo hook use to memoize the filtered house data based on the dependencies that cause the filtering to change.
   const filteredHouse = useMemo(() => {
-    return houses.filter((house) => {
+    return (searchResult.length >0 ? searchResult : houses).filter((house) => {
       if (pathname === "/houses/allHouses" || !forRent && !forSale) {
         return filterAllHouses(house);
       } else if (pathname === "/houses/rent" || forRent) {
@@ -432,59 +434,28 @@ function HouseList({
     user,
     squareAreaMin,
     squareAreaMax,
+    searchResult,
   ]);
 
   const resetToFirstPage = () => {
     currentPage.current = 1
 };
 
-  const handlePageClick = (e) => {
-    currentPage.current = e.selected + 1
-    dispatch(searchFiltersFetched( currentPage.current, limit, search, forRent, forSale, minPrice, maxPrice, beds, bath, area, city, houseType, features, squareAreaMin, squareAreaMax));
-  };
-
-
-useEffect(() =>{
-  resetToFirstPage()
-},[pathname, search, forRent, forSale, minPrice, maxPrice, beds, bath, area, city, houseType, features, squareAreaMin, squareAreaMax])
+ 
 
 const hasFilters = () => {
   return (
-    search ||
-    forRent ||
-    forSale ||
-    minPrice ||
-    maxPrice ||
-    beds > 1 ||
-    bath > 1 ||
-    area ||
-    city ||
-    houseType.length > 0 ||
-    features.length > 0 ||
-    squareAreaMin ||
-    squareAreaMax
+    searchResult || forRent || forSale || minPrice > 0 || maxPrice > 0|| beds > 1 || bath > 1 || area || city || houseType.length > 0 || features.length > 0 || squareAreaMin >0 || squareAreaMax > 0
   );
 };
 
 const fetchHouses = () => {
+  // const filters = hasFilters()
+  // console.log("filters.........",hasFilters())
   if (hasFilters()) {
     dispatch(
       searchFiltersFetched(
-        currentPage.current,
-        limit,
-        search,
-        forRent,
-        forSale,
-        minPrice,
-        maxPrice,
-        beds,
-        bath,
-        area,
-        city,
-        houseType,
-        features,
-        squareAreaMin,
-        squareAreaMax
+        currentPage.current, limit,forRent, forSale, minPrice, maxPrice, beds, bath, area, city, houseType, features, squareAreaMin, squareAreaMax
       )
     );
   } else {
@@ -492,58 +463,56 @@ const fetchHouses = () => {
   }
 };
 
+const handlePageClick = (e) => {
+  currentPage.current = e.selected + 1
+  fetchHouses()
+};
+
+useEffect(() =>{
+  resetToFirstPage()
+},[pathname, search, forRent, forSale, minPrice, maxPrice, beds, bath, area, city, houseType, features, squareAreaMin, squareAreaMax])
+
 useEffect(() => {
+  setIsLoading(false);
   fetchHouses();
 }, [
-  search,
-  forRent,
-  forSale,
-  minPrice,
-  maxPrice,
-  beds,
-  bath,
-  area,
-  city,
-  houseType,
-  features,
-  squareAreaMin,
-  squareAreaMax,
+  dispatch,forRent, forSale, minPrice, maxPrice, beds, bath, area, city, houseType, features, squareAreaMin, squareAreaMax,pageCount
 ]);
-
-
 
 useEffect(() => {
   // Check if filteredHouse is empty and set noResults accordingly
-  if (allHouses.length > 0) {
+  if (houses.length > 0) {
     setNoResults(""); // Clear the message if there are results  
-    setIsLoading(false);
    } else {
      setNoResults("No results found for the selected criteria.");
    }
     setHouses(allHouses)
-  }, [allHouses, pageCount]);
+    checkHighestPrice()
+  }, [allHouses]);
   
 
   useEffect(() => {
-    const { state,pathname} = location;
+    // const { state,pathname} = location;
     // Check for location state to set initial search and results
     if (state && state.search && state.results) {
       setSearch(state.search);
-      setResult(state.results);
+      setSearchResult(state.results);
       // Reset the location state to avoid retaining search data
     navigate(pathname, { replace: true, state: { search: "", results: [] } });
     }
-  }, [location, navigate]);
+  }, [pathname, state, navigate]);
   
   return (
     <div className="container-houses">
       <Search
+      currentPage={currentPage.current}
+      limit={limit}
         searchHouses={search}
         setSearchHouses={setSearch}
         check
         houseList={houses}
-        setResult={setResult}
-        result={result}
+        setResult={setSearchResult}
+        result={searchResult}
         forRent={forRent}
         forSale={forSale}
         handleAvailabilityClick={handleAvailabilityClick}
@@ -634,7 +603,7 @@ useEffect(() => {
         onPageChange={handlePageClick}
         marginPagesDisplayed={2}
         pageRangeDisplayed={4}
-        pageCount={pageCount}
+        pageCount={searchResult.length > 0 ? Math.ceil(searchResult.length/limit) : pageCount}
         previousLabel={"< previous"}
         renderOnZeroPageCount={null}
         forcePage={currentPage.current -1 }

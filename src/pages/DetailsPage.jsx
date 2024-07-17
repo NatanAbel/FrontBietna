@@ -46,14 +46,14 @@ const API_URL = "http://localhost:5005/images" ;
 
 function DetailsPage() {
   const house = useSelector(selectHouseDetail);
-  const Allhouses = useSelector(selecthouses);
+  const houses = useSelector(selecthouses);
   const dispatch = useDispatch();
   const { houseId } = useParams();
   const [showDetails, setShowDetails] = useState(false);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [selectedThumbnailIndex, setSelectedThumbnailIndex] = useState(null);
-
-  const { allHouses, favorites } = Allhouses;
+console.log("DetailsPage........houses", houses.allHouses)
+  const { allHouses, favorites } = houses;
 
   const detailsToggle = () => {
     setShowDetails(!showDetails);
@@ -66,7 +66,7 @@ function DetailsPage() {
 
   useEffect(() => {
     dispatch(fetchDetailsPage(houseId));
-    dispatch(fetchedHouses);
+    dispatch(fetchedHouses(1, 6));
   }, [dispatch, houseId]);
 
 
@@ -183,7 +183,7 @@ function DetailsPage() {
                 <div className="map-info">
                   <h1>Map</h1>
                   <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2435.837259239149!2d4.653629776675463!3d52.373370847075215!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c5ef5f774567c5%3A0xb8ba8b9c0080cc53!2sPrins%20Bernhardlaan%20328%2C%202033%20SC%20Haarlem!5e0!3m2!1snl!2snl!4v1697466464514!5m2!1snl!2snl"
+                    src={`https://www.google.com/maps?q=${house.latitude},${house.longitude}&hl=es;z=14&output=embed`}
                     width="800"
                     height="600"
                     style={{ border: "0" }}
@@ -232,7 +232,7 @@ function DetailsPage() {
               modules={[EffectCoverflow, Pagination, Navigation]}
               className="mySwiper"
             >
-              {allHouses.slice(0, 8).map((house) => (
+              {allHouses.map((house) => (
                 <SwiperSlide key={house._id}>
                   <div className="details-card-wrapper">
                     <Link to={`/housesDetails/${house._id}`}>

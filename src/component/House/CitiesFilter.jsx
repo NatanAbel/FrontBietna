@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import {useSelector } from "react-redux";
 import { selecthouses } from "../../store/houses/selectors";
-import { fetchedHouses } from "../../store/houses/thunks";
-import { useLocation } from "react-router-dom";
+
 
 function CitiesFilter({ city, filterCity, forRent, forSale }) {
-  const dispatch = useDispatch();
   const house = useSelector(selecthouses);
+  const [isLoading, setIsLoading] = useState(true);
   const [showCityDropdown, setShowCityDropdown] = useState(false);
   const [availableCities, setAvailableCities] = useState([]);
-  const location = useLocation().pathname;
 
-  const { allHouses } = house;
+  const { uniqueCities } = house;
 
   const toggleCityDropdown = (e) => {
     e.preventDefault();
@@ -24,27 +22,10 @@ function CitiesFilter({ city, filterCity, forRent, forSale }) {
     setShowCityDropdown(false);
   };
 
-  // useEffect(() => {
-  //   dispatch(fetchedHouses)
-  //   }, [dispatch]);
-
   useEffect(() => {
-    // Sets are JavaScript data structures that store unique values, meaning each value can only occur once within the set.
-    const allCities = new Set();
-    // Compute available areas whenever allHouses, forRent, or forSale changes
-    allHouses.forEach((house) => {
-      if (
-        (forRent && house.availability.forRent) ||
-        (forSale && house.availability.forSale) ||
-        (!forRent && !forSale)
-      ) {
-        allCities.add(house.city);
-      }
-    });
-    // setAvailableCities(Array.from(allCities));
-    // set is converted back to an array using the spread operator [...allCities]
-    setAvailableCities([...allCities]);
-  }, [allHouses, forRent, forSale]);
+    setIsLoading(false);
+    setAvailableCities(uniqueCities);
+  }, [uniqueCities]);
 
   return (
     <div className="filter-area-container">
@@ -65,7 +46,7 @@ function CitiesFilter({ city, filterCity, forRent, forSale }) {
                 All
               </p>
               
-              {availableCities.map((homeCity) => {
+              {!isLoading ? availableCities.map((homeCity) => {
                 return (
                   <p
                     key={homeCity}
@@ -76,7 +57,7 @@ function CitiesFilter({ city, filterCity, forRent, forSale }) {
                     {homeCity}
                   </p>
                 );
-              })}
+              }) : <p>Loading.....</p>}
               
             </li>
           )}

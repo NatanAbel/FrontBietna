@@ -1,22 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import {useSelector } from "react-redux";
 import { selecthouses } from "../../store/houses/selectors";
-import { fetchedHouses } from "../../store/houses/thunks";
-import { useLocation } from "react-router-dom";
 
-function AreaFilter({ area, filterArea, forRent, forSale }) {
-  const dispatch = useDispatch();
+function AreaFilter({ area, filterArea}) {
   const house = useSelector(selecthouses);
   const [isLoading, setIsLoading] = useState(true);
   const [showAreaDropdown, setShowAreaDropdown] = useState(false);
   const [availableAreas, setAvailableAreas] = useState([]);
-  const location = useLocation().pathname;
 
-  const { allHouses } = house;
+  const { uniqueAreas } = house;
 
   const toggleAreaDropdown = (e) => {
     e.preventDefault();
     setShowAreaDropdown(!showAreaDropdown);
+    
   };
 
   const handleAreaSelection = (selectedArea) => {
@@ -24,22 +21,11 @@ function AreaFilter({ area, filterArea, forRent, forSale }) {
     filterArea(areaToFilter);
     setShowAreaDropdown(false);
   };
-
+  
   useEffect(() => {
-    //Compute available areas whenever allHouses, forRent, or forSale changes
-    const selectedArea = new Set(); // Sets are JavaScript data structures that store unique values, meaning each value can only occur once within the set.
-    allHouses.forEach((house) => {
-      if (
-        (forRent && house.availability.forRent) ||
-        (forSale && house.availability.forSale) ||
-        (!forRent && !forSale)
-      ) {
-        selectedArea.add(house.address);
-      }
-    });
-    //Converting object selectedArea to an array
-    setAvailableAreas(Array.from(selectedArea));
-  }, [allHouses, forRent, forSale]);
+    setIsLoading(false);
+    setAvailableAreas(uniqueAreas);
+  }, [uniqueAreas]);
 
   return (
     <div className="filter-area-container">
@@ -59,18 +45,20 @@ function AreaFilter({ area, filterArea, forRent, forSale }) {
               >
                 All
               </p>
-              {availableAreas.map((homeArea) => {
+              {!isLoading ? availableAreas.map((homeArea) => {
                 return (
                   <p
                     key={homeArea}
-                    onClick={() => handleAreaSelection(homeArea)}
+                    onClick={() => {
+                      handleAreaSelection(homeArea);
+                    }}
                     className="dropdown-item"
                     value={homeArea}
                   >
                     {homeArea}
                   </p>
                 );
-              })}
+              }) : <p>Loading.......</p>}
             </li>
           )}
         </ul>
