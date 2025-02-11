@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 function PriceFilter({
   minPrice,
@@ -6,16 +6,15 @@ function PriceFilter({
   maxPrice,
   setMaxPrice,
   forRent,
+  isMobile,
 }) {
   const [minLocalPrice, setMinLocalPrice] = useState(minPrice);
   const [maxLocalPrice, setMaxLocalPrice] = useState(maxPrice);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isResize, setIsResize] = useState(window.innerWidth <= 1083);
   const [displayMinPrice, setDisplayMinPrice] = useState(false);
   const [displayMaxPrice, setDisplayMaxPrice] = useState(false);
-
-  const toggleDropdown = ()=>{
-    setShowDropdown(!showDropdown)
-  }
+  const dropdownRef = useRef(null);
 
   const handleMinPriceChange = (e) => {
     e.preventDefault();
@@ -23,12 +22,8 @@ function PriceFilter({
     setMinLocalPrice(enteredValue);
     setMinPrice(enteredValue);
     setDisplayMinPrice(enteredValue > 0);
-    // if (enteredValue > 0) {
-    //   setDisplayMinPrice(true);
-    // } else {
-    //   setDisplayMinPrice(false);
-    // }
   };
+  
   const handleMaxPriceChange = (e) => {
     e.preventDefault();
     e.stopPropagation()
@@ -62,6 +57,46 @@ function PriceFilter({
     }
   }
 
+  const toggleDropdown = (e) => {
+    e.preventDefault();
+    // toggleDropdown(e)
+    const width = window.innerWidth;
+    // Toggle if width is <= 768px or >= 1813px
+    if (isMobile || width >= 1083) {
+      setShowDropdown(!showDropdown);
+      }
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      // Optionally hide dropdown on resize
+      const width = window.innerWidth;
+      if (width <= 1083) {
+        setIsResize(true);
+      }else{
+        setShowDropdown(false);
+        setIsResize(false);
+      }
+  };
+
+  const handleClickOutside =()=>{
+    if(dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setShowDropdown(false);
+    }
+  }
+
+  if (showDropdown) {
+    document.addEventListener("mousedown", handleClickOutside);
+  }
+
+  window.addEventListener('resize', handleResize);
+  return () => {
+    window.removeEventListener('resize', handleResize);
+    document.removeEventListener("mousedown", handleClickOutside);
+  }
+  },[isMobile,isResize,showDropdown])
+
+  
   useEffect(() => {
     // Update the local state only when the external state changes
     setMinLocalPrice(minPrice);
@@ -74,25 +109,24 @@ function PriceFilter({
       setMaxLocalPrice(0);
       setMaxPrice(0);
     }
+
   }, [minPrice, maxPrice]);
   
   return (
-    <div className="price-filter">
-      {/* <button>Price</button> */}
-      <div style={{ width: "80px", height: "30px" }}>
+    <div className="price-filter " ref={dropdownRef}>
+      <p className="mobile-price-text">Price</p>
+      <div className="price-box">
         {displayMinPrice &&
         displayMaxPrice &&
         minLocalPrice > 0 &&
         maxLocalPrice > 0 ? (
-          <p>
-            {(minLocalPrice / 1000).toFixed(1) < 1 &&(maxLocalPrice / 1000).toFixed(1) < 1 ? <span>${minLocalPrice } - ${maxLocalPrice }</span> : <span>${(minLocalPrice / 1000).toFixed(1)}K - ${(maxLocalPrice / 1000).toFixed(1)}K</span>}
+          <p className="price-indicator">
+            {(minLocalPrice / 1000).toFixed(1) < 1 &&(maxLocalPrice / 1000).toFixed(1) < 1 ? <p>${minLocalPrice } - ${maxLocalPrice }</p> :  <p>${Math.floor(minLocalPrice / 1000)}K - ${Math.floor(maxLocalPrice / 1000)}K</p>}
           </p>
-        ) : (
-          <p>Price</p>
-        )}
+        ) : <p className="price-text">Price</p>}
       </div>
-      <button className="filter-area-btn" onClick={toggleDropdown}>{showDropdown ? "🔼" : "🔽"}</button>
-      {showDropdown && <div className="price-dropdown-menu">
+      <button className="toggle-dropdown-btn" onClick={toggleDropdown}>{showDropdown ? "🔼" : "🔽"}</button>
+      {(showDropdown || isResize) && <div className="price-dropdown-menu">
         <p className="price-title">Price Range</p>
         <div className="price-min-dropdown">
           {forRent ? (
@@ -112,13 +146,13 @@ function PriceFilter({
                         key={value}
                         onClick={() => handlePriceChange(value, "minPrice")}
                       >
-                        ${value}
+                        ${value.toLocaleString()}
                       </p>
                     ))}
                   </div>
                 </div>
               </div>
-              <div >-</div> 
+              <div style={{width:"15px", height:"1px", backgroundColor:"black"}}></div> 
               <div className="price-range">
                 <input
                   type="number"
@@ -134,7 +168,7 @@ function PriceFilter({
                         key={value}
                         onClick={() => handlePriceChange(value, "maxPrice")}
                       >
-                        ${value}
+                        ${value.toLocaleString()}
                       </p>
                     ))}
                   </div>
@@ -158,13 +192,14 @@ function PriceFilter({
                         key={value}
                         onClick={() => handlePriceChange(value, "minPrice")}
                       >
-                        ${value}
+                        ${value.toLocaleString()}
                       </p>
                     ))}
                   </div>
                 </div>
               </div>
-              {/* <div className="price-range">-</div> */}
+              <div style={{width:"15px", height:"1px", backgroundColor:"black"}}>
+              </div> 
               <div className="price-range">
                 <input
                   type="number"
@@ -180,7 +215,7 @@ function PriceFilter({
                         key={value}
                         onClick={() => handlePriceChange(value, maxPrice)}
                       >
-                        ${value}
+                        ${value.toLocaleString()}
                       </p>
                     ))}
                   </div>

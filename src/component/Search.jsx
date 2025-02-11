@@ -1,6 +1,7 @@
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import DOMPurify from 'dompurify'; // Import DOMPurify
+import { faFilter, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import FilterAvailability from "./House/FilterAvailability";
 import PriceFilter from "./House/PriceFilter";
@@ -14,8 +15,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { searchFiltersFetched } from "../store/houses/thunks";
 import { selecthouses } from "../store/houses/selectors";
 import axios from "axios";
+import FilterCountry from "./House/FilterCountry";
+import "./SearchFilters.css";
 
-const API_URL = "http://localhost:5005";
+const API_URL = import.meta.env.VITE_BACK_URL;
 
 function Search({
   currentPage,
@@ -45,11 +48,11 @@ function Search({
   bathRoom,
   setBathRoom,
   area,
-  setArea,
   filterArea,
   city,
-  setCity,
   filterCity,
+  country,
+  filterCountry,
   handleAvailabilityClick,
   houseType,
   houseTypeFilter,
@@ -61,14 +64,26 @@ function Search({
   squareAreaRange,
   handleSearchClick,
   handlePageClick,
+  setSearchDisplay,
 }) {
   const [searchForm, setSearchForm] = useState("");
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const location = useLocation();
   const [searchResult, setSearchResult] = useState([]);
+  const [mobielFilter, setMobielFilter] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [showFilters, setShowFilters] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [isResize, setIsResize] = useState(window.innerWidth >= 1813);
+  const dropdownRef = useRef(null)
+  const {pathname} = location
+
+  // Sanitize function
+  const sanitizeInput = (input) => DOMPurify.sanitize(input); 
 
   const handleChange = (e) => {
-    const value = e.target.value.toLowerCase();
+     // Sanitize user input
+    const value = sanitizeInput(e.target.value.toLowerCase());
     setSearchForm(value);
     setDropdownVisible(true);
 
@@ -79,6 +94,7 @@ function Search({
         setResult([]); // Clear the results when input is empty
         setSearchHouses("");
         setSearchResult([]);
+        setSearchDisplay(false);
       }
     } else {
       setSearch(value);
@@ -86,23 +102,27 @@ function Search({
   };
 
   const handleItemClick = (address) => {
-    setSearchForm(address);
+    // Sanitize selected address
+    const sanitizedAddress = sanitizeInput(address); 
+    setSearchForm(sanitizedAddress);
     setDropdownVisible(false);
     if (check) {
-      setSearchHouses(address);
+      setSearchHouses(sanitizedAddress);
     } else {
-      setSearch(address);
+      setSearch(sanitizedAddress);
     }
   };
 
   const searchFilter = async () => {
     try {
       const response = await axios.get(
-        `${API_URL}/houses/search/result?page=${currentPage}&limit=${limit}&search=${searchForm}`
+        `${API_URL}/houses/search/result?page=${currentPage}&limit=${limit}search=${encodeURIComponent(searchForm)}`
       );
-      setSearchResult(response.data.result);
+      if (searchForm) {
+        setSearchResult(response.data.result);
+      }
     } catch (e) {
-      console.log(e.message);
+      console.log(e);
     }
   };
 
@@ -123,6 +143,7 @@ function Search({
 
     if (searchForm.length > 0 && addressStartsWith.length !== 0) {
       if (check) {
+        setSearchDisplay(true);
         setResult(resultsToDisplay);
       } else {
         handleSearch(search, resultsToDisplay);
@@ -135,15 +156,68 @@ function Search({
     searchFilter();
   }, [searchForm]);
 
-  const shouldShow = location.pathname !== "/";
+  const toggleOtherFiters = (e) => {
+    e.preventDefault(e);
+    const width = window.innerWidth;
+    // Toggle if width is <= 768px or >= 1813px
+    if (width >= 768 || width <= 1813) {
+        setShowFilters(!showFilters)
+    }
+};
+
+  useEffect(() => {
+    //Handlle mobile devices filters for dropdown menu's to display without dropdown buttons.
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+      // handle filters if it's not mobile device
+      setMobielFilter(false)
+      const width = window.innerWidth;
+        if (width >= 768 && width <= 1813) {
+          setIsResize(false);
+        }else{
+          // setShowDropdown(false);
+          setIsResize(width >= 1813);
+        }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [isResize]);
+
+  useEffect(() => {
+    const handleClickOutside =()=>{
+      if(dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowFilters(false);
+        // setShowDropdown(false);
+      }
+    }
+
+    if (showFilters) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showFilters]);
+
+  const mobFilterIcon = ()=>{
+    setMobielFilter(!mobielFilter)
+  }
+
+  // const toggleOtherFiters = () => {
+  //   setShowFilters(!showFilters)
+  // }
+  
+  const shouldShow = pathname !== "/";
 
   return (
     <form
       onSubmit={handleSubmit}
-      className={!shouldShow ? "search-form-wrapper" : "small-search-form"}
+      className={!shouldShow ? "landing-search-form" : "search-form"}
     >
       <div className="search-input-wrapper">
-        <div className="search-input">
+        { <div className="search-input">        
           <input
             value={search ? search : searchHouses}
             type="search"
@@ -153,7 +227,11 @@ function Search({
           />
           <button
             type="submit"
-            className={!shouldShow ? "submit-search" : "submit-magnifier"}
+            className={
+              !shouldShow
+                ? "landing-submit-search"
+                : "houselist-submit-magnifier"
+            }
           >
             <FontAwesomeIcon icon={faMagnifyingGlass} />
           </button>
@@ -165,7 +243,7 @@ function Search({
             >
               {uniqueAddresses &&
                 uniqueAddresses.map((address) => (
-                  <div key={address} className="search-list-wrapper">
+                  <div key={address} className="search-list-wrapper ">
                     <li
                       className="search-list"
                       onClick={() => handleItemClick(address)}
@@ -176,9 +254,52 @@ function Search({
                 ))}
             </ul>
           )}
-        </div>
+        </div>}
+        <div >
+            <button className="filter-icon" onClick={mobFilterIcon}>
+              <FontAwesomeIcon icon={faFilter} />
+            </button>
+          </div>
         {shouldShow && (
-          <div className="filter-wrapper">
+          <div className={!mobielFilter ?"filter-wrapper ":"mobile-filter show"}>
+            <div className="search-input">
+         <input
+           value={search ? search : searchHouses}
+           type="search"
+           placeholder="Search-houses"
+           onChange={handleChange}
+           className="input-search"
+         />
+         <button
+           type="submit"
+           className={
+             !shouldShow
+               ? "landing-submit-search"
+               : "houselist-submit-magnifier"
+           }
+         >
+           <FontAwesomeIcon icon={faMagnifyingGlass} />
+         </button>
+         {dropdownVisible && (
+           <ul
+             className={
+               !shouldShow ? "dropDown-search" : "dropDown-search-small"
+             }
+           >
+             {uniqueAddresses &&
+               uniqueAddresses.map((address) => (
+                 <div key={address} className="search-list-wrapper">
+                   <li
+                     className="search-list"
+                     onClick={() => handleItemClick(address)}
+                   >
+                     {address}
+                   </li>
+                 </div>
+               ))}
+           </ul>
+         )}
+       </div>
             <FilterAvailability
               handlePageClick={handlePageClick}
               calculateMinPrice={calculateMinPrice}
@@ -192,6 +313,7 @@ function Search({
               maxPrice={maxPrice}
               setMaxPrice={setMaxPrice}
               forRent={forRent}
+              isMobile={isMobile}
             />
             <Roomfilter
               bedRoom={bedRoom}
@@ -199,34 +321,62 @@ function Search({
               bathRoom={bathRoom}
               setBathRoom={setBathRoom}
             />
-            <AreaFilter
-              area={area}
-              filterArea={filterArea}
-              forSale={forSale}
-              forRent={forRent}
+            <FilterCountry 
+            country={country} 
+            filterCountry={filterCountry}
             />
-            <CitiesFilter
-              city={city}
-              filterCity={filterCity}
-              forSale={forSale}
-              forRent={forRent}
+            <div className="rest-filter-wrapper" ref={dropdownRef}>
+              <button className="rest-btn" onClick={toggleOtherFiters}>More</button>
+
+            {(showFilters || isMobile || isResize) && <div className="rest-filters" >
+              <PriceFilter
+              minPrice={minPrice}
+              setMinPrice={setMinPrice}
+              maxPrice={maxPrice}
+              setMaxPrice={setMaxPrice}
+              forRent={forRent} 
+
             />
-            <HouseType
-              forSale={forSale}
-              forRent={forRent}
-              houseList={houseList}
-              houseType={houseType}
-              houseTypeFilter={houseTypeFilter}
+            <Roomfilter
+              bedRoom={bedRoom}
+              setBedRoom={setBedRoom}
+              bathRoom={bathRoom}
+              setBathRoom={setBathRoom}
+              isMobile={isMobile}
             />
-            <FeatureFilter
-              features={features}
-              featureHouseFilter={featureHouseFilter}
-            />
-            <SquareAreaFilter
-              squareAreaMin={squareAreaMin}
-              squareAreaMax={squareAreaMax}
-              squareAreaRange={squareAreaRange}
-            />
+              <CitiesFilter
+                city={city}
+                filterCity={filterCity}
+                forSale={forSale}
+                forRent={forRent}
+              />
+              <AreaFilter
+                area={area}
+                filterArea={filterArea}
+                forSale={forSale}
+                forRent={forRent}
+              />
+              <HouseType
+                forSale={forSale}
+                forRent={forRent}
+                houseList={houseList}
+                houseType={houseType}
+                houseTypeFilter={houseTypeFilter}
+                isMobile={isMobile}
+              />
+              <FeatureFilter
+                features={features}
+                featureHouseFilter={featureHouseFilter}
+                isMobile={isMobile}
+              />
+              <SquareAreaFilter
+                squareAreaMin={squareAreaMin}
+                squareAreaMax={squareAreaMax}
+                squareAreaRange={squareAreaRange}
+                isMobile={isMobile}   
+              />
+            </div>}
+            </div>
           </div>
         )}
       </div>

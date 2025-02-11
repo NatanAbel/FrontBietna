@@ -1,20 +1,28 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
-const API_URL = "http://localhost:5005";
+const API_URL = import.meta.env.VITE_BACK_URL;
 
-function FeatureFilter({features,
-    featureHouseFilter}) {
-    const [showDropdown, setShowDropdown] = useState(false);
+function FeatureFilter({features,featureHouseFilter, isMobile}) {
+    const [showFeatureDropdown, setShowFeatureDropdown] = useState(false);
+    const [isResize, setIsResize] = useState(window.innerWidth < 1813);
     const [localFeature, setLocalFeature] = useState([]);
+    const dropdownRef = useRef(null);
 
-const hundelFeature = ( clickedFeature) => {
+
+const hundelFeature = ( clickedFeature, e) => {
+    e.preventDefault();
     featureHouseFilter(clickedFeature);   
   };
 
   const toggleFeatureDropdown = (e) => {
     e.preventDefault();
-    setShowDropdown(!showDropdown);
+    // toggleDropdown(e)
+    const width = window.innerWidth;
+    // Toggle if width is <= 768px or >= 1813px
+    if (width >= 1813) {
+      setShowFeatureDropdown(!showFeatureDropdown);
+      }
   };
 
   // Fetch enum values for home types from the backend
@@ -29,38 +37,64 @@ const hundelFeature = ( clickedFeature) => {
 
   useEffect(() => {
     featureEnumValues()
-  },[features])
+    const handleClickOutside =()=>{
+      if(dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowFeatureDropdown(false);
+      }
+    }
+
+    const handleResize = () => {
+      // Optionally hide dropdown on resize
+      const width = window.innerWidth;
+      if (width < 1813) {
+        setIsResize(true);
+      }else{
+        setShowFeatureDropdown(false);
+        setIsResize(false)
+      }
+  };
+
+    if (showFeatureDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  },[features,showFeatureDropdown,isResize])
 
   return (
-    <div className="filter-area-container">
+    <div className="filter-area-container housetype-feature-wrapper" ref={dropdownRef}>
               <div className='filter-area'>
                 <p className='title-filter-area'><span>Feature</span></p>
                 <button
-                  className="filter-area-btn"
+                  className="filter-area-btn type-dropdown-btn"
                   onClick={toggleFeatureDropdown}
                 >
-                  {showDropdown ? "🔼" : "🔽"}
+                  {showFeatureDropdown ? "🔼" : "🔽"}
                 </button>
-                <ul className="filter-area-dropdown-display">
-                  {showDropdown &&
+                <div className="filter-area-dropdown-display">
+                  {(showFeatureDropdown || isResize) &&
                     localFeature.map((feature) => {
                       return (
-                        <li key={feature} style={{ textDecoration: "none" }}>
-                          <label htmlFor={feature}>
+                        <div key={feature} className='checkbox-content'>
                             <input
                               type="checkbox"
                               id={feature}
                               name={feature}
                               value={feature}
                               checked={features.includes(feature)}
-                              onChange={() => hundelFeature( feature)}
+                              onChange={(e) => hundelFeature( feature, e)}
                             />
-                            {feature}
+                            <label htmlFor={feature}>
+                            {feature.charAt(0).toUpperCase() + feature.slice(1)}
                           </label>
-                        </li>
+                        </div>
                       );
                     })}
-                </ul>
+                </div>
               </div>
             </div>
   )

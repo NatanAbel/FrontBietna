@@ -1,38 +1,34 @@
+import axios from "axios";
 import Navbar from "./component/Navbar";
 import "./App.css";
 import LandingPage from "./pages/LandingPage";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import Footer from "./component/Footer";
-import DetailsPage from "./pages/detailsPage";
-import UpdatePage from "./pages/updatePage";
+import DetailsPage from "./pages/DetailsPage.jsx";
+import UpdatePage from "./pages/UpdatePage";
 import NewHousePage from "./pages/NewHousePage";
 import HouseList from "./pages/HouseList";
 import { useEffect, useRef, useState } from "react";
 import SignupPage from "./pages/SignupPage";
 import LoginPage from "./pages/LoginPage";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch} from "react-redux";
 import { bootstrapThunkLogin } from "./store/auth/thunks";
-import {
-  selectIsAuthenticated,
-  selectLoginToken,
-} from "./store/auth/selectors";
 import ProfilePage from "./pages/ProfilePage";
 import PrivateRoute from "./component/user/PrivateRoute";
 import ErrorPage from "./pages/ErrorPage";
 
+axios.defaults.withCredentials = true;
+
 function App() {
   const dispatch = useDispatch();
-  const token = useSelector(selectLoginToken);
-  const isAuthenticated = useSelector(selectIsAuthenticated);
   const [forSale, setForSale] = useState(false);
   const [forRent, setForRent] = useState(false);
   const navigate = useNavigate();
   const location = useLocation().pathname
-
-  const ref = useRef(isAuthenticated)
+  const effectRun = useRef(false);
 
   // checking the availability of houses
-  const handleAvailabilityClick = (availabilityType) => {
+const handleAvailabilityClick = (availabilityType) => {
     if (availabilityType === "forRent") {
       setForRent(true);
       setForSale(false);
@@ -46,11 +42,14 @@ function App() {
       navigate("/houses/buy");
     }
   };
-  console.log("forRent.........", forRent)
-  console.log("forSale.........", forSale)
-  useEffect(() => {
+
+useEffect(() => {
+ // React 18 Strict Mode
+  if (effectRun.current === true || process.env.NODE_ENV !== 'development' ) {
     dispatch(bootstrapThunkLogin);
-  }, [dispatch]);
+  }
+  return ()=> effectRun.current = true
+}, [dispatch]);
 
   // Set initial availability based on local storage
   useEffect(() => {
@@ -64,7 +63,7 @@ function App() {
       setForRent(false);
     }
 
-  }, [forRent, forSale]);
+  }, []);
 
 // 
   useEffect(() => {
@@ -81,11 +80,26 @@ function App() {
       setForSale(true);
       localStorage.setItem("availabilityType","forSale");
     }
+
+    
+    // Scroll to the top of the page
+    window.scrollTo(0, 0);
   },[location])
+
+  const backButton = ()=>{
+    navigate(-1)
+  }
+  // const location = useLocation()
+  // useEffect(() => {
+  //   // Scroll to the top of the page
+  //   window.scrollTo(0, 0);
+
+  // },[])
+
 
 
   return (
-    <>
+    <div className="app-container">
       <Navbar />
 
       <Routes>
@@ -139,13 +153,26 @@ function App() {
             }
           />
         </Route>
-        <Route path="/housesDetails/:houseId" element={<DetailsPage />} />
-        {isAuthenticated ? (
-          <>
-            <Route path="/update/:houseId" element={<UpdatePage />} />
-            <Route path="/house/new" element={<NewHousePage />} />
-
-            <Route
+        <Route path="/housesDetails/:houseId" element={<DetailsPage  backButton={backButton}/>} />
+        <Route path="/signup" element={<SignupPage />} />
+            <Route path="/login" element={<LoginPage />} />
+        <Route
+              path="/update/:houseId"
+              element={
+                <PrivateRoute>
+                  <UpdatePage />
+                </PrivateRoute>
+              }
+            />
+        <Route
+              path="/house/new"
+              element={
+                <PrivateRoute>
+                  <NewHousePage />
+                </PrivateRoute>
+              }
+            />
+        <Route
               path="/profile"
               element={
                 <PrivateRoute>
@@ -153,17 +180,10 @@ function App() {
                 </PrivateRoute>
               }
             />
-          </>
-        ) :(
-          <>
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/login" element={<LoginPage />} />
-          </>
-        )}
         <Route path="*" element={<ErrorPage/>}/> 
       </Routes>
       <Footer handleAvailabilityClick={handleAvailabilityClick} />
-    </>
+    </div>
   );
 }
 

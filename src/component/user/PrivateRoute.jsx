@@ -1,24 +1,27 @@
-import React, { Children, useEffect } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
-import {selectIsAuthenticated, selectUser, selectloading} from "../../store/auth/selectors";
-import { Navigate, Outlet, useNavigate } from "react-router-dom";
+import {
+  selectIsAuthenticated,
+  selectloading,
+} from "../../store/auth/selectors";
+import {Navigate} from "react-router-dom";
 
-function PrivateRoute({children}) {
-  const currentUser = useSelector(selectUser);
+function PrivateRoute({ children }) {
   const isLoading = useSelector(selectloading);
   const isAuthenticated = useSelector(selectIsAuthenticated);
 
-  const navigate = useNavigate();
   
+  // Redirect if authentication failed
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  // Wait until authentication is determined
+  if (isLoading) {
+    return <p style={{marginTop:"5rem"}}>Your login has expired...<a href="/login"style={{color:"blue"}}>Back to login</a></p>;
+  }
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token && isLoading) {
-        navigate("/login");
-      }
-  }, [currentUser,isLoading]);
-
-return currentUser ?  <div className='profile-container' >{children}</div>: <p>loading.....</p>;
+  // Render the protected page
+  return <div className="profile-container">{children}</div>;
 
 }
 

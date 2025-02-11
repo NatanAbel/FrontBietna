@@ -6,6 +6,7 @@ const initialState = {
     me:null,
     isAuthenticated:false,
     status:null,
+    message:"",
 }
 
 export const loginSlice = createSlice({
@@ -20,6 +21,7 @@ export const loginSlice = createSlice({
             state.token = action.payload.token
             state.me = action.payload.me
             state.isAuthenticated = true
+            state.message = ""
             state.loading = false;
         },
         updateUser: (state, action) => {
@@ -51,19 +53,25 @@ export const loginSlice = createSlice({
             state.status = action.payload
             
         },
+        messageResponse: (state, action)=>{
+            state.message = action.payload
+        },
         logout : (state)=>{
-            if(state.token) {
-                localStorage.removeItem("token")
+            if(state.me && state.isAuthenticated) {
+                // localStorage.removeItem("token")
+                sessionStorage.removeItem("persist:auth"); // Clear persisted state
                 state.token = null
                 state.me = null
                 state.isAuthenticated = false
                 state.loading = true
+                state.status = null
+                state.message = ""
             }
         },
 
     }
 })
 
-export const {startLoading, userLogedIn, updateUser, toggleFavorites,statusResponse,logout,houseDelete} = loginSlice.actions
+export const {startLoading, userLogedIn, updateUser, toggleFavorites,statusResponse,messageResponse,logout,houseDelete} = loginSlice.actions
 
 export default loginSlice.reducer

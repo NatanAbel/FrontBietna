@@ -1,0 +1,40 @@
+.footer {
+    position: relative;
+    background-color: rgb(249, 249, 251);
+    padding: 2em 1.5em;
+    margin-top: auto;
+  }
+
+  .footer-wrapper {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    flex-direction: row;
+    flex-wrap: wrap;
+    text-align: center;
+  }
+
+  .footer-links > p {
+    margin: 1rem;
+  }
+
+  @media screen and (width <= 424px) {
+    .footer {
+      padding: 1em;
+    }
+
+    .footer-wrapper {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .footer-links > h3{
+      font-size: 1.56em;
+      line-height: 1.8em;
+    }
+    .footer-links > p{
+      font-size: 1.2em;
+    }
+    
+  }

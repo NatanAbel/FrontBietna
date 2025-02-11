@@ -1,0 +1,670 @@
+
+.details-container {
+  max-width:1200px;
+  width: 100%;
+  margin-inline: auto;
+  background-color: #ffffff;
+  margin-top: 50px;
+  position: relative;
+}
+
+.details-wrapper {
+  position: relative;
+  display: flex;
+  padding-inline: 1rem;
+  max-width: 100%;
+  }
+
+.details-content{
+  max-width: 800px;
+}
+
+  
+  .house-details {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .details-favourite-back{
+    padding:.5rem 1rem;
+    position: sticky;
+    top:3.2em;
+    z-index: 1000;
+  }
+  
+  .back-button{
+    max-width: 100px;
+    padding:.5rem 1rem;
+    background-color: rgba(160, 157, 152, 0.755);
+    border: none;
+    border-radius: .5rem;
+    z-index: 1000;
+    margin-right: .5rem;
+  }
+
+  .back-icon{
+    padding-right: .4rem;
+  }
+
+  .back-button:hover {
+    background-color: #9b9d9f;
+}
+
+  /* ///-gallary Swiper-///*/
+  
+  body.active-modal {
+    overflow-y: hidden;
+  }
+  
+  .modal, .overlay {
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: fixed;
+    z-index: 1000;
+  }
+  
+  .overlay {
+    background: rgba(0, 0, 0, .9);
+    backdrop-filter: blur(10px)
+  }
+  
+  
+  .modal-content {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 3px;
+    max-width: 100%; 
+    max-height: 700px;
+    z-index: 1000;
+  }
+
+  .modal-content .modal-swiper-large {
+    max-width: 100%;
+    height: 550px; 
+  }
+  
+  .modal-content .swiper-slide {
+    text-align: center;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .modal-swiper-large  img {
+    display: block;
+    width: 80%; 
+    max-height: 100%;
+    border-radius: .9rem;
+    }
+    
+  
+  .modal-content .small-modal-swiper {
+    max-width: 50%;
+    height: 150px;
+    box-sizing: border-box;
+    padding: 30px 0;
+  }
+  
+  .small-modal-swiper .swiper-slide {
+    opacity: .2;
+  }
+  
+  .small-modal-swiper .swiper-slide-thumb-active {
+    opacity: 1;
+    border: 2px solid white;
+    border-radius: 15px;
+  }
+  
+  .small-modal-swiper .swiper-slide img {
+    display: block;
+    width: 100%;
+    border-radius: 15px;
+  }
+  
+  .close-modal {
+    position: absolute;
+    top: -3rem;
+    right: 1rem;
+    padding: 5px 7px;
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 2rem;
+  }
+
+  /* ///////////////////////////////////////// */
+
+  .gallary-swiper-img {
+    display: flex;
+    flex-direction: column;
+    max-width: 800px;
+    max-height: 600px;
+    background: #000;
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 25px;
+  }
+
+  .gallary-swiper-img .mySwiper2 {
+    width: 100%;
+    height: 500px;
+  }
+
+  .mySwiper2  .large-img {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .gallary-swiper-img .mySwiper-gallery {
+    max-width: 100%;
+    height: 100px;
+    box-sizing: border-box;
+    padding: .5rem;
+    max-width: 100%;
+  }
+  
+  .mySwiper-gallery .swiper-slide {
+    max-height: 100%;
+    opacity: 0.4;
+    overflow: hidden;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 25px;
+  }
+  
+  .mySwiper-gallery .swiper-slide-thumb-active {
+    opacity: 1;
+    border: 3px solid white;
+  }
+  
+  .mySwiper-gallery .swiper-slide > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ///////////////////////Contact-us//////////////*/
+
+  .contact-us-container{
+    position: relative;
+    padding-left: 1.5rem;
+    max-width: 100%;
+    transition: top 0.3s; 
+  }
+  
+  .contact-us-box{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: sticky;
+    top:10%;
+    max-width: 350px;
+    padding: 2.5rem;
+    box-shadow: 0px 2px 5px 0px rgb(0,0,0,.2);
+    border-radius: 25px;
+    background-color: #ffffff;;
+  }
+
+  .contact-us-info{
+    margin: 0.5rem 0; 
+    padding: .4rem; 
+    width: 100%; 
+    box-sizing: border-box;
+    text-align: left; 
+  }
+
+  .contact-button{
+    padding: 10px 40px;
+    margin: 1rem;
+    border-radius: 1rem;
+    border: none;
+  }
+
+  .contact-button:hover{
+    background-color: rgba(85, 84, 82, 0.755);
+    transition-duration: 1s;
+  }
+
+  /* /////////////////------house-details-box-----////////////////////// */
+  .house-details-box {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    max-height: 400px;
+    margin-top: 1rem;
+    text-align: left;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+    background-color:rgb(239, 239, 239);
+    padding: 1rem;
+    border-radius: .4rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    
+  }
+
+  .room-status-container{
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .status-home-type{
+    display: flex;
+  }
+
+  .text-status{
+    width: 5rem;
+    font-size: 1rem;
+    margin-right: 1rem;
+    text-align: center;
+    color: #ffffff;
+    background-color: rgba(35, 26, 26);
+    padding: 0.01em 0.3em;
+    border-radius: 1em;
+  }
+  
+  .house-address-price {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .details-text {
+    font-size: 2rem;
+  }
+
+  .house-place{
+    color: rgb(136, 134, 134);
+  }
+  
+  .room-details-wrapper {
+    display: flex;
+  }
+  
+  .rooms-text {
+    padding-left: 1.3em;
+    font-size: 1.3rem;
+  }
+
+  .details-icon{
+    padding-right: .3rem;
+  }
+  
+  .general-house-title {
+    text-align: center;
+    margin: 2rem 0;
+  }
+  .general-house-title h1 {
+    line-height: 0.9rem;
+  }
+  .check .button-hide-show {
+  }
+  
+  .house-info {
+    max-width: 100%;
+    margin-top: 2rem;
+  }
+  
+  .info-details {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 35px;
+    text-align: left;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 25px;
+  }
+  
+  .info-right-left{
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+  }
+
+  .details-left-info{
+    width: 45%;
+    background-color:rgb(239, 239, 239);
+    padding: 0 1rem;
+    border-radius: .4rem;
+  }
+
+  .left-info, .right-info{
+    display: flex;
+    justify-content: space-between;
+    padding: .5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.079);
+  }
+
+  .details-right-info{
+    width:45%;
+    background-color:rgb(239, 239, 239);
+    border-radius: .4rem;
+    padding: 0 1rem;
+  }
+
+  .label-info{
+    font-weight: 700;
+  }
+
+  .feature-details-info{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    padding: 0.5rem 2rem;
+    border-radius: .4rem;
+    background-color:rgb(239, 239, 239);
+  }
+
+  .feature-list-info{
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .feature-list{
+    width: 8rem;
+    padding: .5rem ;
+    border: 1px solid lightgreen;
+    background-color: rgba(144, 238, 144, 0.276);
+    border-radius: 1rem;
+    margin-right: 1.5rem;
+    text-align: center;
+  }
+
+  .description-text{
+    padding: 1rem;
+  }
+
+  .map-info > iframe{
+    width: 100%;
+    min-height: 300px;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 25px;
+  }
+  
+  /* ////////////////////////-Swiper-///////////////////////*/
+
+  .card-related-houses{
+    margin: 1rem 0;
+    padding-inline: 1rem;
+  }
+
+  
+  
+  .cards-swiper-container {
+    background: #eee;
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    color: #000;
+    margin: 0;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 25px;
+  }
+
+  .related-country{
+    padding-top: .5rem;
+    padding-left: 1.5rem;
+  }
+
+  .related-country-status{
+    width: 5rem;
+    font-size: 1rem;
+    text-align: center;
+    color: #ffffff;
+    background-color: rgba(35, 26, 26);
+    padding: 0.01em 0.3em;
+    border-radius: .3em;
+  }
+  
+  .cards-swiper-container .mySwiper {
+    width: 100%;
+  }
+
+  .mySwiper .swiper-wrapper{
+    padding: 3rem 0;
+  }
+  
+  .mySwiper .swiper-slide {
+    background-position: center;
+    background-size: cover;
+    max-width: 300px;
+    max-height: 300px;
+    /* margin: .5rem 2.5rem; */
+    margin:1.5rem;
+  }
+  
+  .swiper-img {
+    display: block;
+    width: 100%;
+    min-height: 300px;
+    border-top-left-radius: 200px;
+    border-top-right-radius: 200px; 
+  }
+  
+  .details-card-wrapper {
+    position: relative;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+    border-top-left-radius: 200px;
+    border-top-right-radius: 200px; 
+  
+  }
+  
+  .details-card-wrapper .details-card {
+    position: absolute; 
+    bottom: 0;
+    background: rgb(0, 0, 0); 
+    background: rgba(0, 0, 0, 0.5);
+    color: #f1f1f1;
+    width: 100%;
+  }
+  
+  .details-card {
+    padding: 10px;
+  }
+  
+  .swiper-img:hover {
+    transform: scale(1.025);
+  }
+  
+ 
+  .details-card-wrapper p {
+    line-height: 0.3em;
+  }
+
+  @media screen and (width <= 1200px) {
+
+  .details-container {
+    max-width:1083px;
+    width: 100%;
+  }
+  .details-content{
+    max-width: 700px;
+  }
+
+  .gallary-swiper-img{
+    max-width: 100%;
+    max-height: 400px;
+  }
+
+  .gallary-swiper-img .mySwiper2 {
+    height: 400px;
+  }
+
+
+  }
+
+  @media screen and (width <= 1083px) {
+    .details-wrapper {
+      flex-direction: column;
+      max-width: 100%;
+    }
+
+    
+    .details-content{
+      max-width: 100%;;
+    }
+
+    .gallary-swiper-img .mySwiper2 {
+      height: 400px;
+    }
+
+    .contact-us-container{
+      padding-left: 0;
+    }
+    
+    .contact-us-box{
+      max-width: 500px;
+      margin: 1.5rem 0;
+      margin-inline: auto;
+    }
+    
+    
+    .contact-us-info{
+      max-width: 100%;
+    }
+
+  }
+  
+/* Mobile-view */
+  @media screen and (width <= 768px) {
+
+    .details-wrapper {
+      margin-inline:auto;
+      padding-inline: 0.5rem;
+    }
+
+
+    .modal-content .modal-swiper-large {
+      width: 100%;
+      height: 400px; 
+    }
+
+    .modal-swiper-large  img {
+      width: 90%; 
+      }
+  
+    .modal-content .small-modal-swiper {
+      max-height: 120px;
+    }
+
+    .small-modal-swiper .swiper-slide img {
+      border-radius: 10px;
+    }
+
+    .modal-content .small-modal-swiper {
+      max-width: 70%;
+    }
+    
+  .close-modal {
+      top: -4rem;      
+    }
+
+    .house-details-box{
+      padding: 0.5rem;
+
+    }
+
+    .text-status{
+      margin-right: .3rem;
+    }
+    
+    .rooms-text{
+      padding-left: 0.5rem;
+      padding-right: 0;
+    }
+
+    .info-right-left{
+      display: block;
+    }
+  
+    .details-left-info, .details-right-info{
+      width: 100%;
+    }
+  }
+
+
+  @media screen and (width <= 424px) {
+    /* .details-container {
+      width:100%;
+    } */
+    
+    .details-wrapper{
+      padding-inline: 0rem;
+    }
+
+    .modal, .overlay {
+      width: 100%;
+      height: 100%;
+      /* height: 100; */
+    }
+
+    .modal-content .modal-swiper-large {
+      max-height: 300px;
+      border: 2px solid red; 
+    }
+
+    .modal-swiper-large  img {
+      width: 100%;
+      border-radius: 0; 
+      }
+  
+    .modal-content .small-modal-swiper {
+      max-height: 90px; 
+      padding-top: 1rem;
+    }
+
+    .close-modal {
+      top: -6rem;
+      right: .5;      
+    }
+    
+    .gallary-swiper-img{
+      max-height: 300px;
+      border-radius: 0px;
+    }
+
+    .gallary-swiper-img .mySwiper2 {
+      height: 300px;
+    }
+
+    .text-status{
+      border-radius: 0.2em;
+    }
+
+    .room-status-container, .house-address-price{
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .rooms-text{
+      padding-left: 0rem;
+      padding-right: .5rem;
+    }
+
+    .details-text{
+      font-size: 1.7rem;
+    }
+
+    .house-info  h2 {
+      padding-left: .5rem;
+      padding-bottom: .5rem;
+    }
+    .card-related-houses h2{
+      padding-left: .5rem;
+      padding-bottom: .5rem;
+    }
+    .card-related-houses{
+      margin: 1rem 0;
+      padding-inline: 0rem;
+    }
+  }

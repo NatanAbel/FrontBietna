@@ -1,22 +1,27 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
 
-const API_URL = "http://localhost:5005";
+const API_URL = import.meta.env.VITE_BACK_URL;;
 
-function HouseType({houseType,
-    houseTypeFilter,}) {
-    const [showDropdown, setShowDropdown] = useState(false);
-    const [localHouseType, setLocalHouseType] = useState([]);
-    // const [enumHouseType,setEnumHouseType] = useState([])
+function HouseType({ houseType, houseTypeFilter, isMobile }) {
+  const [showTypeDropdown, setShowTypeDropdown] = useState(false);
+  const [isResize, setIsResize] = useState(window.innerWidth < 1813);
+  const [localHouseType, setLocalHouseType] = useState([]);
+  const dropdownRef = useRef(null);
 
-const hundelHouseType = (clickedHouse) => {
+  const hundelHouseType = (clickedHouse) => {
     // e.preventDefault();
-    houseTypeFilter(clickedHouse);   
+    houseTypeFilter(clickedHouse);
   };
 
-  const toggleFeatureDropdown = (e) => {
+  const toggleTypeDropdown = (e) => {
     e.preventDefault();
-    setShowDropdown(!showDropdown);
+    const width = window.innerWidth;
+    // Toggle if width is <= 768px or >= 1813px
+    if (width >= 1813) {
+      setShowTypeDropdown(!showTypeDropdown);
+    }
+    // toggleDropdown();
   };
 
   // Fetch enum values for home types from the backend
@@ -29,43 +34,76 @@ const hundelHouseType = (clickedHouse) => {
     }
   };
 
+
   useEffect(() => {
-    houseEnumValues()
-  },[houseType])
+    houseEnumValues();
+
+    const handleResize = () => {
+      // Optionally hide dropdown on resize
+      const width = window.innerWidth;
+      if (width < 1813) {
+        setIsResize(true);
+      } else {
+        setShowTypeDropdown(false);
+        setIsResize(false);
+      }
+    };
+
+    const handleClickOutside = () => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowTypeDropdown(false);
+        // setShowDropdown(false);
+      }
+    };
+
+    if (showTypeDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [houseType, isResize, isMobile, showTypeDropdown]);
 
   return (
-    <div className="filter-area-container">
-              <div className='filter-area'>
-                <p className='title-filter-area'><span>Type</span></p>
-                <button
-                  className="filter-area-btn"
-                  onClick={toggleFeatureDropdown}
-                >
-                  {showDropdown ? "🔼" : "🔽"}
-                </button>
-                <ul className="filter-area-dropdown-display">
-                  {showDropdown &&
-                    localHouseType.map((type) => {
-                      return (
-                        <li key={type} style={{ textDecoration: "none" }}>
-                          <label htmlFor={type}>
-                            <input
-                              type="checkbox"
-                              id={type}
-                              name={type}
-                              value={type}
-                              checked={houseType.includes(type)}
-                              onChange={() => hundelHouseType( type)}
-                            />
-                            {type}
-                          </label>
-                        </li>
-                      );
-                    })}
-                </ul>
-              </div>
-            </div>
-  )
+    <div
+      className="filter-area-container housetype-feature-wrapper"
+      ref={dropdownRef}
+    >
+      <div className="filter-area">
+        <p className="title-filter-area">
+          <span>Type</span>
+        </p>
+        <button
+          className="filter-area-btn type-dropdown-btn"
+          onClick={toggleTypeDropdown}
+        >
+          {showTypeDropdown ? "🔼" : "🔽"}
+        </button>
+        <div className="filter-area-dropdown-display">
+          {(showTypeDropdown || isResize) &&
+            localHouseType.map((type) => {
+              return (
+                <div key={type} className="checkbox-content">
+                  <input
+                    type="checkbox"
+                    id={type}
+                    name={type}
+                    value={type}
+                    checked={houseType.includes(type)}
+                    onChange={() => hundelHouseType(type)}
+                  />
+
+                  <label htmlFor={type} >{type.charAt(0).toUpperCase() + type.slice(1)}</label>
+                </div>
+              );
+            })}
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export default HouseType
+export default HouseType;

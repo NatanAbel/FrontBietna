@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom"
+import "./Footer.css"
 
 function Footer({handleAvailabilityClick}) {
   return (
-    <footer >
+    <footer className="footer">
         <div className="footer-container">
           <div className="footer-wrapper">
             <div className="footer-links">
@@ -13,15 +14,15 @@ function Footer({handleAvailabilityClick}) {
             </div>
             <div className="footer-links">
               <h3>Info</h3>
-              <Link to="/#"><p>About Us</p></Link>
-              <Link to="/#"><p>Contact Us</p></Link>
-              <Link to="/#"><p>Features</p></Link>
+              <p><Link to="/#">About Us</Link></p>
+              <p><Link to="/#">Contact Us</Link></p>
+              <p><Link to="/#">Features</Link></p>
             </div>
             <div className="footer-links">
               <h3>Social Media</h3>
-              <Link><p>facebook</p></Link>
-              <Link><p>instagram</p></Link>
-              <Link><p>twitter</p></Link>
+              <p><Link>facebook</Link></p>
+              <p><Link>instagram</Link></p>
+              <p><Link>twitter</Link></p>
             </div>
           </div>
           <hr />

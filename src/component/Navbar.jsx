@@ -1,40 +1,39 @@
 import { useDispatch, useSelector } from "react-redux";
-import { selectUser, selectloading } from "../store/auth/selectors";
-import { useEffect, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
-import { logout } from "../store/auth/slice";
+import { selectUser } from "../store/auth/selectors";
+import { useEffect } from "react";
+import {  useNavigate } from "react-router-dom";
+import { fetchLogOut } from "../store/auth/thunks";
 
 function Navbar() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const user = useSelector(selectUser);
-  const isloading = useSelector(selectloading)
-  // const [isloading, setIsloading] = useState(true)
 
   const handleLogout = ()=>{
-    dispatch(logout())
+    dispatch(fetchLogOut)
     navigate("/")
   }
 
   useEffect(() => {
-    
+
   }, [user]);
-  
+
   return (
-    <div className="container">
+    <div className="container navbar-wrapper">
       <nav className="navbar navbar-expand-lg navbar-light nav-container fixed-top">
-        <div className="container-fluid">
-          <a className="navbar-brand ms-5 text-dark" href="/">
+        <div className="container-fluid px-2">
+          <a className="navbar-brand text-dark" href="/">
             Bietna
           </a>
           <button
-            className="navbar-toggler"
+            className="navbar-toggler px-0"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#navbarNavDropdown"
             aria-controls="navbarNavDropdown"
             aria-expanded="false"
             aria-label="Toggle navigation"
+            
           >
             <span className="navbar-toggler-icon"></span>
           </button>

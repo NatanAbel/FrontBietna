@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {useSelector } from "react-redux";
 import { selecthouses } from "../../store/houses/selectors";
 
@@ -7,13 +7,12 @@ function AreaFilter({ area, filterArea}) {
   const [isLoading, setIsLoading] = useState(true);
   const [showAreaDropdown, setShowAreaDropdown] = useState(false);
   const [availableAreas, setAvailableAreas] = useState([]);
-
+  const dropdownRef = useRef(null)
   const { uniqueAreas } = house;
 
   const toggleAreaDropdown = (e) => {
     e.preventDefault();
     setShowAreaDropdown(!showAreaDropdown);
-    
   };
 
   const handleAreaSelection = (selectedArea) => {
@@ -25,10 +24,23 @@ function AreaFilter({ area, filterArea}) {
   useEffect(() => {
     setIsLoading(false);
     setAvailableAreas(uniqueAreas);
-  }, [uniqueAreas]);
+    const handleClickOutside =()=>{
+      if(dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowAreaDropdown(false);
+      }
+    }
+    if (showAreaDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [uniqueAreas,showAreaDropdown]);
+
 
   return (
-    <div className="filter-area-container">
+    <div className="filter-area-container test-one" ref={dropdownRef}>
       <div className="filter-area">
         <p className="title-filter-area">
           {area === "" ? <span>Area</span> : area}
@@ -36,9 +48,9 @@ function AreaFilter({ area, filterArea}) {
         <button className="filter-area-btn" onClick={toggleAreaDropdown}>
           {showAreaDropdown ? <p>🔼</p> : <p>🔽</p>}
         </button>
-        <ul className="filter-area-dropdown-display">
-          {showAreaDropdown && (
-            <li>
+        <div className="filter-area-dropdown-display">
+          { showAreaDropdown && (
+            <div>
               <p
                 onClick={() => handleAreaSelection("none")}
                 className="dropdown-item"
@@ -59,9 +71,9 @@ function AreaFilter({ area, filterArea}) {
                   </p>
                 );
               }) : <p>Loading.......</p>}
-            </li>
+            </div>
           )}
-        </ul>
+        </div>
       </div>
     </div>
   );

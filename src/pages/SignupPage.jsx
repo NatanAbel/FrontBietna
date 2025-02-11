@@ -3,15 +3,19 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import AuthForm from "../component/user/AuthForm";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "../store/auth/selectors";
+import { messageResponse, statusResponse } from "../store/auth/slice";
 
-const API_URL = "http://localhost:5005/auth";
+const API_URL = import.meta.env.VITE_BACK_URL;
 
 function SignupPage() {
   const navigate = useNavigate();
+  const dispatch = useDispatch()
   const user = useSelector(selectUser);
   const [userName, setUserName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -19,17 +23,21 @@ function SignupPage() {
     e.preventDefault();
 
     try {
-      const body = { userName, email, password };
-
-      const res = await axios.post(`${API_URL}/signup`, body);
+      const body = { userName, firstName,
+        lastName, email, password };
+      const res = await axios.post(`${API_URL}/auth/signup`, body);
       setUserName("");
       setEmail("");
       setPassword("");
+      setFirstName("");
+      setLastName("");
       if (res.status === 201) {
+        // alert("Verification email sent. Please check your inbox.");
         navigate("/login");
       }
     } catch (e) {
-      console.log(e.message);
+      dispatch(statusResponse(e.response.status))
+      dispatch(messageResponse(e.response.data.message))
     }
   };
 
@@ -45,6 +53,8 @@ function SignupPage() {
         handleSubmit={handleSubmit}
         setPassword={setPassword}
         setUserName={setUserName}
+        setFirstName={setFirstName}
+        setLastName={setLastName}
         setEmail={setEmail}
       />
     </>

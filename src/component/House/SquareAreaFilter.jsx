@@ -1,19 +1,17 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
-function SquareAreaFilter({squareAreaMin, squareAreaMax, squareAreaRange, forRent}) {
+function SquareAreaFilter({squareAreaMin, squareAreaMax, squareAreaRange, isMobile}) {
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isResize, setIsResize] = useState(window.innerWidth < 1813);
   const [displayMin, setDisplayMin] = useState(false);
   const [displayMax, setDisplayMax] = useState(false);
+  const dropdownRef = useRef(null)
 
-  const toggleDropdown = ()=>{
-    setShowDropdown(!showDropdown)
-  }
 
   const handleMinPriceChange = (e, value) => {
     e.preventDefault();
     const minValue = parseInt(e.target.value);
     squareAreaRange(minValue, value)
-  
     setDisplayMin(minValue > 0);
   };
 
@@ -32,13 +30,22 @@ function SquareAreaFilter({squareAreaMin, squareAreaMax, squareAreaRange, forRen
     if(isMin === "minSqm"){
       squareAreaRange(value, "minSqm");
       setDisplayMin(value > 0)
-      console.log("valueMinType..........", typeof(value))
     }else{
       squareAreaRange(value, "maxSqm");
       setDisplayMax(value > 0);
-      console.log("valueMaxType..........", typeof(value));
     }
   }
+
+  const toggleDropdown = (e) => {
+    e.preventDefault();
+    // toggleDropdown(e)
+    const width = window.innerWidth;
+    // Toggle if width is <= 768px or >= 1813px
+    if (isMobile || width >= 1813) {
+      setShowDropdown(!showDropdown);
+      }
+  };
+
 
   useEffect(() => {
     // Handle negative numbers
@@ -47,27 +54,63 @@ function SquareAreaFilter({squareAreaMin, squareAreaMax, squareAreaRange, forRen
     } else if (squareAreaMax < 0 || isNaN(squareAreaMax)) {
       squareAreaRange(0, "maxSqm")
     }
-  }, [squareAreaMin, squareAreaMax]);
+
+ setShowDropdown(isMobile);
+
+  }, [squareAreaMin, squareAreaMax, isMobile]);
+
+
+  useEffect(() => {
+    const handleResize = () => {
+      // Optionally hide dropdown on resize
+      const width = window.innerWidth;
+      if (width < 1813) {
+        setIsResize(width < 1813);
+      }else{
+        setShowDropdown(false);
+        setIsResize(false)
+      }
+  };
+
+  const handleClickOutside =()=>{
+    if(dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setShowDropdown(false);
+    }
+  }
+
+  if (showDropdown) {
+    document.addEventListener("mousedown", handleClickOutside);
+  }
+
+  window.addEventListener('resize', handleResize);
+  return () => {
+    window.removeEventListener('resize', handleResize);
+    document.removeEventListener("mousedown", handleClickOutside);
+  }
+
+  },[isResize,showDropdown])
+
+
 
   return (
-    <div className="price-filter">
-      {/* <button>Price</button> */}
-      <div style={{ width: "80px", height: "30px" }}>
+    <div className="price-filter  sqm-wrapper" ref={dropdownRef}>
+      <p className="mobile-price-text">Sqm</p>
+      <div className="price-box">
         {displayMin &&
         displayMax &&
         squareAreaMin > 0 &&
         squareAreaMax > 0 ? (
-          <p>
+          <p className="price-indicator">
              <span>{squareAreaMin } - {squareAreaMax }</span> 
           </p>
         ) : (
-          <p>Sqm</p>
+          <p className="price-text">Sqm</p>
         )}
       </div>
-      <button className="filter-area-btn" onClick={toggleDropdown}>{showDropdown ? "🔼" : "🔽"}</button>
-      {showDropdown && 
+      <button className="toggle-dropdown-btn" onClick={toggleDropdown}>{showDropdown ? "🔼" : "🔽"}</button>
+      {(showDropdown || isResize) && 
       <div className="price-dropdown-menu square-range-dropdwon">
-        <p className="price-title">Price Range</p>
+        <p className="price-title">Area</p>
         <div className="price-min-dropdown">
           
             <>
@@ -92,7 +135,8 @@ function SquareAreaFilter({squareAreaMin, squareAreaMax, squareAreaRange, forRen
                   </div>
                 </div>
               </div>
-              {/* <div className="price-range">-</div> */}
+              <div style={{width:"15px", height:"1px", backgroundColor:"black"}}>
+              </div> 
               <div className="price-range">
                 <input
                   type="number"

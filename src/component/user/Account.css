@@ -1,0 +1,64 @@
+.account-container {
+  background-color: white;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 5px 0 rgb(0, 0, 0,.2);
+  box-sizing: border-box;
+  width:700px;
+  /* border: 1px solid rgb(0, 0, 0); */
+}
+
+.account-form-wrapper , .account-edit{
+  display: flex;
+  flex-direction: column;
+  margin:1.8rem ;
+}
+
+.btn-form-wrapper{
+  margin-top:1.5rem;
+  align-self: center;
+}
+
+.btn-form-wrapper > button , .account-edit-btn{
+  padding: 0.4rem;
+  width: 5rem;
+  border-radius: 0.5rem;
+  border: none;
+  background-color:  darkgray;
+}
+
+.btn-form-wrapper > button{
+  margin-right:1.5rem;
+}
+
+.account-edit-btn {
+  align-self:flex-end;
+}
+
+.account-edit-btn:hover , .btn-form-wrapper > button:hover{
+  background-color: rgb(1, 105, 255);
+  border-radius: 5px;
+  color: white;
+}
+
+.edit-icon{
+  padding-right: .2em;
+}
+
+.account-info  > p , .form-info > label{
+  margin-top: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.info-card , .form-account-input{
+  border-radius: 0.6rem;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+  padding: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.input-error{
+  color: red;
+}

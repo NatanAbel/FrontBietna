@@ -2,7 +2,7 @@ import axios from "axios"
 import { houseFatchedfully, startLoading } from "./slice"
 
 
-const API_URL = "http://localhost:5005"
+const API_URL = import.meta.env.VITE_BACK_URL;
 
 export const fetchDetailsPage = (houseId)=> async(dispatch, getState) => {
     try{
@@ -12,6 +12,6 @@ export const fetchDetailsPage = (houseId)=> async(dispatch, getState) => {
         const house = res.data
         dispatch(houseFatchedfully(house))
     }catch(err){
-        console.log(err.message)
+        console.log(err)
     }
 }

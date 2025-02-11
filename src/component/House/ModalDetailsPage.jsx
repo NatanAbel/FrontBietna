@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
+import DOMPurify from "dompurify"; 
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/effect-coverflow";
@@ -11,52 +12,45 @@ import "swiper/css/thumbs";
 
 // import required modules
 import {
-  EffectCube, 
   Pagination,
   Navigation,
   FreeMode,
   Thumbs
 } from "swiper/modules";
+import { faCircleXmark } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const API_URL = "http://localhost:5005/images" ;
 
 const ModalDetailsPage = ({ house,selectedThumbnailIndex,
   toggleModal}) => {
     const [thumbsSwiper, setThumbsSwiper] = useState(null);
-    console.log("house...",selectedThumbnailIndex)
 
+    const sanitizedImages = house.images.map(image =>
+      DOMPurify.sanitize(image, { ALLOWED_URI_REGEXP: /^(?:(?:https?|data):)/i })
+    );
 
   return  ReactDOM.createPortal(
-    
+
       <div className="overlay">
       <div className="modal-content">
-        <button className="close-modal" onClick={()=>toggleModal(null)}>X</button>
+        <button className="close-modal" onClick={()=>toggleModal(null)}><FontAwesomeIcon icon={faCircleXmark} /></button>
             <Swiper
                 style={{
                   "--swiper-navigation-color": "#fff",
                   "--swiper-pagination-color": "#fff",
                 }}
-                // loop={true}
-                effect={'cube'}
-                grabCursor={true}
-                cubeEffect={{
-                  shadow: true,
-                  slideShadows: true,
-                  shadowOffset: 20,
-                  shadowScale: 0.94,
-                }}
                 spaceBetween={10}
                 navigation={true}
                 thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
                 pagination={true}
-                modules={[EffectCube, Pagination, FreeMode, Navigation, Thumbs]}
+                modules={[Pagination, FreeMode, Navigation, Thumbs]}
                 className="modal-swiper-large"
                 initialSlide={selectedThumbnailIndex}
               >
-                {house.images.map((image, index) => (
+                {sanitizedImages.map((image, index) => (
                   <SwiperSlide key={index}>
                     <img
-                      src={`${API_URL}/${image}`}
+                      src={image}
                       alt={`Image-index ${index}`}
                       loading="lazy"
                     />
@@ -65,7 +59,6 @@ const ModalDetailsPage = ({ house,selectedThumbnailIndex,
               </Swiper>
               <Swiper
                 onSwiper={setThumbsSwiper}
-                // loop={true}
                 spaceBetween={10}
                 slidesPerView={4}
                 freeMode={true}
@@ -74,10 +67,10 @@ const ModalDetailsPage = ({ house,selectedThumbnailIndex,
                 className="small-modal-swiper"
                 initialSlide={selectedThumbnailIndex}
               >
-                {house.images.map((image, index) => (
+                {sanitizedImages.map((image, index) => (
                   <SwiperSlide key={index}>
                     <img
-                      src={`${API_URL}/${image}`}
+                      src={image}
                       alt={`Image-index ${index}`}
                       loading="lazy"
                     />

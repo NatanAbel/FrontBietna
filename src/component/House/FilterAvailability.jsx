@@ -29,9 +29,9 @@ function FilterAvailability({ forRent, forSale, handleAvailabilityClick, calcula
   }, [forRent, forSale]);
 
   return (
-    <div className="availability-filters">
+    <div className="availability-filters ">
       <div className="availability-input-wrapper">
-        <p>
+        <p className="availability-status">
           {" "}
           {selectedOption === "" ?(
             <span>Status</span>
