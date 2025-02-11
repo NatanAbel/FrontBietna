@@ -246,6 +246,7 @@
   .contact-us-img > img {
     border-radius: 85px 5px;
     max-width: 100%;
+    padding:1.5rem;
   }
 
 
