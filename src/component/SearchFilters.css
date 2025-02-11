@@ -603,8 +603,8 @@
   width: 150px;
   height: 44px;
   padding: 0.1em 0.8em;
-  padding-top: .5em;
-  background-color: #d9d3d3;
+  /* padding-top: .5em; */
+  background-color: transparent;
   border: 1px solid white;
   border-radius: 0.5em;
   font-weight: 700;
@@ -870,7 +870,7 @@
     margin-top: 1rem; 
   }
 
-  .availability-status, .title-filter-area,.rest-btn,.price-title,.price-indicator {
+  .availability-status, .title-filter-area,.price-title,.price-indicator {
     min-width: 90px;
     padding: 0.1em 1.4em;
     padding-top: .5em;

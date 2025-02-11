@@ -316,6 +316,10 @@ useEffect(() =>{
 useEffect(() => {
    if (!message && allHouses.length > 0 ) {
     setHouses(allHouses); // Update the houses state with fetched data
+  }else{
+    const paginationBtn = document.querySelector('.pagination-button');
+    paginationBtn.style.display = 'none';
+    window.scrollTo(0, 0);
   } 
     checkHighestPrice()
   }, [allHouses, message]);
@@ -366,7 +370,7 @@ useEffect(() => {
 
         <HouseCards filteredHouse={filteredHouse} noResults={message} skip={skip} limit={limit} isLoading={isLoading} handleFavourites={handleFavourites} handlePageClick={handlePageClick} pageCount={pageCount} currentPage={currentPage}/>
 
-      <div>
+      <div className="pagination-button">
         {!message && <ReactPaginate
           breakLabel={"..."}
           nextLabel={"next >"}
