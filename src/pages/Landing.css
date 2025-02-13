@@ -80,7 +80,6 @@
   .my-button:hover {
     background-color: rgba(237, 232, 232, 0.755);
     color: black;
-    transition-duration: 1s;
   }
   
   .landing-search-form {
@@ -130,8 +129,8 @@
     margin: 1rem;
     border-radius: 1rem;
     border: none;
-    color: black;
-    background-color: rgba(227, 215, 203, 0.755);
+    color: rgb(0, 0, 0);
+    background-color: rgba(77, 76, 75, 0.755);
     transition: transform 0.1s;
   }
 

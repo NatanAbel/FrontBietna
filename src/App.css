@@ -1,6 +1,6 @@
 *, *::before, *::after{
   box-sizing: border-box;
-  outline: 2px solid green;
+  /* outline: 2px solid green; */
 }
 :root {
   --primary-btn: linear-gradient(0deg, #F37352, #EE326C);
@@ -18,8 +18,8 @@ body {
   /* background-color:rgb(117, 123, 129); */
 
   /* background-color: rgb(238, 238, 238); */
-  /* background-color: hsl(0, 6%, 87%); */
-  background-image: linear-gradient( rgb(228, 225, 225),hsl(0, 6%, 40%));
+  background-color: hsl(0, 6%, 87%);
+  /* background-image: linear-gradient( rgb(228, 225, 225),hsl(0, 6%, 40%)); */
   background-attachment: fixed;
   background-size: cover;
 }
@@ -52,8 +52,16 @@ a {
 
 .img-header-dropdown {
   min-width: 100px;
-  margin-left: -20px;
+  /* margin-left: -20px; */
   text-align: center;
 
+}
+
+
+
+@media screen and (width <= 991px) {
+  .img-header-dropdown {
+    margin-left: 1px;
+  }  
 }
 

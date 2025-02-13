@@ -60,7 +60,7 @@ function LandingPage({forRent,setForRent,forSale,setForSale, handleAvailabilityC
   }, [dispatch]);
 
   useEffect(() => {
-    if (allHouses.length) {
+    if (allHouses.length > 0) {
       const shuffled = [...allHouses].sort(() => 0.5 - Math.random());
       setDisplayedHouses(shuffled.slice(0, 8));
 

@@ -38,8 +38,8 @@ function Navbar() {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarNavDropdown">
-            <ul className="navbar-nav ms-auto ">
-              <li className="nav-item">
+            <ul className="navbar-nav ms-auto">
+              <li className="nav-item  d-flex align-items-center">
                 <a
                   className="nav-link active text-dark"
                   aria-current="page"
@@ -48,7 +48,7 @@ function Navbar() {
                   Home
                 </a>
               </li>
-              <li className="nav-item ">
+              {/* <li className="nav-item ">
                 <a className="nav-link text-dark" href="#">
                   Features
                 </a>
@@ -57,8 +57,8 @@ function Navbar() {
                 <a className="nav-link text-dark" href="#">
                   Pricing
                 </a>
-              </li>
-              <li className="nav-item dropdown ">
+              </li> */}
+              {/* <li className="nav-item dropdown ">
                 <a
                   className="nav-link dropdown-toggle text-dark"
                   href="#"
@@ -89,13 +89,13 @@ function Navbar() {
                     </a>
                   </li>
                 </ul>
-              </li>
+              </li> */}
 
               {user ? (
                 <>
-                <li className="nav-item dropdown ">
+                <li className="nav-item dropdown d-flex align-items-center position-relative ">
                   <a
-                  className="nav-link dropdown-toggle text-dark"
+                  className="nav-link dropdown-toggle text-dark "
                   href="#"
                   id="navbarDropdownMenuLink"
                   role="button"
@@ -110,7 +110,7 @@ function Navbar() {
                   />
                 </a>
                 <ul
-                  className=" img-header-dropdown dropdown-menu"
+                  className=" img-header-dropdown dropdown-menu position-absolute "
                   aria-labelledby="navbarDropdownMenuLink"
                 >
                   <li>
@@ -125,7 +125,7 @@ function Navbar() {
                 </li>
                 </>
               ) : (
-                <li className="nav-item ">
+                <li className="nav-item ms-1">
                 <a className="nav-link text-dark" href="/login">
                   Login
                 </a>

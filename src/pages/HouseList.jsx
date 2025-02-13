@@ -283,7 +283,7 @@ const fetchHouses = () => {
       )
     );
   } else {
-    dispatch(fetchedHouses(currentPage.current, limit));
+      dispatch(fetchedHouses(currentPage.current, limit));
   }
 };
 
@@ -310,7 +310,7 @@ useEffect(() =>{
   resetToFirstPage()
   fetchHouses();
    // Scroll to the top of the page
-},[pathname, forRent, forSale, minPrice, maxPrice, beds, bath, area, city, country, houseType, features, squareAreaMin, squareAreaMax,pageCount, searchDisplay, searchResult, state, navigate])
+},[pathname, forRent, forSale, minPrice, maxPrice, beds, bath, area, city, country, houseType, features, squareAreaMin, squareAreaMax,pageCount, searchDisplay, searchResult, state])
 
 
 useEffect(() => {

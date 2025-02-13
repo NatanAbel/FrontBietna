@@ -5,6 +5,7 @@ import { fetchlogin } from "../../store/auth/thunks";
 import { selectMessage, selectStatus } from "../../store/auth/selectors";
 import "./AuthForm.css";
 import { toast } from "react-toastify";
+import { messageResponse } from "../../store/auth/slice";
 
 function AuthForm({
   handleSubmit,
@@ -20,6 +21,27 @@ function AuthForm({
   const status = useSelector(selectStatus);
   const [message, setMessage] = useState("");
   const location = useLocation().pathname;
+
+ // Local state for username and password
+ const [localUsername, setLocalUsername] = useState("");
+ const [localPassword, setLocalPassword] = useState("");
+ const [passwordStrength, setPasswordStrength] = useState("");
+
+ // Password strength checker function
+ const checkPasswordStrength = (password, username) => {
+   let strength = 0;
+   if (password.length >= 8) strength += 1; // Minimum length
+   if (/[A-Z]/.test(password)) strength += 1; // Uppercase
+   if (/[a-z]/.test(password)) strength += 1; // Lowercase
+   if (/\d/.test(password)) strength += 1; // Number
+   if (/[@$!%*?&]/.test(password)) strength += 1; // Special character
+   if (password.toLowerCase().includes(username.toLowerCase()) && username.length > 0) strength -= 1; // Penalize if password contains username
+
+   if (strength <= 2) return 'Weak';
+   if (strength === 3 || strength === 4) return 'Moderate';
+   if (strength >= 5) return 'Strong';
+ };
+
 
   const handleGoogleClick = async () => {
     dispatch(fetchlogin("googleContinue"));
@@ -41,8 +63,30 @@ function AuthForm({
   }
   };
 
+  // Update password and check strength
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setLocalPassword(newPassword);
+    setPassword(newPassword);
+    setPasswordStrength(checkPasswordStrength(newPassword, localUsername));
+  };
+
+  // Update username and check password again to avoid matching
+  const handleUsernameChange = (e) => {
+    const newUsername = e.target.value;
+    setLocalUsername(newUsername);
+    setUserName(newUsername);
+    setPasswordStrength(checkPasswordStrength(localPassword, newUsername));
+  };
+
+  // Validate username length
+  const isUsernameValid = localUsername.length >= 5 && localUsername.length <= 15;
+ 
+  
+
   useEffect(() => {
     if (location === "/login" || location === "/signup") {
+      // dispatch(messageResponse())
       setMessage("");
     }
   }, [location]);
@@ -60,16 +104,20 @@ function AuthForm({
       <div className="auth-wrapper">
         <h1>{location === "/login" ? "Log In" : "Register"}</h1>
         <form onSubmit={handleFormSubmit} className="auth-form">
+           {/* Username Field */}
           <label htmlFor="username">
             <p>Username</p>
             <input
               name="username"
               id="username"
               type="text"
-              onChange={(e) => setUserName(e.target.value)}
+              onChange={handleUsernameChange}
               autoComplete="off"
               required
             />
+            {location === "/signup" && !isUsernameValid && localUsername.length > 0 && (
+              <p className="error-message">Username must be between 5 and 15 characters.</p>
+            )}
           </label>
 
           {location === "/signup" && (
@@ -109,31 +157,54 @@ function AuthForm({
               </label>
             </>
           )}
+          {/* Password Field */}
           <label htmlFor="password">
             <p>Password</p>
             <input
               name="password"
               id="password"
               type="password"
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={handlePasswordChange}
               required
             />
+            {location === "/signup" && localPassword && (
+              <div className="password-strength">
+                <p className={`strength-text ${
+                  passwordStrength === 'Weak' ? 'weak' :
+                  passwordStrength === 'Moderate' ? 'moderate' :
+                  'strong'
+                }`}>
+                  Password Strength: {passwordStrength}
+                </p>
+                <div className="strength-bar">
+                  <div
+                    className={`bar ${
+                      passwordStrength === 'Weak' ? 'bar-weak' :
+                      passwordStrength === 'Moderate' ? 'bar-moderate' :
+                      'bar-strong'
+                    }`}
+                  ></div>
+                </div>
+              </div>
+            )}
           </label>
+           {/* Display Error Messages */}
           {message && (
             <p style={{ margin: "0 auto", color: "red" }}>{message}</p>
           )}
+           {/* Submit Button */}
           <div className="btn-container ">
             <button
               type="submit"
               className={`btn-form ${
                 location === "/login" ? "login" : "register"
-              }`}
+              }`} disabled={location === "/signup" ? !isUsernameValid || passwordStrength !== 'Strong': false}
             >
               {location === "/login" ? "Log In" : "Register"}
             </button>
           </div>
+          {/* Google Sign In Button */}
           <div className="btn-container">
-            {/* <button onClick={handleGoogleClick} type='button' className= {`btn-form ${location === '/login' ? 'login-with-google' : 'signup-with-google'}`}>{location === '/login' ? 'LOGIN WITH GOOGLE' : 'SINGUP WITH GOOGLE'}</button> */}
             <button onClick={handleGoogleClick} className="gsi-material-button">
               <div className="gsi-material-button-state"></div>
               <div className="gsi-material-button-content-wrapper">
@@ -172,7 +243,7 @@ function AuthForm({
             </button>
           </div>
         </form>
-
+        {/* Navigation Links */}
         <div className="account">
           {location === "/login" ? (
             <div className="account-options">
@@ -181,11 +252,11 @@ function AuthForm({
                   Create an account
                 </Link>
               </p>
-              <p className="forgot-password">
+              {/* <p className="forgot-password">
                 <Link to="/forgot-password" className="link">
                   Credential forgotten
                 </Link>
-              </p>
+              </p> */}
             </div>
           ) : (
             <div className="have-account-option">
