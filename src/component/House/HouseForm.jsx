@@ -253,34 +253,38 @@ function HouseForm(props) {
   const getLocation = () => {
     return new Promise((resolve, reject) => {
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            resolve({ latitude, longitude });
-          },
-          (error) => {
-            if (error.code === 1) {
-              alert("Permission denied. Please allow location access.");
-            } else if (error.code === 2) {
-              alert(
-                "Position unavailable. Please check your location settings."
-              );
-            } else if (error.code === 3) {
-              alert("Location request timed out. Try again.");
-            } else {
-              alert(
-                "An unknown error occurred while retrieving your location."
-              );
+        const userConsent = window.confirm("Would you like to share your location for this property?");
+  
+        if (userConsent) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const { latitude, longitude } = position.coords;
+              resolve({ latitude, longitude });
+            },
+            (error) => {
+              if (error.code === 1) {
+                alert("Permission denied. Please allow location access.");
+              } else if (error.code === 2) {
+                alert("Position unavailable. Please check your location settings.");
+              } else if (error.code === 3) {
+                alert("Location request timed out. Try again.");
+              } else {
+                alert("An unknown error occurred while retrieving your location.");
+              }
+              reject(error);
             }
-            reject(error);
-          }
-        );
+          );
+        } else {
+          alert("You chose not to share your location.");
+          reject(new Error("Location sharing declined by user"));
+        }
       } else {
         alert("Geolocation is not supported by your browser.");
         reject(new Error("Geolocation not supported"));
       }
     });
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -289,18 +293,21 @@ function HouseForm(props) {
     let lng = longitude;
 
     const formData = new FormData();
-    // Only get the location if it's not an update
-    if (!isUpdating) {
+    // Ask the user if they want to use their current location
+  const userWantsLocation = window.confirm("Do you want to include your current location with this property?");
+
+    // Only get the location if it's not an update 
+    if (!isUpdating && userWantsLocation) {
       try {
         const location = await getLocation();
         lat = location.latitude;
         lng = location.longitude;
-        // Add latitude and longitude only while posting a new house
-
-        formData.append("latitude", lat);
-        formData.append("longitude", lng);
-
-        if (lat === null || lng === null) {
+  
+        // Only add location if the user consents to share it
+        if (lat && lng) {
+          formData.append("latitude", lat);
+          formData.append("longitude", lng);
+        } else {
           alert("Location not available. Please enable location services.");
           return; // Stop form submission if location isn't available
         }
@@ -308,6 +315,9 @@ function HouseForm(props) {
         console.error("Error fetching location during form submit", error);
         return; // Stop form submission if there's an error with location
       }
+    } else if (!userWantsLocation) {
+      alert("Location sharing is disabled. Proceeding without location.");
+      // Don't include latitude or longitude if they don't want to share location
     }
 
     // Sanitize all other fields
