@@ -1,21 +1,21 @@
 import React from "react";
 import axios from "axios";
-import Navbar from "../components/Navbar.js";
-import LandingPage from "../pages/LandingPage";
+import Navbar from "../components/Navbar.jsx";
+import LandingPage from "../pages/LandingPage.jsx";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import Footer from "../components/Footer.js";
+import Footer from "../components/Footer.jsx";
 import DetailsPage from "./DetailsPage.jsx";
-import UpdatePage from "./UpdatePage";
-import NewHousePage from "./NewHousePage";
-import HouseList from "./HouseList";
+import UpdatePage from "./UpdatePage.jsx";
+import NewHousePage from "./NewHousePage.jsx";
+import HouseList from "./HouseList.jsx";
 import { useEffect, useRef, useState } from "react";
-import SignupPage from "./SignupPage";
-import LoginPage from "./LoginPage";
+import SignupPage from "./SignupPage.jsx";
+import LoginPage from "./LoginPage.jsx";
 import { useDispatch } from "react-redux";
 import { bootstrapThunkLogin } from "../store/auth/thunks";
-import ProfilePage from "./ProfilePage";
-import PrivateRoute from "../components/user/PrivateRoute.js";
-import ErrorPage from "./ErrorPage";
+import ProfilePage from "./ProfilePage.jsx";
+import PrivateRoute from "../components/user/PrivateRoute.jsx";
+import ErrorPage from "./ErrorPage.jsx";
 
 axios.defaults.withCredentials = true;
 
