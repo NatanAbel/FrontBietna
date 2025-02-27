@@ -6,6 +6,12 @@ import { PersistGate } from "redux-persist/integration/react";
 import store,{persistor}  from "./store/index.js";
 import { BrowserRouter as Router } from "react-router-dom";
 import React from "react";
+import { disableReactDevTools } from "@fvilers/disable-react-devtools";
+
+if (process.env.NODE_ENV === "production") {
+  // Disable react dev tools in production
+  disableReactDevTools();
+}
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

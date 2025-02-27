@@ -39,6 +39,7 @@ import { Circles } from "react-loader-spinner";
 
 const API_URL = import.meta.env.VITE_BACK_URL;
 const PROFILE_IMG_DEFAULT_URL = import.meta.env.VITE_PROFILE_DEFAULT_URL;
+
 const giveCurrentDateTime = () => {
   const today = new Date();
   const date =
