@@ -44,6 +44,11 @@ a {
   /* width: 1200px; */
 }
 
+.nav-hover:hover{
+  background-color: rgba(237, 232, 232, 0.755);
+  border-radius: .7rem;
+}
+
 .dropdown-menu {
   /* min-width: 130px; */
   margin-left: -30px;

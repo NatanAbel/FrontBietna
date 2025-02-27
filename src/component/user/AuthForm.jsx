@@ -204,7 +204,7 @@ function AuthForm({
             </button>
           </div>
           {/* Google Sign In Button */}
-          <div className="btn-container">
+          {/* <div className="btn-container">
             <button onClick={handleGoogleClick} className="gsi-material-button">
               <div className="gsi-material-button-state"></div>
               <div className="gsi-material-button-content-wrapper">
@@ -241,7 +241,7 @@ function AuthForm({
                 <span style={{ display: "none" }}>Sign in with Google</span>
               </div>
             </button>
-          </div>
+          </div> */}
         </form>
         {/* Navigation Links */}
         <div className="account">

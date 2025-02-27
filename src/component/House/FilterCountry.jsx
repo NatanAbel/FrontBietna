@@ -13,7 +13,7 @@ function FilterCountry({ country, filterCountry }) {
   const handleClick = (country) => {
     filterCountry(country);
   };
-  const countries = ["Eritrea", "Uganda", "Ethiopia"];
+  const countries = ["Netherlands", "Germany", "Belgium"];
 
   useEffect(() => {
     setIsLoading(false);

@@ -625,13 +625,13 @@ const validateFile = async (file) => {
               Favourites
             </p>
 
-            <p
+            {/* <p
               onClick={() => handleOptionClick("saved")}
               className={activeOption === "saved" ? "active" : ""}
             >
               <FontAwesomeIcon className="profile-icon" icon={faFloppyDisk} />{" "}
               Saved Searches
-            </p>
+            </p> */}
 
             <p
               className={`delete-user ${

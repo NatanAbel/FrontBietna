@@ -1,13 +1,16 @@
 import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "../store/auth/selectors";
 import { useEffect } from "react";
-import {  useNavigate } from "react-router-dom";
+import {  useLocation, useNavigate } from "react-router-dom";
 import { fetchLogOut } from "../store/auth/thunks";
+import { selectHouseDetail } from "../store/houseDetails/selectors";
 
 function Navbar() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const user = useSelector(selectUser);
+  const house = useSelector(selectHouseDetail)
+  const {pathname} = useLocation();
 
   const handleLogout = ()=>{
     dispatch(fetchLogOut)
@@ -39,60 +42,27 @@ function Navbar() {
           </button>
           <div className="collapse navbar-collapse" id="navbarNavDropdown">
             <ul className="navbar-nav ms-auto">
-              <li className="nav-item  d-flex align-items-center">
+              <li className="nav-item  d-flex align-items-center nav-hover">
                 <a
-                  className="nav-link active text-dark"
+                  className="nav-link active text-dark "
                   aria-current="page"
                   href="/"
                 >
                   Home
                 </a>
               </li>
-              {/* <li className="nav-item ">
-                <a className="nav-link text-dark" href="#">
-                  Features
-                </a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link text-dark" href="#">
-                  Pricing
-                </a>
-              </li> */}
-              {/* <li className="nav-item dropdown ">
-                <a
-                  className="nav-link dropdown-toggle text-dark"
-                  href="#"
-                  id="navbarDropdownMenuLink"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Dropdown link
-                </a>
-                <ul
-                  className="dropdown-menu"
-                  aria-labelledby="navbarDropdownMenuLink"
-                >
-                  <li>
-                    <a className="dropdown-item" href="#">
-                      Action
-                    </a>
-                  </li>
-                  <li>
-                    <a className="dropdown-item" href="#">
-                      Another action
-                    </a>
-                  </li>
-                  <li>
-                    <a className="dropdown-item" href="#">
-                      Something else here
-                    </a>
-                  </li>
-                </ul>
-              </li> */}
 
               {user ? (
                 <>
+                <li className="nav-item  d-flex align-items-center nav-hover">
+                <a
+                  className="nav-link active text-dark"
+                  aria-current="page"
+                  href="/house/new"
+                >
+                  New House
+                </a>
+              </li>
                 <li className="nav-item dropdown d-flex align-items-center position-relative ">
                   <a
                   className="nav-link dropdown-toggle text-dark "
@@ -125,11 +95,18 @@ function Navbar() {
                 </li>
                 </>
               ) : (
-                <li className="nav-item ms-1">
+                <>
+                <li className="nav-item nav-hover">
+                <a className="nav-link text-dark" href="/login">
+                  New House
+                </a>
+                </li>
+                <li className="nav-item nav-hover">
                 <a className="nav-link text-dark" href="/login">
                   Login
                 </a>
                 </li>
+                </>
               )}
             </ul>
           </div>

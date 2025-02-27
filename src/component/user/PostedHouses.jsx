@@ -5,6 +5,8 @@ import { selectIsAuthenticated } from '../../store/auth/selectors';
 import DOMPurify from "dompurify";
 import { debounce } from "lodash";
 import { useMemo } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
  // Escape HTML for additional safety
  const escapeHTML = (unsafe) =>
@@ -69,7 +71,7 @@ function PostedHouses({publishedHouses, user, handleDeleteHouse}) {
                     className="btn-faHeart"
                     onClick={() =>handleDelete(house._id, house.postedBy._id)}
                   >
-                    <span>delete</span>
+                    <FontAwesomeIcon className="profile-icon" icon={faTrash} />
                   </button>
               <p className="card-img-text">
                 {house.availability?.forRent ? "For rent" : "For Sale"}

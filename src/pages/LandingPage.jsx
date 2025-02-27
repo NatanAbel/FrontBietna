@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchedHouses } from "../store/houses/thunks";
 import { selecthouses } from "../store/houses/selectors";
@@ -26,7 +26,7 @@ function LandingPage({forRent,setForRent,forSale,setForSale, handleAvailabilityC
   const { allHouses } = house;
   const navigate = useNavigate()
   const location = useLocation().pathname
-
+  const hasInitialFetchOccurred = useRef(false);
 
   const handleCountryClick = (chosenCounrty) =>{
     const sanitizedCountry = DOMPurify.sanitize(chosenCounrty);
@@ -37,6 +37,7 @@ function LandingPage({forRent,setForRent,forSale,setForSale, handleAvailabilityC
   const handleSearch = (searchInput, searchResults) => {
     // Sanitize search inputs and results
     const sanitizedSearchInput = DOMPurify.sanitize(searchInput);
+    if(searchResults !== undefined){
     const sanitizedSearchResults = searchResults.map((result) =>
       DOMPurify.sanitize(result)
     );
@@ -44,6 +45,10 @@ function LandingPage({forRent,setForRent,forSale,setForSale, handleAvailabilityC
     navigate("/houses/allHouses", {
       state: { search: sanitizedSearchInput, results: sanitizedSearchResults },
     });
+  }else{
+    navigate("/houses/allHouses", {
+      state: { search: sanitizedSearchInput, results: [] },})
+  }
   };
 
 
@@ -52,15 +57,25 @@ function LandingPage({forRent,setForRent,forSale,setForSale, handleAvailabilityC
   //   const shuffled = [...allHouses].sort(() => 0.5 - Math.random());
   //   return shuffled.slice(0, 8);
   // };
+  
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      if (location === '/' && !hasInitialFetchOccurred.current) {
+        hasInitialFetchOccurred.current = true;
+        setIsLoading(true);
+        try {
+          await dispatch(fetchedHouses(1, 16));
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+  
+    fetchInitialData();
+  }, [dispatch, location]);
 
   useEffect(() => {
-    dispatch(fetchedHouses(1,16));
-    setIsLoading(false)
-     
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (allHouses.length > 0) {
+    if (allHouses !== undefined && allHouses.length > 0) {
       const shuffled = [...allHouses].sort(() => 0.5 - Math.random());
       setDisplayedHouses(shuffled.slice(0, 8));
 
@@ -80,7 +95,7 @@ function LandingPage({forRent,setForRent,forSale,setForSale, handleAvailabilityC
       <header className="header">
         <div className="header-content">
           <h1>Welcome to Bietna</h1>
-          <div className="header-button">
+          {/* <div className="header-button">
               <button className="my-button" onClick={()=>handleCountryClick("Eritrea")}>
               Eritrea
               </button>
@@ -91,7 +106,7 @@ function LandingPage({forRent,setForRent,forSale,setForSale, handleAvailabilityC
               <button className="my-button" onClick={()=>handleCountryClick("Ethiopia")}>
                Ethiopia
               </button>
-          </div> 
+          </div>  */}
           <div className="landing-search-input">
             <Search houses={allHouses} search={search} setSearch={setSearch} handleSearch={handleSearch} forRent ={forRent} setForRent={setForRent} forSale={forSale} setForSale={setForSale}/>
           </div>
@@ -211,7 +226,7 @@ function LandingPage({forRent,setForRent,forSale,setForSale, handleAvailabilityC
             Phone: +1 (123) 456-7890
             </p>
             <p>
-            Address: 123 Your Street, City, Country
+            Address: 123 Street, City, Country
             </p>
           </div>
           <div className="contact-us-img">

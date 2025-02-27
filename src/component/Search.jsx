@@ -116,10 +116,15 @@ function Search({
   const searchFilter = async () => {
     try {
       const response = await axios.get(
-        `${API_URL}/houses/search/result?page=${currentPage}&limit=${limit}search=${encodeURIComponent(searchForm)}`
+        `${API_URL}/houses/search/result?page=${currentPage}&limit=${limit}&search=${encodeURIComponent(searchForm)}`
       );
-      if (searchForm) {
-        setSearchResult(response.data.result);
+      const responseResult = response.data.result
+      if (searchForm && responseResult !== undefined) {
+        setSearchResult(responseResult);
+      }else{
+        if(check){
+          setResult([]);
+        }
       }
     } catch (e) {
       console.log(e);
@@ -130,6 +135,7 @@ function Search({
 
   const resultToCheck =
     searchForm && resultsToDisplay.map((house) => house.address.toLowerCase());
+
   const uniqueAddresses =
     searchForm &&
     resultToCheck.filter(
@@ -149,11 +155,20 @@ function Search({
         handleSearch(search, resultsToDisplay);
       }
       setDropdownVisible(false);
+    }else{
+      if(check){
+        setSearchDisplay(false);
+        setResult([]);
+      }else{
+        handleSearch(search, searchResult);
+      }
     }
   };
 
   useEffect(() => {
-    searchFilter();
+    if(searchForm){
+      searchFilter();
+    }
   }, [searchForm]);
 
   const toggleOtherFiters = (e) => {

@@ -21,6 +21,7 @@ import { toggleFavorites, updateUser } from "../store/auth/slice";
 import { Circles } from "react-loader-spinner";
 import "./HouseList.css"
 import HouseCards from "../component/House/HouseCards";
+import { fetchData } from "../methods/houseMethods";
 
 const API_URL = import.meta.env.VITE_BACK_URL;
 
@@ -38,7 +39,7 @@ function HouseList({
   // const [isLike, setIsLike] = useState(false);
   const house = useSelector(selecthouses);
   const user = useSelector(selectUser);
-  const token = useSelector(selectLoginToken)
+  const token = useSelector(selectLoginToken);
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const location = useLocation();
   const navigate = useNavigate();
@@ -58,48 +59,47 @@ function HouseList({
   const [squareAreaMax, setSquareAreaMax] = useState(0);
   const [limit, setLimit] = useState(9);
   // const currentPage = useRef(1);
-  const [searchDisplay, setSearchDisplay] = useState(false)
-  const[houses, setHouses] = useState([])
-  const[country, setCountry] = useState("")
-
+  const [searchDisplay, setSearchDisplay] = useState(false);
+  const [houses, setHouses] = useState([]);
+  const [country, setCountry] = useState("");
+  // Add a mount ref to prevent double fetching
+  const isMounted = useRef(false);
   const currentPage = useRef(1);
-  
-  const { allHouses, pageCount, message} = house;
-  
-  // Skip variable with 0 value uses as the first argument of silce method to display houses
-  const skip = 0
 
-  const { state ,pathname } = location;
+  const { allHouses, pageCount, message } = house;
+
+  // Skip variable with 0 value uses as the first argument of silce method to display houses
+  const skip = 0;
+
+  const { state, pathname } = location;
   // sorting houses based in the compare_name function above the component function
   const sortedHouses = [...houses].sort(compare_name);
 
   const filterArea = (chosenArea) => {
-    if(chosenArea === "none"){
-      setArea("")
-      setCity("")
-    }
-    else{
+    if (chosenArea === "none") {
+      setArea("");
+      setCity("");
+    } else {
       setArea(chosenArea);
     }
   };
-  
+
   const filterCity = (chosenCity) => {
-    if(chosenCity === "none"){
-      setCity("")
-    }else{
+    if (chosenCity === "none") {
+      setCity("");
+    } else {
       setCity(chosenCity);
     }
   };
 
   const filterCountry = (chosenCountry) => {
-    if(chosenCountry === "none"){
-      setCountry("")
-    }else{
-      setCountry(chosenCountry)
+    if (chosenCountry === "none") {
+      setCountry("");
+    } else {
+      setCountry(chosenCountry);
     }
-  }
+  };
 
-  
   const houseTypeFilter = (selectedType) => {
     // Check if the clicked feature is already in the enumHouseType array
     const isHouseTypeSelected = houseType.includes(selectedType);
@@ -202,19 +202,18 @@ function HouseList({
 
   // Handle clicked favourites button
   const handleFavourites = async (houseId) => {
-  
     if (!houseId) {
       console.error("Invalid houseId");
       return;
     }
-  
+
     // Perform basic validation on the client
     if (!houseId.match(/^[a-fA-F0-9]{24}$/)) {
       console.error("Invalid houseId format");
       return;
     }
- 
-  const body = { favorites: houseId };
+
+    const body = { favorites: houseId };
 
     try {
       const res = await axios.put(`${API_URL}/auth/update/profile`, body, {
@@ -233,19 +232,18 @@ function HouseList({
 
   // Memoize the filteredHouse variable using useMemo hook use to memoize the filtered house data based on the dependencies that cause the filtering to change.
   const filteredHouse = useMemo(() => {
-    
-    return houses
-    // return houses.filter((house) => {
-    //   if (pathname === "/houses/allHouses" || !forRent && !forSale) {
-    //     return filterAllHouses(house);
-    //   } else if (pathname === "/houses/rent" || forRent) {
-    //     return filterRentHouses(house);
-    //   } else if (pathname === "/houses/buy" || forSale) {
-    //     return filterBuyHouses(house);
-    //   } else {
-    //     return false;
-    //   }
-    // });
+  
+    return houses.filter((house) => {
+      if (pathname === "/houses/allHouses" || (!forRent && !forSale)) {
+        return true; // Show all houses
+      } else if (pathname === "/houses/rent" || forRent) {
+        return house.availability.forRent;
+      } else if (pathname === "/houses/buy" || forSale) {
+        return house.availability.forSale;
+      } else {
+        return false;
+      }
+    });
   }, [
     houses,
     pathname,
@@ -257,142 +255,223 @@ function HouseList({
     bath,
     area,
     city,
+    country,
     user,
     squareAreaMin,
     squareAreaMax,
     searchResult,
   ]);
 
-
   const resetToFirstPage = () => {
-    currentPage.current = 1
-};
+    currentPage.current = 1;
+  };
 
-const hasFilters = () => {
-  return (
-    state ||search || forRent || forSale || minPrice > 0 || maxPrice > 0|| beds >=0 || bath >=0 || area || city ||country || houseType.length > 0 || features.length > 0 || squareAreaMin >0 || squareAreaMax > 0
-  );
-};
-
-const fetchHouses = () => {
-
-  if (hasFilters()) {
-    dispatch(
-      searchFiltersFetched(
-        currentPage.current, limit,search,forRent, forSale, minPrice, maxPrice, beds, bath, area, city, country, houseType, features, squareAreaMin, squareAreaMax
-      )
+  const hasFilters = () => {
+    return (
+      search ||
+      forRent ||
+      forSale ||
+      minPrice > 0 ||
+      maxPrice > 0 ||
+      beds > 0 ||
+      bath > 0 ||
+      area ||
+      city ||
+      country ||
+      houseType.length > 0 ||
+      features.length > 0 ||
+      squareAreaMin > 0 ||
+      squareAreaMax > 0
     );
-  } else {
+  };
+
+  const fetchHouses = () => {
+    if (hasFilters()) {
+      dispatch(
+        searchFiltersFetched(
+          currentPage.current,
+          limit,
+          search,
+          country,
+          forRent,
+          forSale,
+          minPrice,
+          maxPrice,
+          beds,
+          bath,
+          area,
+          city,
+          houseType,
+          features,
+          squareAreaMin,
+          squareAreaMax
+        )
+      );
+    } else {
       dispatch(fetchedHouses(currentPage.current, limit));
-  }
-};
+    }
+  };
 
-const handlePageClick = (e) => {
-  currentPage.current = e.selected + 1
-  window.scrollTo(0, 0);
-  fetchHouses();
-};
-
-useEffect(() =>{
-  setIsLoading(false);
-
-  if (state && state?.search && state.results) {
-    setSearch(state.search);
-    setSearchResult(state.results);
-    // Reset the location state to avoid retaining search data
-  navigate(pathname, { replace: true, state: { search: "", results: [] } });
-  }else if (state && state?.country){
-    setCountry(state.country);
-    navigate(pathname, { replace: true, state: { country:""}});
-  }
-
-  window.scrollTo(0, 0);
-  resetToFirstPage()
-  fetchHouses();
-   // Scroll to the top of the page
-},[pathname, forRent, forSale, minPrice, maxPrice, beds, bath, area, city, country, houseType, features, squareAreaMin, squareAreaMax,pageCount, searchDisplay, searchResult, state])
-
-
-useEffect(() => {
-   if (!message && allHouses.length > 0 ) {
-    setHouses(allHouses); // Update the houses state with fetched data
-  }else{
-    const paginationBtn = document.querySelector('.pagination-button');
-    paginationBtn.style.display = 'none';
+  const handlePageClick = (e) => {
+    currentPage.current = e.selected + 1;
     window.scrollTo(0, 0);
-  } 
-    checkHighestPrice()
+    fetchHouses();
+  };
+
+  // const fetchData = async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     if (state && state?.search && state.results) {
+  //       setSearch(state.search);
+  //       setSearchResult(state.results);
+  //       navigate(pathname, { replace: true, state: { search: "", results: [] } });
+  //       fetchHouses();
+  //     } else if (state && state?.country) {
+  //       setCountry(state.country);
+  //       navigate(pathname, { replace: true, state: { country: "" } });
+  //       fetchHouses();
+  //     }else{
+  //       fetchHouses();
+  //     }
+  //     // Scroll to the top of the page
+  //     window.scrollTo(0, 0);
+  //     resetToFirstPage();
+  //     //  fetchHouses();
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  useEffect(() => {
+    // Skip the first render since LandingPage already fetched
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
+    // use fetchData method from houseMethods.js to fetch the data from the server
+    fetchData(
+      state,
+      setIsLoading,
+      setSearch,
+      setCountry,
+      setSearchResult,
+      dispatch,
+      navigate,
+      pathname,
+      fetchHouses,
+      resetToFirstPage
+    );
+  }, [
+    pathname,
+    forRent,
+    forSale,
+    minPrice,
+    maxPrice,
+    beds,
+    bath,
+    area,
+    city,
+    country,
+    houseType,
+    features,
+    squareAreaMin,
+    squareAreaMax,
+    pageCount,
+    searchDisplay,
+    searchResult,
+    state,
+  ]);
+
+  useEffect(() => {
+    if (!message && allHouses.length > 0) {
+      setHouses(allHouses); // Update the houses state with fetched data
+    } else {
+      // const paginationBtn = document.querySelector('.pagination-button');
+      // paginationBtn.style.display = 'none';
+      // window.scrollTo(0, 0);
+    }
+    checkHighestPrice();
   }, [allHouses, message]);
 
   return (
     <div className="container-houses">
-        
-        <Search
+      <Search
         currentPage={currentPage.current}
         limit={limit}
-          searchHouses={search}
-          setSearchHouses={setSearch}
-          check
-          houseList={houses}
-          setResult={setSearchResult}
-          result={searchResult}
-          forRent={forRent}
-          forSale={forSale}
-          handleAvailabilityClick={handleAvailabilityClick}
-          minPrice={minPrice}
-          setMinPrice={setMinPrice}
-          maxPrice={maxPrice}
-          setMaxPrice={setMaxPrice}
-          calculateMinPrice={calculateMinPrice}
-          bedRoom={beds}
-          setBedRoom={setBeds}
-          bathRoom={bath}
-          setBathRoom={setBath}
-          area={area}
-          setArea={setArea}
-          filterArea={filterArea}
-          city={city}
-          setCity={setCity}
-          filterCity={filterCity}
-          country={country}
-          filterCountry={filterCountry}
-          houseType={houseType}
-          houseTypeFilter={houseTypeFilter}
-          features={features}
-          featureHouseFilter={featureHouseFilter}
-          squareAreaMin={squareAreaMin}
-          squareAreaMax={squareAreaMax}
-          squareAreaRange={squareAreaRange}
-          handlePageClick={handlePageClick}
-          setSearchDisplay={setSearchDisplay}
-        />
+        searchHouses={search}
+        setSearchHouses={setSearch}
+        check
+        houseList={houses}
+        setResult={setSearchResult}
+        result={searchResult}
+        forRent={forRent}
+        forSale={forSale}
+        handleAvailabilityClick={handleAvailabilityClick}
+        minPrice={minPrice}
+        setMinPrice={setMinPrice}
+        maxPrice={maxPrice}
+        setMaxPrice={setMaxPrice}
+        calculateMinPrice={calculateMinPrice}
+        bedRoom={beds}
+        setBedRoom={setBeds}
+        bathRoom={bath}
+        setBathRoom={setBath}
+        area={area}
+        setArea={setArea}
+        filterArea={filterArea}
+        city={city}
+        setCity={setCity}
+        filterCity={filterCity}
+        country={country}
+        filterCountry={filterCountry}
+        houseType={houseType}
+        houseTypeFilter={houseTypeFilter}
+        features={features}
+        featureHouseFilter={featureHouseFilter}
+        squareAreaMin={squareAreaMin}
+        squareAreaMax={squareAreaMax}
+        squareAreaRange={squareAreaRange}
+        handlePageClick={handlePageClick}
+        setSearchDisplay={setSearchDisplay}
+      />
 
-
-        <HouseCards filteredHouse={filteredHouse} noResults={message} skip={skip} limit={limit} isLoading={isLoading} handleFavourites={handleFavourites} handlePageClick={handlePageClick} pageCount={pageCount} currentPage={currentPage}/>
+      <HouseCards
+        filteredHouse={filteredHouse}
+        noResults={message}
+        skip={skip}
+        limit={limit}
+        isLoading={isLoading}
+        handleFavourites={handleFavourites}
+        handlePageClick={handlePageClick}
+        pageCount={pageCount}
+        currentPage={currentPage}
+      />
 
       <div className="pagination-button">
-        {!message && <ReactPaginate
-          breakLabel={"..."}
-          nextLabel={"next >"}
-          onPageChange={handlePageClick}
-          marginPagesDisplayed={2}
-          pageRangeDisplayed={4}
-          pageCount={pageCount}
-          previousLabel={"< previous"}
-          renderOnZeroPageCount={null}
-          forcePage={currentPage.current -1 }
-          // bootstrap class names
-          containerClassName={"pagination justify-content-center my-4"}
-          pageClassName={"page-item"}
-          pageLinkClassName={"page-link"}
-          previousClassName={"page-item"}
-          previousLinkClassName={"page-link"}
-          nextClassName={"page-item"}
-          nextLinkClassName={"page-link"}
-          breakClassName={"page-item"}
-          breakLinkClassName={"page-link"}
-          activeClassName={"active"}
-        />}
+        {!message && (
+          <ReactPaginate
+            breakLabel={"..."}
+            nextLabel={"next >"}
+            onPageChange={handlePageClick}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={4}
+            pageCount={pageCount}
+            previousLabel={"< previous"}
+            renderOnZeroPageCount={null}
+            forcePage={currentPage.current - 1}
+            // bootstrap class names
+            containerClassName={"pagination justify-content-center my-4"}
+            pageClassName={"page-item"}
+            pageLinkClassName={"page-link"}
+            previousClassName={"page-item"}
+            previousLinkClassName={"page-link"}
+            nextClassName={"page-item"}
+            nextLinkClassName={"page-link"}
+            breakClassName={"page-item"}
+            breakLinkClassName={"page-link"}
+            activeClassName={"active"}
+          />
+        )}
       </div>
     </div>
   );

@@ -89,6 +89,10 @@ function DetailsPage({ backButton }) {
 
   const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
 
+  const updateHouse = () => {
+    navigate(`/update/${house._id}`);
+  }
+
   useEffect(() => {
     dispatch(fetchDetailsPage(houseId));
     dispatch(fetchedHouses(1, 30));
@@ -126,13 +130,14 @@ function DetailsPage({ backButton }) {
         <>
             <div className="details-favourite-back">
               <button onClick={backButton} className="back-button">
-                <p>
                   <FontAwesomeIcon
                     icon={faTentArrowTurnLeft}
                     className="back-icon"
                   />
                   Back
-                </p>
+              </button>
+              <button onClick={updateHouse} className="update-button">
+              Update
               </button>
             </div>
           <div className="details-wrapper">
