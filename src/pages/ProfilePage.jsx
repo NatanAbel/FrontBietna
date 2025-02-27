@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectLoginToken, selectUser } from "../store/auth/selectors";
 import AccountForm from "../components/user/AccountForm.jsx";
 import axios from "axios";
-import PostedHouses from "../components/user/postedHouses.jsx";
+import PostedHouses from "../components/user/PostedHouses.jsx";
 import {
   houseDelete,
   logout,
