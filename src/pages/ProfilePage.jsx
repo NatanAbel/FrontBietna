@@ -1,21 +1,21 @@
-import DOMPurify from "dompurify"; 
+import DOMPurify from "dompurify";
 import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { selectLoginToken, selectUser } from "../store/auth/selectors";
-import AccountForm from "../component/user/AccountForm";
+import AccountForm from "../components/user/AccountForm";
 import axios from "axios";
-import PostedHouses from "../component/user/postedHouses";
+import PostedHouses from "../components/user/postedHouses";
 import {
   houseDelete,
   logout,
   toggleFavorites,
   updateUser,
 } from "../store/auth/slice";
-import Favourites from "../component/user/Favourites";
+import Favourites from "../components/user/Favourites";
 import { useNavigate } from "react-router-dom";
 import "./Profile.css";
-import "../component/user/Account.css";
+import "../components/user/Account.css";
 import {
   getStorage,
   ref,
@@ -49,14 +49,14 @@ const giveCurrentDateTime = () => {
   return `${date} ${time}`;
 };
 
-   // Escape HTML for additional safety
-   const escapeHTML = (unsafe) =>
-    unsafe
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+// Escape HTML for additional safety
+const escapeHTML = (unsafe) =>
+  unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 
 function ProfilePage() {
   // const currentUser = useSelector(selectUser);
@@ -97,7 +97,7 @@ function ProfilePage() {
 
   // Sanitize function
   const sanitizeInput = (input) => DOMPurify.sanitize(input);
-  
+
   const handleOptionClick = (option) => {
     setActiveOption(option);
     setAccount(option === "account");
@@ -156,20 +156,21 @@ function ProfilePage() {
       console.error("Invalid houseId");
       return;
     }
-  
+
     // Perform basic validation on the client
     if (!houseId.match(/^[a-fA-F0-9]{24}$/)) {
       console.error("Invalid houseId format");
       return;
     }
-    
+
     const body = { favorites: houseId };
 
     try {
       const res = await axios.put(`${API_URL}/auth/update/profile`, body, {
         headers: {
           Authorization: "Bearer " + token,
-        }});
+        },
+      });
 
       if (res.status === 200) {
         // A condition to remove from favourites if it's already added or add to favourites if it doesn't.
@@ -245,72 +246,75 @@ function ProfilePage() {
   };
 
   // Validate files for type, size, and magic bytes (signature)
-// Function to validate a single file (type, size, signature)
-const validateFile = async (file) => {
-  const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
-  const maxSize = 5 * 1024 * 1024; // 5MB limit
+  // Function to validate a single file (type, size, signature)
+  const validateFile = async (file) => {
+    const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    const maxSize = 5 * 1024 * 1024; // 5MB limit
 
-  // Validate file type (MIME type)
-  setImgValidationError("")
-  if (!validTypes.includes(file.type)) {
-    setImgValidationError("Invalid file type. Only JPG, PNG, GIF, and WEBP are allowed.")
-    return { valid: false};
-  }
+    // Validate file type (MIME type)
+    setImgValidationError("");
+    if (!validTypes.includes(file.type)) {
+      setImgValidationError(
+        "Invalid file type. Only JPG, PNG, GIF, and WEBP are allowed."
+      );
+      return { valid: false };
+    }
 
-  // Validate file size
-  if (file.size > maxSize) {
-    setImgValidationError("File size exceeds the 5MB limit.")
-    return { valid: false };
-  }
+    // Validate file size
+    if (file.size > maxSize) {
+      setImgValidationError("File size exceeds the 5MB limit.");
+      return { valid: false };
+    }
 
-  // Validate file signature (magic bytes)
-  try {
-    await validateFileSignature(file);
-  } catch (error) {
-    setImgValidationError("Invalid file signature.");
-    return { valid: false };
-  }
+    // Validate file signature (magic bytes)
+    try {
+      await validateFileSignature(file);
+    } catch (error) {
+      setImgValidationError("Invalid file signature.");
+      return { valid: false };
+    }
 
-  return { valid: true };
-};
+    return { valid: true };
+  };
 
   // Handle image file selection and preview
   const handleFileChange = async (e) => {
     e.preventDefault();
-    try{
-    const selectedFile = e.target.files[0]; // Convert the FileList to an array
-    if (selectedFile) {
-      // Function to sanitize the filename (removes unsafe characters)
-    const sanitizeFilename = (filename) => {
-      return filename
-        .replace(/[^a-zA-Z0-9_-]/g, "_")  // Only allow safe characters
-        .slice(0, 100)// Limit filename length
-        .replace(/\.\.+/, "_");// Remove dangerous characters like ".."
-    };
+    try {
+      const selectedFile = e.target.files[0]; // Convert the FileList to an array
+      if (selectedFile) {
+        // Function to sanitize the filename (removes unsafe characters)
+        const sanitizeFilename = (filename) => {
+          return filename
+            .replace(/[^a-zA-Z0-9_-]/g, "_") // Only allow safe characters
+            .slice(0, 100) // Limit filename length
+            .replace(/\.\.+/, "_"); // Remove dangerous characters like ".."
+        };
 
-    // Sanitize filename
-    const sanitizedFileName = sanitizeFilename(selectedFile.name);
-      const sanitizedFile = new File([selectedFile], sanitizedFileName, { type: selectedFile.type });
-    // const sanitizedFiles = files.map((file) => {
-    //   const sanitizedFileName = sanitizeFilename(file.name);
-    //   return new File([file], sanitizedFileName, { type: file.type });
-    // });
-      
-      const fileValidation = await validateFile(selectedFile)
+        // Sanitize filename
+        const sanitizedFileName = sanitizeFilename(selectedFile.name);
+        const sanitizedFile = new File([selectedFile], sanitizedFileName, {
+          type: selectedFile.type,
+        });
+        // const sanitizedFiles = files.map((file) => {
+        //   const sanitizedFileName = sanitizeFilename(file.name);
+        //   return new File([file], sanitizedFileName, { type: file.type });
+        // });
 
-      if (fileValidation.valid) {
-        // If file is valid, generate a URL for preview
-        const previewUrl = URL.createObjectURL(sanitizedFile);
+        const fileValidation = await validateFile(selectedFile);
 
-        // Update preview images and file state
-        setProfilePhoto(previewUrl);
-        setFile(sanitizedFile);
+        if (fileValidation.valid) {
+          // If file is valid, generate a URL for preview
+          const previewUrl = URL.createObjectURL(sanitizedFile);
+
+          // Update preview images and file state
+          setProfilePhoto(previewUrl);
+          setFile(sanitizedFile);
+        }
       }
-
+    } catch (e) {
+      console.error("Error during file upload:", e);
     }
-  } catch (e) {
-    console.error("Error during file upload:", e);
-  }
   };
 
   const handleSubmit = async (e) => {
@@ -356,12 +360,13 @@ const validateFile = async (file) => {
     } catch (e) {
       console.error(e);
       if (e.response && e.response.status === 429) {
-        setImgValidationError("Too many update request, please try again later.")
+        setImgValidationError(
+          "Too many update request, please try again later."
+        );
         return;
       }
     }
   };
-
 
   const removeProfilePic = async () => {
     if (prevProfileImg !== PROFILE_IMG_DEFAULT_URL) {
@@ -466,7 +471,7 @@ const validateFile = async (file) => {
 
   useEffect(() => {
     fetchProfile();
-    setIsLoading(false)
+    setIsLoading(false);
   }, []);
 
   // // Toggle modal visibility
@@ -491,142 +496,151 @@ const validateFile = async (file) => {
 
   return (
     <>
-     {isLoading ?( <div style={{margin:"0 auto"}}><Circles
-                     height="80"
-                     width="80"
-                     color="black"
-                     ariaLabel="circles-loading"
-                     wrapperStyle={{}}
-                     wrapperClass=""
-                     visible={true}
-                   /></div>):<div className="profile-container">
-      <div className="profile-header">
-        <div className="profile-picture">
-          {/* {isModalOpen && <div className="profile-modal" >
+      {isLoading ? (
+        <div style={{ margin: "0 auto" }}>
+          <Circles
+            height="80"
+            width="80"
+            color="black"
+            ariaLabel="circles-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+            visible={true}
+          />
+        </div>
+      ) : (
+        <div className="profile-container">
+          <div className="profile-header">
+            <div className="profile-picture">
+              {/* {isModalOpen && <div className="profile-modal" >
           {displayProfileImage()}
           </div>} */}
 
-          <div className="img-container">
-            <img
-              src={file && profilePhoto ? profilePhoto : prevProfileImg}
-              alt={sanitizeInput("Profile Picture")}
-              className={`profile-img ${
-                file && profilePhoto ? "profile-img-opacity" : ""
-              }`}
-              // onClick={toggleModal}
-            />
-          </div>
-          <p className="edit-img-icon">
-            <FontAwesomeIcon
-              icon={faPenToSquare}
-              onClick={() => setIsEditProfilePic(true)}
-            />
-          </p>
+              <div className="img-container">
+                <img
+                  src={file && profilePhoto ? profilePhoto : prevProfileImg}
+                  alt={sanitizeInput("Profile Picture")}
+                  className={`profile-img ${
+                    file && profilePhoto ? "profile-img-opacity" : ""
+                  }`}
+                  // onClick={toggleModal}
+                />
+              </div>
+              <p className="edit-img-icon">
+                <FontAwesomeIcon
+                  icon={faPenToSquare}
+                  onClick={() => setIsEditProfilePic(true)}
+                />
+              </p>
 
-          <form onSubmit={handleSubmit}>
-            {isEditProfilePic && (
-              <div className="upload-btn-container">
-                <div>
-                  <FontAwesomeIcon
-                    icon={faCircleXmark}
-                    onClick={handleCancel}
-                    className="edit-close-btn"
-                  />
-                </div>
-                {imgValidationError ? (
-                  <div className="image-validation">
-                    <p>{escapeHTML(imgValidationError)}</p>
-                  </div>
-                ) : (
-                  <div className="file-status">
-                    {" "}
-                    {profilePhoto && file && (
-                      <p>Image selected to upload...!</p>
+              <form onSubmit={handleSubmit}>
+                {isEditProfilePic && (
+                  <div className="upload-btn-container">
+                    <div>
+                      <FontAwesomeIcon
+                        icon={faCircleXmark}
+                        onClick={handleCancel}
+                        className="edit-close-btn"
+                      />
+                    </div>
+                    {imgValidationError ? (
+                      <div className="image-validation">
+                        <p>{escapeHTML(imgValidationError)}</p>
+                      </div>
+                    ) : (
+                      <div className="file-status">
+                        {" "}
+                        {profilePhoto && file && (
+                          <p>Image selected to upload...!</p>
+                        )}
+                      </div>
                     )}
+
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        gap: "1rem",
+                        paddingTop: ".5rem",
+                      }}
+                    >
+                      {file && !imgValidationError ? (
+                        <button className="img-upload-btn" type="submit">
+                          Upload
+                        </button>
+                      ) : (
+                        <label className="img-upload-btn">
+                          Add photo
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="profileImage/*"
+                            name="profileImage"
+                            onChange={handleFileChange}
+                            className="file-input"
+                            style={{ display: "none" }}
+                          />
+                        </label>
+                      )}
+                      <button
+                        className="img-delete-btn"
+                        type="button"
+                        onClick={removeProfilePic}
+                      >
+                        <FontAwesomeIcon className="" icon={faTrash} /> Delete
+                      </button>
+                    </div>
                   </div>
                 )}
+              </form>
+            </div>
+          </div>
+          <div className="profile-username">
+            <p className="text-username">
+              <span>{sanitizeInput(`${userFirstName} ${userLastName}`)}</span>
+            </p>{" "}
+            <div className="file-status-success">
+              {cancelUploadImg && (
+                <p className="success-upload-img">
+                  Image upload successfully..✅
+                </p>
+              )}
+            </div>
+            <p className="text-username">{/* <span>{username}</span> */}</p>
+          </div>
 
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    gap: "1rem",
-                    paddingTop: ".5rem",
-                  }}
+          <div className="profile-details-wrapper">
+            <div className="profile-info">
+              <div
+                className={`profile-options ${
+                  isOptionsVisible ? "" : "hidden"
+                }`}
+              >
+                <p
+                  onClick={() => handleOptionClick("account")}
+                  className={activeOption === "account" ? "active" : ""}
                 >
-                  {file && !imgValidationError ? (
-                    <button className="img-upload-btn" type="submit">
-                      Upload
-                    </button>
-                  ) : (
-                    <label className="img-upload-btn">
-                      Add photo
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="profileImage/*"
-                        name="profileImage"
-                        onChange={handleFileChange}
-                        className="file-input"
-                        style={{ display: "none" }}
-                      />
-                    </label>
-                  )}
-                  <button
-                    className="img-delete-btn"
-                    type="button"
-                    onClick={removeProfilePic}
-                  >
-                    <FontAwesomeIcon className="" icon={faTrash} /> Delete
-                  </button>
-                </div>
-              </div>
-            )}
-          </form>
-        </div>
-      </div>
-      <div className="profile-username">
-        <p className="text-username">
-          <span>{sanitizeInput(`${userFirstName} ${userLastName}`)}</span>
-        </p>{" "}
-        <div className="file-status-success">
-          {cancelUploadImg && (
-            <p className="success-upload-img">Image upload successfully..✅</p>
-          )}
-        </div>
-        <p className="text-username">{/* <span>{username}</span> */}</p>
-      </div>
+                  <FontAwesomeIcon className="profile-icon" icon={faGear} />{" "}
+                  Account Setting
+                </p>
 
-      <div className="profile-details-wrapper">
-        <div className="profile-info">
-          <div
-            className={`profile-options ${isOptionsVisible ? "" : "hidden"}`}
-          >
-            <p
-              onClick={() => handleOptionClick("account")}
-              className={activeOption === "account" ? "active" : ""}
-            >
-              <FontAwesomeIcon className="profile-icon" icon={faGear} /> Account
-              Setting
-            </p>
+                <p
+                  onClick={() => handleOptionClick("posted")}
+                  className={activeOption === "posted" ? "active" : ""}
+                >
+                  <FontAwesomeIcon className="profile-icon" icon={faUpload} />{" "}
+                  Posted
+                </p>
 
-            <p
-              onClick={() => handleOptionClick("posted")}
-              className={activeOption === "posted" ? "active" : ""}
-            >
-              <FontAwesomeIcon className="profile-icon" icon={faUpload} />{" "}
-              Posted
-            </p>
+                <p
+                  onClick={() => handleOptionClick("favourites")}
+                  className={activeOption === "favourites" ? "active" : ""}
+                >
+                  <FontAwesomeIcon className="profile-icon" icon={faStar} />{" "}
+                  Favourites
+                </p>
 
-            <p
-              onClick={() => handleOptionClick("favourites")}
-              className={activeOption === "favourites" ? "active" : ""}
-            >
-              <FontAwesomeIcon className="profile-icon" icon={faStar} />{" "}
-              Favourites
-            </p>
-
-            {/* <p
+                {/* <p
               onClick={() => handleOptionClick("saved")}
               className={activeOption === "saved" ? "active" : ""}
             >
@@ -634,92 +648,94 @@ const validateFile = async (file) => {
               Saved Searches
             </p> */}
 
-            <p
-              className={`delete-user ${
-                activeOption === "delete" ? "active" : ""
-              }`}
-              onClick={() => userDeleteCheck("warning")}
-            >
-              <FontAwesomeIcon className="profile-icon" icon={faTrash} /> Delete
-              Account
-            </p>
-            {/* <p onClick={deleteUser}>Delete Account</p> */}
-          </div>
-          <div className="options-text">
-            {!isOptionsVisible && (
-              <h3>
-                {activeOption.charAt(0).toUpperCase() + activeOption.slice(1)}
-              </h3>
-            )}
-          </div>
-          <div
-            className={
-              !isMobile
-                ? "profile-to-display"
-                : `mobile-profile-options ${
-                    isOptionsVisible ? "hide-mobile" : ""
-                  } `
-            }
-          >
-            {/* Close Button on Mobile */}
-            {isMobile && !isOptionsVisible && (
-              <button
-                className="close-button"
-                onClick={toggleOptionsVisibility}
+                <p
+                  className={`delete-user ${
+                    activeOption === "delete" ? "active" : ""
+                  }`}
+                  onClick={() => userDeleteCheck("warning")}
+                >
+                  <FontAwesomeIcon className="profile-icon" icon={faTrash} />{" "}
+                  Delete Account
+                </p>
+                {/* <p onClick={deleteUser}>Delete Account</p> */}
+              </div>
+              <div className="options-text">
+                {!isOptionsVisible && (
+                  <h3>
+                    {activeOption.charAt(0).toUpperCase() +
+                      activeOption.slice(1)}
+                  </h3>
+                )}
+              </div>
+              <div
+                className={
+                  !isMobile
+                    ? "profile-to-display"
+                    : `mobile-profile-options ${
+                        isOptionsVisible ? "hide-mobile" : ""
+                      } `
+                }
               >
-                <FontAwesomeIcon icon={faCircleXmark} />
-              </button>
-            )}
+                {/* Close Button on Mobile */}
+                {isMobile && !isOptionsVisible && (
+                  <button
+                    className="close-button"
+                    onClick={toggleOptionsVisibility}
+                  >
+                    <FontAwesomeIcon icon={faCircleXmark} />
+                  </button>
+                )}
 
-            {account && (
-              <AccountForm
-                username={username}
-                setUserName={setUserName}
-                emailUser={userEmail}
-                setUserEmail={setUserEmail}
-                userFirstName={userFirstName}
-                setUserFirstName={setUserFirstName}
-                userLastName={userLastName}
-                setUserLastName={setUserLastName}
-                telNumber={telNumber}
-                setTelNumber={setTelNumber}
-              />
-            )}
-            {posted && (
-              <PostedHouses
-                publishedHouses={publishedHouses}
-                user={user}
-                handleDeleteHouse={handleDeleteHouse}
-              />
-            )}
-            {favs && (
-              <Favourites
-                user={user}
-                favourites={favourites}
-                handleFavBtn={handleFavBtn}
-              />
-            )}
+                {account && (
+                  <AccountForm
+                    username={username}
+                    setUserName={setUserName}
+                    emailUser={userEmail}
+                    setUserEmail={setUserEmail}
+                    userFirstName={userFirstName}
+                    setUserFirstName={setUserFirstName}
+                    userLastName={userLastName}
+                    setUserLastName={setUserLastName}
+                    telNumber={telNumber}
+                    setTelNumber={setTelNumber}
+                  />
+                )}
+                {posted && (
+                  <PostedHouses
+                    publishedHouses={publishedHouses}
+                    user={user}
+                    handleDeleteHouse={handleDeleteHouse}
+                  />
+                )}
+                {favs && (
+                  <Favourites
+                    user={user}
+                    favourites={favourites}
+                    handleFavBtn={handleFavBtn}
+                  />
+                )}
+              </div>
+            </div>
+            <div className={`delete-warning ${warning ? "" : "warning-hide"}`}>
+              <p>Are you sure you want to delete your account??</p>
+              <div className="button-delete-container">
+                <button
+                  className="button-delete danger"
+                  onClick={() => userDeleteCheck("delete")}
+                >
+                  Delete
+                </button>
+                <button
+                  className="button-delete"
+                  onClick={() => userDeleteCheck("cancel")}
+                >
+                  cancel
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-        <div className={`delete-warning ${warning ? "" : "warning-hide"}`}>
-          <p>Are you sure you want to delete your account??</p>
-          <div className="button-delete-container">
-            <button
-              className="button-delete danger"
-              onClick={() => userDeleteCheck("delete")}
-            >
-              Delete
-            </button>
-            <button
-              className="button-delete"
-              onClick={() => userDeleteCheck("cancel")}
-            >
-              cancel
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>}
+      )}
     </>
   );
 }

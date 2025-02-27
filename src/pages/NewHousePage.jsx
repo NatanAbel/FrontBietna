@@ -1,9 +1,7 @@
-import HouseForm from '../component/House/HouseForm'
+import HouseForm from "../components/House/HouseForm";
 
 function NewHousePage() {
-  return (
-    <HouseForm heading="New House"/>
-  )
+  return <HouseForm heading="New House" />;
 }
 
-export default NewHousePage
+export default NewHousePage;

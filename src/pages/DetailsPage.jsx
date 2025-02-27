@@ -17,7 +17,7 @@ import { fetchedHouses } from "../store/houses/thunks";
 import { Swiper, SwiperSlide } from "swiper/react";
 import DOMPurify from "dompurify";
 import { Link } from "react-router-dom";
-import ModalDetailsPage from "../component/House/ModalDetailsPage";
+import ModalDetailsPage from "../components/House/ModalDetailsPage";
 import "./DetailsPage.css";
 
 // Import Swiper styles
@@ -73,8 +73,8 @@ function DetailsPage({ backButton }) {
       if (home.country === house.country) {
         return (
           (home._id !== house._id && // Ensure the house isn't the same
-          home.city === house.city) || // Match the city
-          Math.abs(home.price - house.price) <= 50000  || // Example price range criteria
+            home.city === house.city) || // Match the city
+          Math.abs(home.price - house.price) <= 50000 || // Example price range criteria
           Math.abs(home.rentalPrice - house.rentalPrice) <= 10000
         );
       }
@@ -91,7 +91,7 @@ function DetailsPage({ backButton }) {
 
   const updateHouse = () => {
     navigate(`/update/${house._id}`);
-  }
+  };
 
   useEffect(() => {
     dispatch(fetchDetailsPage(houseId));
@@ -128,81 +128,81 @@ function DetailsPage({ backButton }) {
       )}
       {house ? (
         <>
-            <div className="details-favourite-back">
-              <button onClick={backButton} className="back-button">
-                  <FontAwesomeIcon
-                    icon={faTentArrowTurnLeft}
-                    className="back-icon"
-                  />
-                  Back
-              </button>
-              <button onClick={updateHouse} className="update-button">
+          <div className="details-favourite-back">
+            <button onClick={backButton} className="back-button">
+              <FontAwesomeIcon
+                icon={faTentArrowTurnLeft}
+                className="back-icon"
+              />
+              Back
+            </button>
+            <button onClick={updateHouse} className="update-button">
               Update
-              </button>
-            </div>
+            </button>
+          </div>
           <div className="details-wrapper">
             <div className="details-content">
               <div className="house-details">
-                  <div className="gallary-swiper-img">
-                    <Swiper
-                      style={{
-                        "--swiper-navigation-color": "#fff",
-                        "--swiper-pagination-color": "#fff",
-                      }}
-                      spaceBetween={10}
-                      loop={house.images.length > 1} // Enable loop only if there are more than 1 image
-                      slidesPerGroup={1}
-                      navigation={true}
-                      thumbs={{
-                        swiper:
-                          thumbsSwiper && !thumbsSwiper.destroyed
-                            ? thumbsSwiper
-                            : null,
-                      }}
-                      modules={[FreeMode, Navigation, Thumbs]}
-                      className="mySwiper2"
-                    >
-                      {house.images.map((image, index) => (
-                        <SwiperSlide key={index}>
-                          <img
-                            className="large-img"
-                            src={image}
-                            alt={`Image-index ${index}`}
-                            loading="lazy"
-                            onClick={() => handleModalImage(index)}
-                          />
-                        </SwiperSlide>
-                      ))}
-                    </Swiper>
-                    <Swiper
-                      onSwiper={setThumbsSwiper}
-                      spaceBetween={10}
-                      slidesPerView={4} // Show up to 4 slides
-                      slidesPerGroup={1} // Move one slide at a time
-                      loop={house.images.length > 4}
-                      freeMode={true}
-                      watchSlidesProgress={true}
-                      modules={[FreeMode, Navigation, Thumbs]}
-                      className="mySwiper-gallery"
-                    >
-                      {house.images.map((image, index) => (
-                        <SwiperSlide key={index}>
-                          <img
-                            src={image}
-                            alt={`Image-index ${index}`}
-                            loading="lazy"
-                          />
-                        </SwiperSlide>
-                      ))}
-                    </Swiper>
-                  </div>
+                <div className="gallary-swiper-img">
+                  <Swiper
+                    style={{
+                      "--swiper-navigation-color": "#fff",
+                      "--swiper-pagination-color": "#fff",
+                    }}
+                    spaceBetween={10}
+                    loop={house.images.length > 1} // Enable loop only if there are more than 1 image
+                    slidesPerGroup={1}
+                    navigation={true}
+                    thumbs={{
+                      swiper:
+                        thumbsSwiper && !thumbsSwiper.destroyed
+                          ? thumbsSwiper
+                          : null,
+                    }}
+                    modules={[FreeMode, Navigation, Thumbs]}
+                    className="mySwiper2"
+                  >
+                    {house.images.map((image, index) => (
+                      <SwiperSlide key={index}>
+                        <img
+                          className="large-img"
+                          src={image}
+                          alt={`Image-index ${index}`}
+                          loading="lazy"
+                          onClick={() => handleModalImage(index)}
+                        />
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
+                  <Swiper
+                    onSwiper={setThumbsSwiper}
+                    spaceBetween={10}
+                    slidesPerView={4} // Show up to 4 slides
+                    slidesPerGroup={1} // Move one slide at a time
+                    loop={house.images.length > 4}
+                    freeMode={true}
+                    watchSlidesProgress={true}
+                    modules={[FreeMode, Navigation, Thumbs]}
+                    className="mySwiper-gallery"
+                  >
+                    {house.images.map((image, index) => (
+                      <SwiperSlide key={index}>
+                        <img
+                          src={image}
+                          alt={`Image-index ${index}`}
+                          loading="lazy"
+                        />
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
+                </div>
 
                 <div className="house-details-box">
                   <div className="room-status-container">
                     <div className="status-home-type">
                       <div>
                         <p className="text-status">
-                        {capitalize(house.homeType)}
+                          {capitalize(house.homeType)}
                         </p>
                       </div>
                       <div>
@@ -244,7 +244,7 @@ function DetailsPage({ backButton }) {
                     </div>
                   </div>
                   <div className="house-address-price">
-                  <h1>{escapeHTML(house.address)}</h1>
+                    <h1>{escapeHTML(house.address)}</h1>
                     <p className="details-text">
                       $
                       {house.availability.forRent
@@ -258,7 +258,9 @@ function DetailsPage({ backButton }) {
                         icon={faLocationDot}
                         className="details-icon"
                       />
-                      {escapeHTML(`${house.address}, ${house.city}, ${house.country}`)}
+                      {escapeHTML(
+                        `${house.address}, ${house.city}, ${house.country}`
+                      )}
                     </p>
                   </div>
                 </div>
@@ -293,23 +295,17 @@ function DetailsPage({ backButton }) {
                             </div>
                             <div className="left-info">
                               <p className="label-info">House type :</p>
-                              <p>
-                              {capitalize(house.homeType)}
-                              </p>
+                              <p>{capitalize(house.homeType)}</p>
                             </div>
                             <div className="left-info">
                               <p className="label-info">City :</p>
-                              <p>
-                              {capitalize(house.city)}
-                              </p>
+                              <p>{capitalize(house.city)}</p>
                             </div>
                           </div>
                           <div className="details-right-info">
                             <div className="right-info">
                               <p className="label-info">Country :</p>
-                              <p>
-                              {capitalize(house.country)}
-                              </p>
+                              <p>{capitalize(house.country)}</p>
                             </div>
                             <div className="right-info">
                               <p className="label-info">Area:</p>
@@ -342,7 +338,10 @@ function DetailsPage({ backButton }) {
                           </div>
                           <div className="feature-list-info">
                             {house.features.map((feature, index) => (
-                              <p key={`${feature}-${index}`} className="feature-list">
+                              <p
+                                key={`${feature}-${index}`}
+                                className="feature-list"
+                              >
                                 {capitalize(feature)}
                               </p>
                             ))}
@@ -351,10 +350,12 @@ function DetailsPage({ backButton }) {
                       </div>
                       <h2>Description</h2>
                       <div className="info-details">
-                      <p
-              className="description-text"
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(house.description) }}
-            ></p>
+                        <p
+                          className="description-text"
+                          dangerouslySetInnerHTML={{
+                            __html: DOMPurify.sanitize(house.description),
+                          }}
+                        ></p>
                       </div>
                     </div>
 
@@ -417,9 +418,7 @@ function DetailsPage({ backButton }) {
             <h2>Related Houses</h2>
             <div className="cards-swiper-container">
               <div className="related-country">
-                <p className="related-country-status">
-                  {house.country}
-                </p>
+                <p className="related-country-status">{house.country}</p>
               </div>
               <Swiper
                 effect={"coverflow"}
@@ -441,7 +440,10 @@ function DetailsPage({ backButton }) {
                 {homeRelated.slice(0, 8).map((house) => (
                   <SwiperSlide key={house._id}>
                     <div className="details-card-wrapper">
-                      <a href={`/housesDetails/${house._id}`} className="related-card-link">
+                      <a
+                        href={`/housesDetails/${house._id}`}
+                        className="related-card-link"
+                      >
                         <img
                           src={house.images[0]}
                           alt="images"

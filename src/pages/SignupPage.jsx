@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect } from "react";
 import { useState } from "react";
-import AuthForm from "../component/user/AuthForm";
+import AuthForm from "../components/user/AuthForm";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "../store/auth/selectors";
@@ -11,7 +11,7 @@ const API_URL = import.meta.env.VITE_BACK_URL;
 
 function SignupPage() {
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const [userName, setUserName] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -23,8 +23,7 @@ function SignupPage() {
     e.preventDefault();
 
     try {
-      const body = { userName, firstName,
-        lastName, email, password };
+      const body = { userName, firstName, lastName, email, password };
       const res = await axios.post(`${API_URL}/auth/signup`, body);
       setUserName("");
       setEmail("");
@@ -36,8 +35,8 @@ function SignupPage() {
         navigate("/login");
       }
     } catch (e) {
-      dispatch(statusResponse(e.response.status))
-      dispatch(messageResponse(e.response.data.message))
+      dispatch(statusResponse(e.response.status));
+      dispatch(messageResponse(e.response.data.message));
     }
   };
 
@@ -46,7 +45,7 @@ function SignupPage() {
       navigate("/");
     }
   }, [user]);
-  
+
   return (
     <>
       <AuthForm

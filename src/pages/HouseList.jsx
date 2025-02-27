@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { faHeartbeat } from "@fortawesome/free-solid-svg-icons";
 // import { toggleFavorites } from "../store/houses/slice";
-import Search from "../component/Search";
+import Search from "../components/Search";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
 import {
@@ -19,8 +19,8 @@ import {
 } from "../store/auth/selectors";
 import { toggleFavorites, updateUser } from "../store/auth/slice";
 import { Circles } from "react-loader-spinner";
-import "./HouseList.css"
-import HouseCards from "../component/House/HouseCards";
+import "./HouseList.css";
+import HouseCards from "../components/House/HouseCards";
 import { fetchData } from "../methods/houseMethods";
 
 const API_URL = import.meta.env.VITE_BACK_URL;
@@ -29,11 +29,7 @@ const compare_name = (player_a, player_b) => {
   return player_a.address.localeCompare(player_b.address);
 };
 
-function HouseList({
-  forRent,
-  forSale,
-  handleAvailabilityClick,
-}) {
+function HouseList({ forRent, forSale, handleAvailabilityClick }) {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
   // const [isLike, setIsLike] = useState(false);
@@ -232,7 +228,6 @@ function HouseList({
 
   // Memoize the filteredHouse variable using useMemo hook use to memoize the filtered house data based on the dependencies that cause the filtering to change.
   const filteredHouse = useMemo(() => {
-  
     return houses.filter((house) => {
       if (pathname === "/houses/allHouses" || (!forRent && !forSale)) {
         return true; // Show all houses

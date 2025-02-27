@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
-import AuthForm from "../component/user/AuthForm";
+import AuthForm from "../components/user/AuthForm";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchlogin } from "../store/auth/thunks";
 import { useNavigate } from "react-router-dom";
@@ -30,7 +30,7 @@ function LoginPage() {
       setPassword("");
       navigate("/");
     }
-  }, [status, isAuthenticated,navigate]);
+  }, [status, isAuthenticated, navigate]);
 
   return (
     <>
