@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchedHouses } from "../store/houses/thunks";
 import { selecthouses } from "../store/houses/selectors";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import Search from "../components/Search";
+import Search from "../components/Search.jsx";
 import "./Landing.css";
 import PropTypes from "prop-types"; // For prop validation
 import DOMPurify from "dompurify";

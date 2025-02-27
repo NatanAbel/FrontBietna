@@ -17,7 +17,7 @@ import { fetchedHouses } from "../store/houses/thunks";
 import { Swiper, SwiperSlide } from "swiper/react";
 import DOMPurify from "dompurify";
 import { Link } from "react-router-dom";
-import ModalDetailsPage from "../components/House/ModalDetailsPage";
+import ModalDetailsPage from "../components/House/ModalDetailsPage.jsx";
 import "./DetailsPage.css";
 
 // Import Swiper styles

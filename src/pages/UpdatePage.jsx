@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import HouseForm from "../components/House/HouseForm";
+import HouseForm from "../components/House/HouseForm.jsx";
 import DOMPurify from "dompurify";
 
 const API_URL = import.meta.env.VITE_BACK_URL;

@@ -3,16 +3,16 @@ import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { selectLoginToken, selectUser } from "../store/auth/selectors";
-import AccountForm from "../components/user/AccountForm";
+import AccountForm from "../components/user/AccountForm.jsx";
 import axios from "axios";
-import PostedHouses from "../components/user/postedHouses";
+import PostedHouses from "../components/user/postedHouses.jsx";
 import {
   houseDelete,
   logout,
   toggleFavorites,
   updateUser,
 } from "../store/auth/slice";
-import Favourites from "../components/user/Favourites";
+import Favourites from "../components/user/Favourites.jsx";
 import { useNavigate } from "react-router-dom";
 import "./Profile.css";
 import "../components/user/Account.css";

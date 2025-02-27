@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { faHeartbeat } from "@fortawesome/free-solid-svg-icons";
 // import { toggleFavorites } from "../store/houses/slice";
-import Search from "../components/Search";
+import Search from "../components/Search.jsx";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
 import {
@@ -20,8 +20,8 @@ import {
 import { toggleFavorites, updateUser } from "../store/auth/slice";
 import { Circles } from "react-loader-spinner";
 import "./HouseList.css";
-import HouseCards from "../components/House/HouseCards";
-import { fetchData } from "../methods/houseMethods";
+import HouseCards from "../components/House/HouseCards.jsx";
+import { fetchData } from "../methods/houseMethods.js";
 
 const API_URL = import.meta.env.VITE_BACK_URL;
 
