@@ -33,7 +33,10 @@ function LandingPage({
   const handleCountryClick = (chosenCounrty) => {
     const sanitizedCountry = DOMPurify.sanitize(chosenCounrty);
     setCountry(sanitizedCountry);
-    navigate("/houses/allHouses", { state: { country: sanitizedCountry } });
+    navigate("/houses/allHouses", {
+      state: { country: sanitizedCountry },
+      replace: true, // Use replace to prevent history stacking
+    });
   };
 
   const handleSearch = (searchInput, searchResults) => {
@@ -49,10 +52,12 @@ function LandingPage({
           search: sanitizedSearchInput,
           results: sanitizedSearchResults,
         },
+        replace: true, // Use replace to prevent history stacking
       });
     } else {
       navigate("/houses/allHouses", {
         state: { search: sanitizedSearchInput, results: [] },
+        replace: true, // Use replace to prevent history stacking
       });
     }
   };
