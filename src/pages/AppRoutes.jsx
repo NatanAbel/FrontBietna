@@ -49,7 +49,6 @@ function AppRoutes() {
     }
     return () => (effectRun.current = true);
   }, [dispatch]);
-
   // Set initial availability based on local storage
   useEffect(() => {
     // Retrieve availabilityType from local storage

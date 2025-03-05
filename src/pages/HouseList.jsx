@@ -337,14 +337,9 @@ function HouseList({ forRent, forSale, handleAvailabilityClick }) {
   //   }
   // };
 
-  useEffect(() => {
-    // Skip the first render since LandingPage already fetched
-    if (!isMounted.current) {
-      isMounted.current = true;
-      return;
-    }
+  const houseData = async () => {
     // use fetchData method from houseMethods.js to fetch the data from the server
-    fetchData(
+    await fetchData(
       state,
       setIsLoading,
       setSearch,
@@ -356,6 +351,15 @@ function HouseList({ forRent, forSale, handleAvailabilityClick }) {
       fetchHouses,
       resetToFirstPage
     );
+  }
+
+  useEffect(() => {
+    // Skip the first render since LandingPage already fetched
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
+    houseData()
   }, [
     pathname,
     forRent,
