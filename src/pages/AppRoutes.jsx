@@ -49,6 +49,7 @@ function AppRoutes() {
     }
     return () => (effectRun.current = true);
   }, [dispatch]);
+
   // Set initial availability based on local storage
   useEffect(() => {
     // Retrieve availabilityType from local storage
@@ -89,7 +90,6 @@ function AppRoutes() {
   return (
     <div className="app-container">
       <Navbar />
-
       <Routes>
         <Route
           path="/"

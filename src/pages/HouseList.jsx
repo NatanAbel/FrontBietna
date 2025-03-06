@@ -262,7 +262,7 @@ function HouseList({ forRent, forSale, handleAvailabilityClick }) {
 
   const hasFilters = () => {
     return (
-      search ||
+      search.trim() !== "" ||
       forRent ||
       forSale ||
       minPrice > 0 ||
@@ -338,50 +338,49 @@ function HouseList({ forRent, forSale, handleAvailabilityClick }) {
 
   const houseData = async () => {
     setIsLoading(true);
-  try {
-    // Handle navigation state
-    if (state?.search && state.results) {
-      setSearch(state.search);
-      setSearchResult(state.results);
+    try {
+      // Handle navigation state
+      if (state?.search && state.results) {
+        setSearch(state.search);
+        setSearchResult(state.results);
 
-      // Use searchFiltersFetched directly with search params
-      await dispatch(
-        searchFiltersFetched(
-          1, // Reset to first page
-          9,
-          state.search
-        )
-      );
+        // Use searchFiltersFetched directly with search params
+        dispatch(
+          searchFiltersFetched(
+            1, // Reset to first page
+            9,
+            state.search
+          )
+        );
 
-      // Clear the state after using it - IMPORTANT to prevent infinite loops
-      navigate(pathname, { replace: true, state: null });
-    } else if (state?.country) {
-      setCountry(state.country);
+        // Clear the state after using it - IMPORTANT to prevent infinite loops
+        navigate(pathname, { replace: true, state: null });
+      } else if (state?.country) {
+        setCountry(state.country);
 
-      // Use searchFiltersFetched directly with country param
-      await dispatch(
-        searchFiltersFetched(
-          1, // Reset to first page
-          9,
-          "", // No search term
-          state.country
-        )
-      );
+        // Use searchFiltersFetched directly with country param
+        dispatch(
+          searchFiltersFetched(
+            1, // Reset to first page
+            9,
+            "", // No search term
+            state.country
+          )
+        );
 
-      // Clear the state after using it - IMPORTANT to prevent infinite loops
-      navigate(pathname, { replace: true, state: null });
-    } else {
-      // No special state, just fetch houses normally
-      window.scrollTo(0, 0);
-      resetToFirstPage();
-      await dispatch(fetchedHouses(1, 9)); // Direct dispatch instead of calling fetchHouses
+        // Clear the state after using it - IMPORTANT to prevent infinite loops
+        navigate(pathname, { replace: true, state: null });
+      } else {
+        // No special state, just fetch houses normally
+        window.scrollTo(0, 0);
+        resetToFirstPage();
+        fetchHouses();
+      }
+    } catch (error) {
+      console.error("Error fetching house data:", error);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error("Error fetching house data:", error);
-  } finally {
-    setIsLoading(false);
-  }
-
   };
 
   useEffect(() => {

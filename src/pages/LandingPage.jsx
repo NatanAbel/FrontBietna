@@ -33,10 +33,7 @@ function LandingPage({
   const handleCountryClick = (chosenCounrty) => {
     const sanitizedCountry = DOMPurify.sanitize(chosenCounrty);
     setCountry(sanitizedCountry);
-    navigate("/houses/allHouses", {
-      state: { country: sanitizedCountry },
-      replace: true, // Use replace to prevent history stacking
-    });
+    navigate("/houses/allHouses", { state: { country: sanitizedCountry } });
   };
 
   const handleSearch = (searchInput, searchResults) => {
@@ -52,12 +49,10 @@ function LandingPage({
           search: sanitizedSearchInput,
           results: sanitizedSearchResults,
         },
-        replace: true, // Use replace to prevent history stacking
       });
     } else {
       navigate("/houses/allHouses", {
         state: { search: sanitizedSearchInput, results: [] },
-        replace: true, // Use replace to prevent history stacking
       });
     }
   };
@@ -74,7 +69,7 @@ function LandingPage({
         hasInitialFetchOccurred.current = true;
         setIsLoading(true);
         try {
-          await dispatch(fetchedHouses(1, 16));
+          dispatch(fetchedHouses(1, 16));
         } finally {
           setIsLoading(false);
         }
