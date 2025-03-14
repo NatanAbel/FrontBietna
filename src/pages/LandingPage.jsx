@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import React from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchedHouses } from "../store/houses/thunks";
 import { selecthouses } from "../store/houses/selectors";
@@ -12,6 +13,9 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow, Pagination, Navigation } from "swiper/modules";
 import { Circles } from "react-loader-spinner";
 
+// Create memoized search at the top of your file
+const MemoizedSearch = React.memo(Search);
+
 function LandingPage({
   forRent,
   setForRent,
@@ -24,11 +28,17 @@ function LandingPage({
   const [search, setSearch] = useState("");
   const [country, setCountry] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [displayedHouses, setDisplayedHouses] = useState([]);
+  // const [displayedHouses, setDisplayedHouses] = useState([]);
   const { allHouses } = house;
   const navigate = useNavigate();
   const location = useLocation().pathname;
   const hasInitialFetchOccurred = useRef(false);
+
+  //Add client-side caching
+  const housesCache = useRef({});
+  const cacheTimestamp = useRef(0);
+  // Add abort controller for request cancellation
+  const abortController = useRef(null);
 
   const handleCountryClick = (chosenCounrty) => {
     const sanitizedCountry = DOMPurify.sanitize(chosenCounrty);
@@ -36,7 +46,7 @@ function LandingPage({
     navigate("/houses/allHouses", { state: { country: sanitizedCountry } });
   };
 
-  const handleSearch = (searchInput, searchResults) => {
+  const handleSearch = useCallback((searchInput, searchResults) => {
     // Sanitize search inputs and results
     const sanitizedSearchInput = DOMPurify.sanitize(searchInput);
     if (searchResults !== undefined) {
@@ -55,43 +65,112 @@ function LandingPage({
         state: { search: sanitizedSearchInput, results: [] },
       });
     }
-  };
+  }, [navigate]);
 
-  // displaying random 8 images seconds
-  // const getRandomHouses = () => {
-  //   const shuffled = [...allHouses].sort(() => 0.5 - Math.random());
-  //   return shuffled.slice(0, 8);
-  // };
-
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      if (location === "/" && !hasInitialFetchOccurred.current) {
-        hasInitialFetchOccurred.current = true;
-        setIsLoading(true);
-        try {
-          dispatch(fetchedHouses(1, 16));
-        } finally {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    fetchInitialData();
-  }, [dispatch, location]);
-
-  useEffect(() => {
-    if (allHouses !== undefined && allHouses.length > 0) {
-      const shuffled = [...allHouses].sort(() => 0.5 - Math.random());
-      setDisplayedHouses(shuffled.slice(0, 8));
-
-      // displaying new random houses
-      // const interval = setInterval(() => {
-      //   setDisplayedHouses(getRandomHouses());
-      // }, 1000); // Change every 5 seconds
-
-      // return () => clearInterval(interval);
+  const displayedHouses = useMemo(() => {
+    if (allHouses?.length > 0) {
+      // Use a stable sorting algorithm with a fixed seed for consistency
+      const shuffled = [...allHouses].sort((a, b) => {
+        // Simple hash function for addresses to create a consistent "random" order
+        const hashA = a.address.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const hashB = b.address.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        return hashA - hashB;
+      });
+      return shuffled.slice(0, 8);
     }
-    // Scroll to the top of the page
+    return [];
+  }, [allHouses]);
+
+  const fetchInitialData = async () => {
+    if (location === "/" && !hasInitialFetchOccurred.current) {
+      hasInitialFetchOccurred.current = true;
+      setIsLoading(true);
+      
+      try {
+        // Check cache
+        const cacheKey = "landingPageHouses";
+        const currentTime = Date.now();
+        const CACHE_DURATION = 5 * 60 * 1000;
+        
+        if (
+          housesCache.current[cacheKey] && 
+          currentTime - cacheTimestamp.current < CACHE_DURATION &&
+          housesCache.current[cacheKey].length > 0
+        ) {
+
+          dispatch({
+            type: "houses/housesFetched",
+            payload: { allHouses: housesCache.current[cacheKey] }
+          });
+        } else {
+          // Use separate controllers for each request
+          // First fetch with its own controller - this one can be canceled safely
+          const smallController = new AbortController();
+
+          try {
+            const smallResult = await dispatch(
+              fetchedHouses(1, 4, { signal: smallController.signal })
+            );
+            // Show these immediately
+            setIsLoading(false);
+            // Store for cache if we don't get the full result
+            if (smallResult?.result && smallResult.result.length > 0) {
+              housesCache.current[cacheKey] = smallResult.result;
+              cacheTimestamp.current = currentTime;
+            }
+          } catch (smallError) {
+            // Ignore cancellation errors for the small request
+            if (smallError.name !== 'CanceledError' && smallError.name !== 'AbortError') {
+              throw smallError; // Re-throw non-cancellation errors
+            }
+          }
+          // Wait a moment before fetching the full set
+          await new Promise(resolve => setTimeout(resolve, 300));
+          
+          // Second request with a different controller
+          const fullController = new AbortController();
+          abortController.current = fullController; // Store for cleanup
+          
+          try {
+            const fullResult = await dispatch(
+              fetchedHouses(1, 16, { signal: fullController.signal })
+            );
+            
+            // Update cache with full result
+            if (fullResult?.result && fullResult.result.length > 0) {
+              housesCache.current[cacheKey] = fullResult.result;
+              cacheTimestamp.current = currentTime;
+            }
+          } catch (fullError) {
+            // Only log non-cancellation errors
+            if (fullError.name !== 'CanceledError' && fullError.name !== 'AbortError') {
+              console.error("Failed to fetch full house data:", fullError);
+            }
+          }
+        }
+      } catch (error) {
+        // Only log non-cancellation errors
+        if (error.name !== 'CanceledError' && error.name !== 'AbortError') {
+          console.error("Failed to fetch houses:", error);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+  
+// Implement proper caching mechanism with async/await
+useEffect(() => {
+  fetchInitialData();
+   // Cleanup function
+   return () => {
+    if (abortController.current) {
+      abortController.current.abort();
+    }
+  };
+}, [dispatch, location]);
+
+  useEffect(() => {
     window.scrollTo(0, 0);
   }, [allHouses]);
 
@@ -113,7 +192,7 @@ function LandingPage({
               </button>
           </div>  */}
           <div className="landing-search-input">
-            <Search
+            <MemoizedSearch
               houses={allHouses}
               search={search}
               setSearch={setSearch}

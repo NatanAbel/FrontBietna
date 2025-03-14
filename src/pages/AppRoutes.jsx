@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import axios from "axios";
 import Navbar from "../components/Navbar.jsx";
 import LandingPage from "../pages/LandingPage.jsx";
@@ -27,7 +27,7 @@ function AppRoutes() {
   const location = useLocation().pathname;
   const effectRun = useRef(false);
 
-  const handleAvailabilityClick = (availabilityType) => {
+  const handleAvailabilityClick = useCallback( (availabilityType) => {
     if (availabilityType === "forRent") {
       setForRent(true);
       setForSale(false);
@@ -40,12 +40,12 @@ function AppRoutes() {
       localStorage.setItem("availabilityType", forSale ? "" : "forSale");
       navigate("/houses/buy");
     }
-  };
+  }, [navigate]);
 
   useEffect(() => {
     // React 18 Strict Mode
     if (effectRun.current === true || process.env.NODE_ENV !== "development") {
-      dispatch(bootstrapThunkLogin);
+      dispatch(bootstrapThunkLogin());
     }
     return () => (effectRun.current = true);
   }, [dispatch]);

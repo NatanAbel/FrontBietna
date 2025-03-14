@@ -11,17 +11,19 @@ import {
 import PropTypes from "prop-types"; // For prop validation
 import DOMPurify from "dompurify";
 
-function HouseCards({filteredHouse = [],
+function HouseCards({
+  filteredHouse = [],
   noResults = "",
   isLoading = false,
   skip = 0,
   limit = 10,
-  handleFavourites,}) {
+  handleFavourites,
+}) {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const user = useSelector(selectUser);
 
-   // Validate house data structure
-   const validateHouse = (house) => {
+  // Validate house data structure
+  const validateHouse = (house) => {
     return (
       house &&
       typeof house._id === "string" &&
@@ -73,10 +75,14 @@ function HouseCards({filteredHouse = [],
                 )}
                 <p className="card-img-text">
                   {DOMPurify.sanitize(
-                        house.availability.forRent ? "For Rent" : "For Sale"
-                      )}
+                    house.availability.forRent ? "For Rent" : "For Sale"
+                  )}
                 </p>
-                <img src={house.images[0]} alt={`Image of house at ${DOMPurify.sanitize(house.address)}`} loading="lazy"/>
+                <img
+                  src={house.images[0]}
+                  alt={`Image of house at ${DOMPurify.sanitize(house.address)}`}
+                  loading="lazy"
+                />
               </div>
               <div className="card-body">
                 <Link

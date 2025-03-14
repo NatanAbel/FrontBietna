@@ -12,7 +12,7 @@ import { app } from "../../firebase";
 const API_BACK_URL = import.meta.env.VITE_BACK_URL;
 axios.defaults.withCredentials = true;
 
-export const bootstrapThunkLogin = async (dispatch, getState) => {
+export const bootstrapThunkLogin =()=> async (dispatch, getState) => {
   // const token = localStorage.getItem("token");
   const isAuthenticated = getState()?.auth?.isAuthenticated;
   
