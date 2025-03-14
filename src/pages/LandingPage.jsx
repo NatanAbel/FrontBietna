@@ -46,34 +46,41 @@ function LandingPage({
     navigate("/houses/allHouses", { state: { country: sanitizedCountry } });
   };
 
-  const handleSearch = useCallback((searchInput, searchResults) => {
-    // Sanitize search inputs and results
-    const sanitizedSearchInput = DOMPurify.sanitize(searchInput);
-    if (searchResults !== undefined) {
-      const sanitizedSearchResults = searchResults.map((result) =>
-        DOMPurify.sanitize(result)
-      );
-      // Navigate to the HouseList page with the search input
-      navigate("/houses/allHouses", {
-        state: {
-          search: sanitizedSearchInput,
-          results: sanitizedSearchResults,
-        },
-      });
-    } else {
-      navigate("/houses/allHouses", {
-        state: { search: sanitizedSearchInput, results: [] },
-      });
-    }
-  }, [navigate]);
+  const handleSearch = useCallback(
+    (searchInput, searchResults) => {
+      // Sanitize search inputs and results
+      const sanitizedSearchInput = DOMPurify.sanitize(searchInput);
+      if (searchResults !== undefined) {
+        const sanitizedSearchResults = searchResults.map((result) =>
+          DOMPurify.sanitize(result)
+        );
+        // Navigate to the HouseList page with the search input
+        navigate("/houses/allHouses", {
+          state: {
+            search: sanitizedSearchInput,
+            results: sanitizedSearchResults,
+          },
+        });
+      } else {
+        navigate("/houses/allHouses", {
+          state: { search: sanitizedSearchInput, results: [] },
+        });
+      }
+    },
+    [navigate]
+  );
 
   const displayedHouses = useMemo(() => {
     if (allHouses?.length > 0) {
       // Use a stable sorting algorithm with a fixed seed for consistency
       const shuffled = [...allHouses].sort((a, b) => {
         // Simple hash function for addresses to create a consistent "random" order
-        const hashA = a.address.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        const hashB = b.address.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const hashA = a.address
+          .split("")
+          .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const hashB = b.address
+          .split("")
+          .reduce((acc, char) => acc + char.charCodeAt(0), 0);
         return hashA - hashB;
       });
       return shuffled.slice(0, 8);
@@ -85,22 +92,21 @@ function LandingPage({
     if (location === "/" && !hasInitialFetchOccurred.current) {
       hasInitialFetchOccurred.current = true;
       setIsLoading(true);
-      
+
       try {
         // Check cache
         const cacheKey = "landingPageHouses";
         const currentTime = Date.now();
         const CACHE_DURATION = 5 * 60 * 1000;
-        
+
         if (
-          housesCache.current[cacheKey] && 
+          housesCache.current[cacheKey] &&
           currentTime - cacheTimestamp.current < CACHE_DURATION &&
           housesCache.current[cacheKey].length > 0
         ) {
-
           dispatch({
             type: "houses/housesFetched",
-            payload: { allHouses: housesCache.current[cacheKey] }
+            payload: { allHouses: housesCache.current[cacheKey] },
           });
         } else {
           // Use separate controllers for each request
@@ -120,22 +126,25 @@ function LandingPage({
             }
           } catch (smallError) {
             // Ignore cancellation errors for the small request
-            if (smallError.name !== 'CanceledError' && smallError.name !== 'AbortError') {
+            if (
+              smallError.name !== "CanceledError" &&
+              smallError.name !== "AbortError"
+            ) {
               throw smallError; // Re-throw non-cancellation errors
             }
           }
           // Wait a moment before fetching the full set
-          await new Promise(resolve => setTimeout(resolve, 300));
-          
+          await new Promise((resolve) => setTimeout(resolve, 300));
+
           // Second request with a different controller
           const fullController = new AbortController();
           abortController.current = fullController; // Store for cleanup
-          
+
           try {
             const fullResult = await dispatch(
               fetchedHouses(1, 16, { signal: fullController.signal })
             );
-            
+
             // Update cache with full result
             if (fullResult?.result && fullResult.result.length > 0) {
               housesCache.current[cacheKey] = fullResult.result;
@@ -143,14 +152,17 @@ function LandingPage({
             }
           } catch (fullError) {
             // Only log non-cancellation errors
-            if (fullError.name !== 'CanceledError' && fullError.name !== 'AbortError') {
+            if (
+              fullError.name !== "CanceledError" &&
+              fullError.name !== "AbortError"
+            ) {
               console.error("Failed to fetch full house data:", fullError);
             }
           }
         }
       } catch (error) {
         // Only log non-cancellation errors
-        if (error.name !== 'CanceledError' && error.name !== 'AbortError') {
+        if (error.name !== "CanceledError" && error.name !== "AbortError") {
           console.error("Failed to fetch houses:", error);
         }
       } finally {
@@ -158,17 +170,17 @@ function LandingPage({
       }
     }
   };
-  
-// Implement proper caching mechanism with async/await
-useEffect(() => {
-  fetchInitialData();
-   // Cleanup function
-   return () => {
-    if (abortController.current) {
-      abortController.current.abort();
-    }
-  };
-}, [dispatch, location]);
+
+  // Implement proper caching mechanism with async/await
+  useEffect(() => {
+    fetchInitialData();
+    // Cleanup function
+    return () => {
+      if (abortController.current) {
+        abortController.current.abort();
+      }
+    };
+  }, [dispatch, location]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -229,6 +241,11 @@ useEffect(() => {
                   navigation={true}
                   modules={[EffectCoverflow, Pagination, Navigation]}
                   className="mySwiper"
+                  touchEventsTarget="container"
+                  preventClicks={false}
+                  preventClicksPropagation={false}
+                  touchStartPreventDefault={false}
+                  watchSlidesProgress={true}
                 >
                   {displayedHouses.map((house) => (
                     <SwiperSlide key={house._id}>

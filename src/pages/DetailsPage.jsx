@@ -436,6 +436,11 @@ function DetailsPage({ backButton }) {
                 navigation={true}
                 modules={[EffectCoverflow, Pagination, Navigation]}
                 className="mySwiper"
+                touchEventsTarget="container"
+              preventClicks={false}
+              preventClicksPropagation={false}
+              touchStartPreventDefault={false}
+              watchSlidesProgress={true}
               >
                 {homeRelated.slice(0, 8).map((house) => (
                   <SwiperSlide key={house._id}>

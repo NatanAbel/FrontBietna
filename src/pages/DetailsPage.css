@@ -456,11 +456,11 @@
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
     border-top-left-radius: 200px;
     border-top-right-radius: 200px; 
-  
+    z-index: 2;
   }
 
   .related-card-link{
-    z-index: 1000;
+    z-index: 4;
   }
   
   .details-card-wrapper .details-card {
