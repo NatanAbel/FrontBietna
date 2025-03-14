@@ -458,6 +458,10 @@
     border-top-right-radius: 200px; 
   
   }
+
+  .related-card-link{
+    z-index: 1000;
+  }
   
   .details-card-wrapper .details-card {
     position: absolute; 
