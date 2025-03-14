@@ -461,6 +461,7 @@
 
   .related-card-link{
     z-index: 4;
+    cursor: pointer;
   }
   
   .details-card-wrapper .details-card {

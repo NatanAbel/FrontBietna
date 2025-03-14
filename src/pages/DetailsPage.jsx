@@ -426,7 +426,7 @@ function DetailsPage({ backButton }) {
                 centeredSlides={true}
                 slidesPerView={"auto"}
                 coverflowEffect={{
-                  rotate: 50,
+                  rotate: 30,
                   stretch: 0,
                   depth: 100,
                   modifier: 1,
@@ -437,17 +437,21 @@ function DetailsPage({ backButton }) {
                 modules={[EffectCoverflow, Pagination, Navigation]}
                 className="mySwiper"
                 touchEventsTarget="container"
-              preventClicks={false}
-              preventClicksPropagation={false}
-              touchStartPreventDefault={false}
-              watchSlidesProgress={true}
+                preventClicks={false}
+                preventClicksPropagation={false}
+                touchStartPreventDefault={false}
+                watchSlidesProgress={true}
+                threshold={5} // Lower threshold for swipe detection
+                touchRatio={1} // Increase touch ratio
+                touchAngle={45} // More forgiving touch angle
+                simulateTouch={true}
               >
                 {homeRelated.slice(0, 8).map((house) => (
                   <SwiperSlide key={house._id}>
                     <div className="details-card-wrapper">
-                      <a
-                        href={`/housesDetails/${house._id}`}
+                      <div
                         className="related-card-link"
+                        onClick={() => navigate(`/housesDetails/${house._id}`)}
                       >
                         <img
                           src={house.images[0]}
@@ -465,7 +469,7 @@ function DetailsPage({ backButton }) {
                               : house.price.toLocaleString()}
                           </p>
                         </div>
-                      </a>
+                      </div>
                     </div>
                   </SwiperSlide>
                 ))}

@@ -34,7 +34,7 @@ function LandingPage({
   const location = useLocation().pathname;
   const hasInitialFetchOccurred = useRef(false);
 
-  //Add client-side caching
+  // Add client-side caching
   const housesCache = useRef({});
   const cacheTimestamp = useRef(0);
   // Add abort controller for request cancellation
@@ -231,7 +231,7 @@ function LandingPage({
                   centeredSlides={true}
                   slidesPerView={"auto"}
                   coverflowEffect={{
-                    rotate: 50,
+                    rotate: 30,
                     stretch: 0,
                     depth: 100,
                     modifier: 1,
@@ -246,11 +246,16 @@ function LandingPage({
                   preventClicksPropagation={false}
                   touchStartPreventDefault={false}
                   watchSlidesProgress={true}
+                  initialSlide={0}
+                  threshold={5} // Lower threshold for swipe detection
+                  touchRatio={1} // Increase touch ratio
+                  touchAngle={45} // More forgiving touch angle
+                  simulateTouch={true}
                 >
                   {displayedHouses.map((house) => (
                     <SwiperSlide key={house._id}>
-                      <div className="details-card-wrapper">
-                        <Link to={`/housesDetails/${house._id}`}>
+                      <div className="details-card-wrapper"  onClick={() => navigate(`/housesDetails/${house._id}`)} >
+                        <div className="house-card-content">
                           <img
                             src={house.images[0]}
                             alt={`Image of house at ${DOMPurify.sanitize(
@@ -271,7 +276,7 @@ function LandingPage({
                               </p>
                             </div>
                           </div>
-                        </Link>
+                        </div>
                       </div>
                     </SwiperSlide>
                   ))}
