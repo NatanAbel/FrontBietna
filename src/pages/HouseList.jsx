@@ -10,7 +10,6 @@ import Search from "../components/Search.jsx";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
 import {
-  selectFavs,
   selectIsAuthenticated,
   selectLoginToken,
   selectUser,
@@ -20,6 +19,7 @@ import { Circles } from "react-loader-spinner";
 import "./HouseList.css";
 import HouseCards from "../components/House/HouseCards.jsx";
 import { debounce } from "../utils/debounce.js";
+import { bootstrapThunkLogin } from "../store/auth/thunks.jsx";
 
 const API_URL = import.meta.env.VITE_BACK_URL;
 
@@ -194,28 +194,53 @@ function HouseList({ forRent, forSale, handleAvailabilityClick }) {
 
   // Memoized clicked favourites button
   const handleFavourites = useCallback(async (houseId) => {
-    // Perform basic validation on the client
-    if (!houseId || !houseId.match(/^[a-fA-F0-9]{24}$/)) {
-      console.error("Invalid houseId format");
-      return;
-    }
-
-    const body = { favorites: houseId };
-
-    try {
-      const res = await axios.put(`${API_URL}/auth/update/profile`, body, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (res.status === 200) {
-        dispatch(toggleFavorites(houseId));
+    const executeFavorite = async (retryCount = 0) => {
+      const body = { favorites: houseId };
+  
+      try {
+        const res = await axios.put(`${API_URL}/auth/update/profile`, body, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        if (res.status === 200) {
+          dispatch(toggleFavorites(houseId));
+        }
+      } catch (error) {
+        // Check if it's a token expiration error (403)
+        if (error.response?.status === 403 && retryCount === 0) {
+          try {
+            // Wait for token refresh to complete and get new token
+            const newToken = await dispatch(bootstrapThunkLogin());
+            
+            // Make a new request with the fresh token
+            const retryRes = await axios.put(`${API_URL}/auth/update/profile`, body, {
+              headers: {
+                Authorization: `Bearer ${newToken}`,
+              },
+            });
+  
+            if (retryRes.status === 200) {
+              dispatch(toggleFavorites(houseId));
+            }
+          } catch (refreshError) {
+            console.error("Token refresh failed");
+            navigate("/login");
+            return;
+          }
+        } else {
+          if (!isAuthenticated) {
+            navigate("/login");
+          }
+        }
       }
-    } catch (error) {
-      console.error("Error updating profile:", error);
-    }
-  }, [dispatch, token]);
+    };
+  
+    await executeFavorite();
+  }, [dispatch, token, isAuthenticated, navigate]);
+
+  // Add this axios interceptor setup inside your compone
 
   // Memoize the filteredHouse variable using useMemo hook use to memoize the filtered house data based on the dependencies that cause the filtering to change.
   const filteredHouse = useMemo(() => {
@@ -268,6 +293,10 @@ function HouseList({ forRent, forSale, handleAvailabilityClick }) {
 
    // Create a debounced fetch function
   const fetchHouses = useCallback(
+    // Create a debounced fetch function that delays API calls until user input stabilizes
+// - Prevents excessive API calls when filters change rapidly
+// - Waits 300ms after the last change before fetching
+// - Improves performance by reducing server load and network requests
     debounce(() => {
       if (hasFilters()) {
         dispatch(

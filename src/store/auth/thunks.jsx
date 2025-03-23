@@ -37,7 +37,10 @@ export const bootstrapThunkLogin =()=> async (dispatch, getState) => {
         token: accessToken,
         me: user,
       })
-    );}
+    );
+
+    return accessToken;
+  }
   } catch (err) {
     
     const status = err?.response?.status || 403;
@@ -48,7 +51,14 @@ export const bootstrapThunkLogin =()=> async (dispatch, getState) => {
       // dispatch(messageResponse("Your login has expired"));
       dispatch(logout())
     }
-    console.log("Error in bootstrapping", err);
+
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error in bootstrapping:', {
+        status: err.response?.status,
+        message: err.response?.data?.message
+      });
+    }
+    
   }
 };
 
@@ -57,7 +67,21 @@ export const fetchlogin = (userName, password) => {
     try {
       dispatch(startLoading());
 
-      const body = { userName, password };
+      // Create the configuration
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        transformRequest: [(data, headers) => {
+          // The data parameter here is the raw data before JSON.stringify
+          // We need to return the stringified data, not just the maskedData
+          return JSON.stringify(data);
+        }],
+        withCredentials: true
+      };
+
+      const body = { userName, password};
       const auth = getAuth(app);
       const provider = new GoogleAuthProvider();
       // condition to check while user signup using google O'auth
@@ -90,10 +114,9 @@ export const fetchlogin = (userName, password) => {
         const userVerified = verifyMe.data.verified;
         dispatch(userLogedIn({ token, me: userVerified }));
       } else {
-        const response = await axios.post(`${API_BACK_URL}/auth/login`, body);
+        const response = await axios.post(`${API_BACK_URL}/auth/login`, body, config);
         const token = response.data.accessToken;
 
-        // localStorage.setItem("token", token);
         dispatch(statusResponse(response.status));
 
         const verifyMe = await axios.get(`${API_BACK_URL}/auth/verify`, {
@@ -106,11 +129,32 @@ export const fetchlogin = (userName, password) => {
         dispatch(userLogedIn({ token: token, me: userVerified }));
       }
     } catch (err) {
+      // Secure error handling
       const status = err?.response?.status || 500;
-      const message = err?.response?.data?.message || "Login failed";
-      dispatch(statusResponse(status));
-      dispatch(messageResponse(message));
-      console.error(err);
+      
+      // Only show generic messages in production
+      if (process.env.NODE_ENV === 'production') {
+        // Generic error messages for users
+        if (status === 401) {
+          dispatch(messageResponse("Invalid credentials"));
+        } else {
+          dispatch(messageResponse("An error occurred during login"));
+        }
+        dispatch(statusResponse(status));
+      } else {
+        // Detailed errors only in development
+        const message = err?.response?.data?.message || "Login failed";
+        dispatch(statusResponse(status));
+        dispatch(messageResponse(message));
+        console.error('Login error:', {
+          status,
+          message,
+          // Avoid logging sensitive data
+          path: err?.config?.url,
+          method: err?.config?.method
+        });
+      }
+      
     }
   };
 };

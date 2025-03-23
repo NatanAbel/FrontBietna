@@ -35,6 +35,7 @@ function PostedHouses({publishedHouses, user, handleDeleteHouse}) {
   );
 
   const handleDelete = (houseId, houseOwnerId) => {
+
     if (user && houseOwnerId === user._id) {
       debouncedDelete(houseId);
     } else {
@@ -69,7 +70,7 @@ function PostedHouses({publishedHouses, user, handleDeleteHouse}) {
             <div className="card-img">
             <button
                     className="btn-faHeart"
-                    onClick={() =>handleDelete(house._id, house.postedBy._id)}
+                    onClick={() =>handleDelete(house._id, house.postedBy)}
                   >
                     <FontAwesomeIcon className="profile-icon" icon={faTrash} />
                   </button>

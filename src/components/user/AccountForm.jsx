@@ -23,7 +23,6 @@ const escapeHTML = (str) => {
     .replace(/'/g, "&#039;");
 };
 
-
 function AccountForm({
   username,
   setUserName,
@@ -38,13 +37,12 @@ function AccountForm({
 }) {
   const dispatch = useDispatch();
   const [edit, setEdit] = useState(false);
-  const token = useSelector(selectLoginToken)
+  const token = useSelector(selectLoginToken);
   const [firstName, setFirstName] = useState(userFirstName);
   const [lastName, setLastName] = useState(userLastName);
-  const [errors, setErrors] = useState({}); 
-   // SanitizeInput for data sent to backend
-  const sanitizeInput = (input) => DOMPurify.sanitize(input); 
-
+  const [errors, setErrors] = useState({});
+  // SanitizeInput for data sent to backend
+  const sanitizeInput = (input) => DOMPurify.sanitize(input);
 
   // Client-side validation function
   const validateInput = () => {
@@ -57,19 +55,28 @@ function AccountForm({
       newErrors.emailUser = "Invalid email address.";
     }
     if (!validator.isLength(firstName || "", { min: 1, max: 50 })) {
-      newErrors.firstName = "First name cannot be empty or exceed 50 characters.";
+      newErrors.firstName =
+        "First name cannot be empty or exceed 50 characters.";
     }
     if (!validator.isLength(lastName || "", { min: 1, max: 50 })) {
       newErrors.lastName = "Last name cannot be empty or exceed 50 characters.";
     }
-    if (!validator.isMobilePhone(String(telNumber) || "", "any")) {
+    // Phone number validation - handle masked numbers
+    const phoneStr = String(telNumber);
+    const isMaskedNumber = phoneStr.includes("****");
+
+    if (
+      telNumber !== 0 &&
+      telNumber !== "" &&
+      !isMaskedNumber &&
+      !validator.isMobilePhone(phoneStr, "any")
+    ) {
       newErrors.telNumber = "Invalid phone number.";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
 
   const handleForm = async (e) => {
     e.preventDefault();
@@ -79,9 +86,12 @@ function AccountForm({
       return; // Stop form submission if validation fails
     }
 
-    setUserFirstName(firstName)
-    setUserLastName(lastName)
-    // const token = localStorage.getItem("token");
+    setUserFirstName(firstName);
+    setUserLastName(lastName);
+
+    // Create a copy of the form data that only includes changed fields
+    const changedFields = {};
+
     const body = {
       userName: sanitizeInput(username),
       email: sanitizeInput(emailUser),
@@ -89,98 +99,118 @@ function AccountForm({
       lastName: sanitizeInput(lastName),
       phoneNumber: sanitizeInput(telNumber),
     };
-    try {
-      const res = await axios.put(`${API_URL}/auth/update/profile`, body,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
 
-      if (res.status === 200) {
-        dispatch(updateUser(res.data));
+    Object.keys(body).forEach((key) => {
+      // Skip masked fields that haven't been changed by the user
+      if (
+        (key === "email" && body[key].includes("***")) ||
+        (key === "phoneNumber" && body[key].includes("****"))
+      ) {
+        return;
       }
-    } catch (error) {
-      console.error("Error updating profile:", error);
+      // Include this field in the update
+      changedFields[key] = body[key];
+    });
+
+    if (Object.keys(changedFields).length > 0) {
+      try {
+        const res = await axios.put(
+          `${API_URL}/auth/update/profile`,
+          changedFields,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (res.status === 200) {
+          dispatch(updateUser(res.data));
+        }
+      } catch (error) {
+        console.error("Error updating profile:", error);
+      }
     }
   };
 
   const editButton = () => {
     setEdit(true);
   };
-  
+
   const doneEdit = (e) => {
     e.preventDefault();
     setEdit(false);
   };
 
   useEffect(() => {
-    setFirstName(userFirstName)
-    setLastName(userLastName)
-  }, [
-    dispatch,
-    username,
-    emailUser,
-    userFirstName,
-    userLastName,
-    telNumber,
-  ]);
+    setFirstName(userFirstName);
+    setLastName(userLastName);
+  }, [dispatch, username, emailUser, userFirstName, userLastName, telNumber]);
 
   return (
     <div className="account-container">
       {edit ? (
-        <form onSubmit={handleForm} >
+        <form onSubmit={handleForm}>
           <div className="account-form-wrapper">
             <div className="form-info">
               <label>Username</label>
-                <input
-                  type="text"
-                  className="form-account-input"
-                  value={username}
-                  onChange={(e) => setUserName(e.target.value)}
-                />
-                {errors.username && <p className="input-error">{errors.username}</p>}
+              <input
+                type="text"
+                className="form-account-input"
+                value={username}
+                onChange={(e) => setUserName(e.target.value)}
+              />
+              {errors.username && (
+                <p className="input-error">{errors.username}</p>
+              )}
             </div>
             <div className="form-info">
               <label>Email</label>
-                <input
-                  type="email"
-                  className="form-account-input"
-                  value={emailUser}
-                  onChange={(e) => setUserEmail(e.target.value)}
-                />
-                {errors.emailUser && <p className="input-error">{errors.emailUser}</p>}
+              <input
+                type="email"
+                className="form-account-input"
+                value={emailUser}
+                onChange={(e) => setUserEmail(e.target.value)}
+              />
+              {errors.emailUser && (
+                <p className="input-error">{errors.emailUser}</p>
+              )}
             </div>
             <div className="form-info">
               <label>Firstname</label>
-                <input
-                  type="text"
-                  className="form-account-input"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                />
-                {errors.firstName && <p className="input-error">{errors.firstName}</p>}
+              <input
+                type="text"
+                className="form-account-input"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+              />
+              {errors.firstName && (
+                <p className="input-error">{errors.firstName}</p>
+              )}
             </div>
             <div className="form-info">
               <label>Lastname</label>
-                <input
-                  type="text"
-                  className="form-account-input"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                />
-                {errors.lastName && <p className="input-error">{errors.lastName}</p>}
+              <input
+                type="text"
+                className="form-account-input"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
+              {errors.lastName && (
+                <p className="input-error">{errors.lastName}</p>
+              )}
             </div>
             <div className="form-info">
               <label>Phonenumber</label>
-                <input
-                  type="text"
-                  className="form-account-input"
-                  value={telNumber}
-                  onChange={(e) => setTelNumber(e.target.value)}
-                />
-                {errors.telNumber && <p className="input-error">{errors.telNumber}</p>}
+              <input
+                type="text"
+                className="form-account-input"
+                value={telNumber}
+                onChange={(e) => setTelNumber(e.target.value)}
+              />
+              {errors.telNumber && (
+                <p className="input-error">{errors.telNumber}</p>
+              )}
             </div>
             <div className="btn-form-wrapper">
               <button type="submit">Save</button>

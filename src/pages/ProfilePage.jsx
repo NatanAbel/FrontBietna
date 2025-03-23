@@ -117,6 +117,8 @@ function ProfilePage() {
     setIsOptionsVisible(true);
   };
 
+  
+
   const handleDeleteHouse = async (house_id) => {
     try {
       const res = await axios.delete(`${API_URL}/houses/${house_id}/delete`, {

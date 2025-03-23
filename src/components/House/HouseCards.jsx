@@ -21,7 +21,6 @@ function HouseCards({
 }) {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const user = useSelector(selectUser);
-
   // Validate house data structure
   const validateHouse = (house) => {
     return (
@@ -37,6 +36,12 @@ function HouseCards({
       (house.rentalPrice || house.price) // At least one price must exist
     );
   };
+
+    // Add this helper function to check if a house is favorited
+  const isHouseFavorited = (houseId) => {
+      if (!user?.favorites || !Array.isArray(user.favorites)) return false;
+      return user.favorites.some(fav => fav._id === houseId);
+    };
 
   return (
     <>
@@ -63,10 +68,11 @@ function HouseCards({
               <div className="card-img">
                 {isAuthenticated ? (
                   <button
-                    className="btn-faHeart"
-                    onClick={() => handleFavourites(house._id)}
+                  className="btn-faHeart"
+                  onClick={() => handleFavourites(house._id)}
                   >
-                    {user?.favorites?.includes(house._id) ? "🖤" : "🤍"}
+                    
+                    {isHouseFavorited(house._id) ? "🖤" : "🤍"}
                   </button>
                 ) : (
                   <Link className="btn-faHeart" to="/login">

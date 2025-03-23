@@ -5,17 +5,19 @@ export const selectIsAuthenticated = (reduxState)=> reduxState.auth.isAuthentica
 export const selectStatus = (reduxState)=> reduxState.auth.status
 export const selectMessage = (reduxState)=> reduxState.auth.message
 
-export const selectFavs = (reduxState)=>{
-    const token = reduxState.auth.token
-    //  mapping over favorites array which is array of id's and find till it matches to house id
-    const houses = reduxState.house.houses
-    if(token){
-        const favorites = reduxState.auth.me
-    const matchFavs = favorites.favorites.map(favId => 
-        houses.find(house => house._id === favId)
-        )
+// export const selectFavs = (reduxState)=>{
+//     const token = reduxState.auth.token
+//     //  mapping over favorites array which is array of id's and find till it matches to house id
+//     const houses = reduxState.house.allHouses
+//     console.log("houses.......",reduxState.house.allHouses)
+//     if(token){
+//         const favorites = reduxState.auth.me
+//         console.log("favorites......",favorites.favorites)
+//     const matchFavs = favorites.favorites.map(favId => 
+//         houses.find(house => house._id === favId._id)
+//         )
 
-    return matchFavs
-    }
-}
+//     return matchFavs
+//     }
+// }
 

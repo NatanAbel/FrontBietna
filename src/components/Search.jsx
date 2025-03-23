@@ -167,11 +167,9 @@ function Search({
     }
   };
 
-  useEffect(() => {
-    if (searchForm) {
-      searchFilter();
-    }
-  }, [searchForm]);
+  const mobFilterIcon = () => {
+    setMobielFilter(!mobielFilter);
+  };
 
   const toggleOtherFiters = (e) => {
     e.preventDefault(e);
@@ -181,6 +179,12 @@ function Search({
       setShowFilters(!showFilters);
     }
   };
+
+  useEffect(() => {
+    if (searchForm) {
+      searchFilter();
+    }
+  }, [searchForm]);
 
   useEffect(() => {
     //Handlle mobile devices filters for dropdown menu's to display without dropdown buttons.
@@ -218,9 +222,6 @@ function Search({
     };
   }, [showFilters]);
 
-  const mobFilterIcon = () => {
-    setMobielFilter(!mobielFilter);
-  };
 
   // const toggleOtherFiters = () => {
   //   setShowFilters(!showFilters)

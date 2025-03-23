@@ -29,16 +29,18 @@ export const loginSlice = createSlice({
           },
         toggleFavorites : (state, action)=>{
             const idToAdd = action.payload
-            if(state.me){
-            // check if the user has already favorited
-            const newFav = state.me.favorites.includes(idToAdd) ?
-            // if it's already favorited remove it 
-            state.me.favorites.filter(fav => fav !== idToAdd) : 
-            // if it's not add to favorites
-            [...state.me.favorites, idToAdd];
-             
-            state.me.favorites = newFav
-        }
+            if (state.me && Array.isArray(state.me.favorites)) {
+                // Check if ID exists in favorites
+                const exists = state.me.favorites.some(fav => fav._id === idToAdd);
+                
+                if (exists) {
+                  // Remove from favorites
+                  state.me.favorites = state.me.favorites.filter(fav => fav._id !== idToAdd);
+                } else {
+                  // Add to favorites as an object
+                  state.me.favorites.push({ _id: idToAdd });
+                }
+              }
         },
         houseDelete : (state, action)=>{
             const idToDelete = action.payload
