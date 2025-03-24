@@ -305,8 +305,6 @@
   .general-house-title h1 {
     line-height: 0.9rem;
   }
-  .check .button-hide-show {
-  }
   
   .house-info {
     max-width: 100%;
@@ -615,7 +613,6 @@
 
     .modal-content .modal-swiper-large {
       max-height: 300px;
-      border: 2px solid red; 
     }
 
     .modal-swiper-large  img {

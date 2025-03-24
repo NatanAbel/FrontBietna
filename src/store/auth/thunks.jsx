@@ -66,22 +66,17 @@ export const fetchlogin = (userName, password) => {
   return async (dispatch) => {
     try {
       dispatch(startLoading());
-
       // Create the configuration
       const config = {
         headers: {
           'Content-Type': 'application/json',
           'X-Requested-With': 'XMLHttpRequest'
         },
-        transformRequest: [(data, headers) => {
-          // The data parameter here is the raw data before JSON.stringify
-          // We need to return the stringified data, not just the maskedData
-          return JSON.stringify(data);
-        }],
-        withCredentials: true
+        withCredentials: true,
       };
 
       const body = { userName, password};
+
       const auth = getAuth(app);
       const provider = new GoogleAuthProvider();
       // condition to check while user signup using google O'auth
@@ -113,7 +108,9 @@ export const fetchlogin = (userName, password) => {
 
         const userVerified = verifyMe.data.verified;
         dispatch(userLogedIn({ token, me: userVerified }));
+
       } else {
+
         const response = await axios.post(`${API_BACK_URL}/auth/login`, body, config);
         const token = response.data.accessToken;
 
