@@ -8,6 +8,7 @@ import {
 } from "./slice";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { app } from "../../firebase";
+import { authApi } from "../../utils/interceptorApi";
 
 const API_BACK_URL = import.meta.env.VITE_BACK_URL;
 axios.defaults.withCredentials = true;
@@ -66,14 +67,14 @@ export const fetchlogin = (userName, password) => {
   return async (dispatch) => {
     try {
       dispatch(startLoading());
-      // Create the configuration
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
-        },
-        withCredentials: true,
-      };
+      // // Create the configuration
+      // const config = {
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'X-Requested-With': 'XMLHttpRequest'
+      //   },
+      //   withCredentials: true,
+      // };
 
       const body = { userName, password};
 
@@ -111,18 +112,19 @@ export const fetchlogin = (userName, password) => {
 
       } else {
 
-        const response = await axios.post(`${API_BACK_URL}/auth/login`, body, config);
+        const response = await authApi.post(`${API_BACK_URL}/auth/login`, body);
         const token = response.data.accessToken;
 
         dispatch(statusResponse(response.status));
 
-        const verifyMe = await axios.get(`${API_BACK_URL}/auth/verify`, {
+        const verifyMe = await authApi.get(`${API_BACK_URL}/auth/verify`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
         const userVerified = verifyMe.data.verified;
+
         dispatch(userLogedIn({ token: token, me: userVerified }));
       }
     } catch (err) {
