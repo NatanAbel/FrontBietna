@@ -126,7 +126,7 @@ export const fetchlogin = (userName, password) => {
           'x-requested-with': 'XMLHttpRequest'
         },
         // Abort request if it takes too long
-        signal: AbortSignal.timeout(2000)
+        // signal: AbortSignal.timeout(2000)
       });
 
       timeMarker = logTiming("Login request", timeMarker);
@@ -148,7 +148,7 @@ export const fetchlogin = (userName, password) => {
             Authorization: `Bearer ${token}`,
             'Cache-Control': 'no-cache'
           },
-          timeout: 1500
+          // timeout: 1500
         })
         .then(verifyMe => {
           if (verifyMe.data.verified) {
