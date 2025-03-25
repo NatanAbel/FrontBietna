@@ -4,7 +4,7 @@ const API_BACK_URL = import.meta.env.VITE_BACK_URL;
 
 export const loginAxios = axios.create({
   baseURL: API_BACK_URL,
-  timeout: 2000, // Reduced timeout
+  // timeout: 2000, // Reduced timeout
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
