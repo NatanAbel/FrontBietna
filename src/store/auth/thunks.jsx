@@ -36,13 +36,33 @@ export const bootstrapThunkLogin = () => async (dispatch, getState) => {
     // if (!token) return
 
     if (isAuthenticated) {
-      const verifyMe = await axios.get(`${API_BACK_URL}/auth/refresh`);
 
-      const accessToken = verifyMe.data.accessToken;
-
-      const userVerified = await axios.get(`${API_BACK_URL}/auth/verify`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
+      const refreshResponse = await loginAxios.get('/auth/refresh', {
+        withCredentials: true,
+        headers: {
+          'Accept': 'application/json',
+          'Cache-Control': 'no-cache'
+        }
       });
+
+      if (!refreshResponse.data.accessToken) {
+        throw new Error('No access token received');
+      }
+
+      const accessToken = refreshResponse.data.accessToken;
+
+      const userVerified = await loginAxios.get('/auth/verify', {
+        headers: { 
+          'Authorization': `Bearer ${accessToken}`,
+          'Accept': 'application/json',
+          'Cache-Control': 'no-cache'
+        },
+        withCredentials: true
+      });
+
+      if (!userVerified.data.verified) {
+        throw new Error('User verification failed');
+      }
 
       const user = userVerified.data.verified;
 

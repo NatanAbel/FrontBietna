@@ -4,17 +4,11 @@ const API_BACK_URL = import.meta.env.VITE_BACK_URL;
 
 export const loginAxios = axios.create({
   baseURL: API_BACK_URL,
-  // timeout: 2000, // Reduced timeout
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
   withCredentials: true,
-  // Enable request compression
-  decompress: true,
-  // Connection pooling
-  maxSockets: 50,
-  keepAlive: true,
   // Disable automatic transformations
   transformResponse: [(data) => {
     try {
