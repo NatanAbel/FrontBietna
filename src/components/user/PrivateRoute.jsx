@@ -16,8 +16,18 @@ function PrivateRoute({ children }) {
     return <Navigate to="/login" replace />;
   }
   // Wait until authentication is determined
+  // Wait until authentication is determined
   if (isLoading) {
-    return <p style={{marginTop:"5rem"}}>Your login has expired...<a href="/login"style={{color:"blue"}}>Back to login</a></p>;
+    return (
+      <div style={{marginTop:"5rem", textAlign: "center"}}>
+        Loading...
+      </div>
+    );
+  }
+
+  // Redirect if authentication failed
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
   }
 
   // Render the protected page
