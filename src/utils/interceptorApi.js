@@ -9,6 +9,7 @@ export const loginAxios = axios.create({
     'Accept': 'application/json',
   },
   withCredentials: true,
+  timeout: 5000,
   // Disable automatic transformations
   transformResponse: [(data) => {
     try {
@@ -29,7 +30,6 @@ loginAxios.interceptors.request.use((config) => {
 
 // Add response interceptor with timing
 loginAxios.interceptors.response.use((response) => {
-  const duration = performance.now() - response.config.metadata.startTime;
   if (process.env.NODE_ENV === 'development') {
     const duration = performance.now() - response.config.metadata.startTime;
     if (duration > 150) {

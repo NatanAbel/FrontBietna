@@ -78,7 +78,7 @@ export const bootstrapThunkLogin = () => async (dispatch, getState) => {
   } catch (err) {
     const status = err?.response?.status || 403;
     // const message = err?.response?.data?.message || "Login failed";
-    if (status === 403) {
+    if (status === 403 || status === 401) {
       // dispatch(statusResponse(status));
       sessionStorage.removeItem("persist:auth"); // Clear persisted state
       // dispatch(messageResponse("Your login has expired"));
