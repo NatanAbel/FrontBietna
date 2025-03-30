@@ -1,6 +1,8 @@
 import axios from "axios";
 import { housesFetched, startLoading } from "./slice";
 import { current } from "@reduxjs/toolkit";
+import { toggleFavorites } from "../auth/slice";
+import { bootstrapThunkLogin, fetchLogOut } from "../auth/thunks";
 
 const API_URL = import.meta.env.VITE_BACK_URL;
 
@@ -60,5 +62,71 @@ export const searchFiltersFetched =
         }
     } catch (e) {
       console.log(e);
+    }
+  };
+  
+  export const handleFavourites = (houseId) => async (dispatch, getState) => {
+    const body = { favorites: houseId };
+    const maxRetries = 2; // Maximum number of retry attempts
+  
+    const executeFavoriteRequest = async (retryCount = 0) => {
+      try {
+        // Get current token
+        const token = getState().auth.token;
+        
+        // Use loginAxios instance which handles credentials
+        const res = await axios.put(`${API_URL}/auth/update/profile`, body, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+          withCredentials: true // Important for refresh token
+        });
+  
+        if (res.status === 200) {
+          dispatch(toggleFavorites(houseId));
+          return true;
+        }
+      } catch (error) {
+        // Handle expired access token (403)
+        if (error.response?.status === 403 && retryCount < maxRetries) {
+          try {
+            // Attempt to refresh token
+            const refreshSuccess = await dispatch(bootstrapThunkLogin());
+            
+            if (!refreshSuccess) {
+              throw new Error('Token refresh failed');
+            }
+  
+            // Get new token after successful refresh
+            const newToken = getState().auth.token;
+            if (!newToken) {
+              throw new Error('No new token received');
+            }
+  
+            // Retry the request with new token
+            return await executeFavoriteRequest(retryCount + 1);
+          } catch (refreshError) {
+            // If refresh token is expired or refresh fails
+            console.error('Token refresh failed:', refreshError);
+            await dispatch(fetchLogOut());
+            throw new Error('Authentication expired. Please login again.');
+          }
+        }
+  
+        // If we've exceeded retries or got a different error
+        if (retryCount >= maxRetries) {
+          throw new Error('Maximum retry attempts reached');
+        }
+  
+        // Handle other errors
+        throw error;
+      }
+    };
+  
+    try {
+      return await executeFavoriteRequest();
+    } catch (error) {
+      console.error('Failed to update favorites:', error);
+      throw error; // Propagate error to component
     }
   };

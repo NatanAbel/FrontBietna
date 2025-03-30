@@ -3,17 +3,14 @@ import { selectUser } from "../store/auth/selectors";
 import { useEffect } from "react";
 import {  useLocation, useNavigate } from "react-router-dom";
 import { fetchLogOut } from "../store/auth/thunks";
-import { selectHouseDetail } from "../store/houseDetails/selectors";
 
 function Navbar() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const user = useSelector(selectUser);
-  const house = useSelector(selectHouseDetail)
-  const {pathname} = useLocation();
 
   const handleLogout = ()=>{
-    dispatch(fetchLogOut)
+    dispatch(fetchLogOut())
     navigate("/")
   }
 

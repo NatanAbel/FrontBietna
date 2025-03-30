@@ -1,5 +1,5 @@
 import { selectIsAuthenticated, selectUser } from "../../store/auth/selectors";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Circles } from "react-loader-spinner";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,6 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import PropTypes from "prop-types"; // For prop validation
 import DOMPurify from "dompurify";
+import { handleFavourites } from "../../store/houses/thunks";
 
 function HouseCards({
   filteredHouse = [],
@@ -17,10 +18,10 @@ function HouseCards({
   isLoading = false,
   skip = 0,
   limit = 10,
-  handleFavourites,
 }) {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const user = useSelector(selectUser);
+  const dispatch = useDispatch();
   // Validate house data structure
   const validateHouse = (house) => {
     return (
@@ -69,7 +70,7 @@ function HouseCards({
                 {isAuthenticated ? (
                   <button
                   className="btn-faHeart"
-                  onClick={() => handleFavourites(house._id)}
+                  onClick={() => dispatch(handleFavourites(house._id))}
                   >
                     
                     {isHouseFavorited(house._id) ? "🖤" : "🤍"}
@@ -161,7 +162,6 @@ HouseCards.propTypes = {
   isLoading: PropTypes.bool,
   skip: PropTypes.number,
   limit: PropTypes.number,
-  handleFavourites: PropTypes.func.isRequired,
 };
 
 export default HouseCards;

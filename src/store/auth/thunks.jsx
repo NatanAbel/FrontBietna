@@ -9,7 +9,7 @@ import {
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { app } from "../../firebase";
 import { loginAxios } from "../../utils/interceptorApi";
-// import { authApi } from "../../utils/interceptorApi";
+
 
 const API_BACK_URL = import.meta.env.VITE_BACK_URL;
 axios.defaults.withCredentials = true;
@@ -72,17 +72,18 @@ export const bootstrapThunkLogin = () => async (dispatch, getState) => {
           me: user,
         })
       );
-
-      return accessToken;
+      return true; 
     }
+    return false;
   } catch (err) {
     const status = err?.response?.status || 403;
     // const message = err?.response?.data?.message || "Login failed";
     if (status === 403 || status === 401) {
-      // dispatch(statusResponse(status));
-      sessionStorage.removeItem("persist:auth"); // Clear persisted state
-      // dispatch(messageResponse("Your login has expired"));
-      dispatch(logout());
+      // First dispatch logout to update Redux state 
+      await dispatch(fetchLogOut());
+      // Clear persisted state
+      sessionStorage.removeItem("persist:auth");
+       
     }
 
     if (process.env.NODE_ENV === "development") {
@@ -235,11 +236,13 @@ export const refresh = async (dispatch) => {
   }
 };
 
-export const fetchLogOut = async (dispatch) => {
+export const fetchLogOut = () => async (dispatch) => {
   try {
     dispatch(logout());
+    sessionStorage.removeItem("persist:auth");
     await axios.get(`${API_BACK_URL}/auth/logout`);
   } catch (err) {
-    console.error(err);
+    dispatch(logout());
+    sessionStorage.removeItem("persist:auth");
   }
 };

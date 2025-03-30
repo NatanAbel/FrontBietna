@@ -59,7 +59,7 @@ export const loginSlice = createSlice({
             state.message = action.payload
         },
         logout : (state)=>{
-            if(state.me && state.isAuthenticated) {
+            if(state.me || state.isAuthenticated) {
                 // localStorage.removeItem("token")
                 sessionStorage.removeItem("persist:auth"); // Clear persisted state
                 state.token = null

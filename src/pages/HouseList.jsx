@@ -1,27 +1,15 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selecthouses } from "../store/houses/selectors";
-import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { fetchedHouses, searchFiltersFetched } from "../store/houses/thunks";
-
-// import { toggleFavorites } from "../store/houses/slice";
 import Search from "../components/Search.jsx";
 import ReactPaginate from "react-paginate";
-import axios from "axios";
-import {
-  selectIsAuthenticated,
-  selectLoginToken,
-  selectUser,
-} from "../store/auth/selectors";
-import { toggleFavorites, updateUser } from "../store/auth/slice";
-import { Circles } from "react-loader-spinner";
 import "./HouseList.css";
 import HouseCards from "../components/House/HouseCards.jsx";
 import { debounce } from "../utils/debounce.js";
-import { bootstrapThunkLogin } from "../store/auth/thunks.jsx";
 
-const API_URL = import.meta.env.VITE_BACK_URL;
 
 const compare_name = (player_a, player_b) => {
   return player_a.address.localeCompare(player_b.address);
@@ -34,11 +22,7 @@ const MemoizedHouseCards = React.memo(HouseCards);
 function HouseList({ forRent, forSale, handleAvailabilityClick }) {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
-  // const [isLike, setIsLike] = useState(false);
   const house = useSelector(selecthouses);
-  const user = useSelector(selectUser);
-  const token = useSelector(selectLoginToken);
-  const isAuthenticated = useSelector(selectIsAuthenticated);
   const location = useLocation();
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
@@ -191,56 +175,6 @@ function HouseList({ forRent, forSale, handleAvailabilityClick }) {
       setSquareAreaMax(0);
     }
   }, [sortedHouses]);
-
-  // Memoized clicked favourites button
-  const handleFavourites = useCallback(async (houseId) => {
-    const executeFavorite = async (retryCount = 0) => {
-      const body = { favorites: houseId };
-  
-      try {
-        const res = await axios.put(`${API_URL}/auth/update/profile`, body, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-  
-        if (res.status === 200) {
-          dispatch(toggleFavorites(houseId));
-        }
-      } catch (error) {
-        // Check if it's a token expiration error (403)
-        if (error.response?.status === 403 && retryCount === 0) {
-          try {
-            // Wait for token refresh to complete and get new token
-            const newToken = await dispatch(bootstrapThunkLogin());
-            
-            // Make a new request with the fresh token
-            const retryRes = await axios.put(`${API_URL}/auth/update/profile`, body, {
-              headers: {
-                Authorization: `Bearer ${newToken}`,
-              },
-            });
-  
-            if (retryRes.status === 200) {
-              dispatch(toggleFavorites(houseId));
-            }
-          } catch (refreshError) {
-            console.error("Token refresh failed");
-            navigate("/login");
-            return;
-          }
-        } else {
-          if (!isAuthenticated) {
-            navigate("/login");
-          }
-        }
-      }
-    };
-  
-    await executeFavorite();
-  }, [dispatch, token, isAuthenticated, navigate]);
-
-  // Add this axios interceptor setup inside your compone
 
   // Memoize the filteredHouse variable using useMemo hook use to memoize the filtered house data based on the dependencies that cause the filtering to change.
   const filteredHouse = useMemo(() => {
@@ -477,7 +411,6 @@ function HouseList({ forRent, forSale, handleAvailabilityClick }) {
         skip={skip}
         limit={limit}
         isLoading={isLoading}
-        handleFavourites={handleFavourites}
         handlePageClick={handlePageClick}
         pageCount={pageCount}
         currentPage={currentPage}
