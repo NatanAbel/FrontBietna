@@ -10,6 +10,13 @@ export const loginAxios = axios.create({
   },
   withCredentials: true,
   timeout: 5000,
+  // Add mobile-specific headers
+  headers: {
+    ...axios.defaults.headers,
+    'X-Requested-With': 'XMLHttpRequest',
+    'Accept': 'application/json',
+    'Cache-Control': 'no-cache'
+  },
   // Disable automatic transformations
   transformResponse: [(data) => {
     try {
