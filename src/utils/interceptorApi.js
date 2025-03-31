@@ -9,7 +9,7 @@ export const loginAxios = axios.create({
     'Accept': 'application/json',
   },
   withCredentials: true,
-  timeout: 5000,
+  timeout: 10000,
   // Disable automatic transformations
   transformResponse: [(data) => {
     try {
