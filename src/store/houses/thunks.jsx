@@ -10,8 +10,20 @@ export const fetchedHouses = (page, limit, options = {}) => async (dispatch, get
   try {
     dispatch(startLoading());
     const response = await axios.get(
-      `${API_URL}/houses?page=${page}&limit=${limit}`,{signal: options.signal}
+      `${API_URL}/houses?page=${page}&limit=${limit}`,{signal: options.signal,
+        headers: {
+          'Cache-Control': 'public, max-age=300',
+        },
+        timeout: options.longTimeout ? 15000 : 8000,
+        withCredentials: true,
+      }
     );
+
+    // Only process response if request wasn't cancelled
+    if (options.signal && options.signal.aborted) {
+      return null;
+    }
+
     if (response.data.message) {
       dispatch(housesFetched({ message: response.data.message, allHouses: [] })); // Dispatch with no results message
     } else {
@@ -27,7 +39,15 @@ export const fetchedHouses = (page, limit, options = {}) => async (dispatch, get
       return null; // Return null instead of throwing
     }
     
-    console.error("Error fetching houses:", e);
+    if (process.env.NODE_ENV === 'development') {
+      console.error("Error fetching houses:", {
+        message: e.message,
+        code: e.code,
+        status: e.response?.status,
+        data: e.response?.data
+      });
+    }
+    
     dispatch(housesFetched({ error: e.message, allHouses: [] }));
 
     throw e;// Re-throw to allow error handling in components

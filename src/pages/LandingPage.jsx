@@ -92,13 +92,17 @@ function LandingPage({
     if (location === "/" && !hasInitialFetchOccurred.current) {
       hasInitialFetchOccurred.current = true;
       setIsLoading(true);
-
+  
+      // Create controller outside of try block
+      const controller = new AbortController();
+      abortController.current = controller;
+  
       try {
-        // Check cache
         const cacheKey = "landingPageHouses";
         const currentTime = Date.now();
         const CACHE_DURATION = 5 * 60 * 1000;
-
+  
+        // Check cache first
         if (
           housesCache.current[cacheKey] &&
           currentTime - cacheTimestamp.current < CACHE_DURATION &&
@@ -106,82 +110,59 @@ function LandingPage({
         ) {
           dispatch({
             type: "houses/housesFetched",
-            payload: { allHouses: housesCache.current[cacheKey] },
+            payload: { allHouses: housesCache.current[cacheKey] }
           });
-        } else {
-          // Use separate controllers for each request
-          // First fetch with its own controller - this one can be canceled safely
-          const smallController = new AbortController();
-
-          try {
-            const smallResult = await dispatch(
-              fetchedHouses(1, 4, { signal: smallController.signal })
-            );
-            // Show these immediately
-            setIsLoading(false);
-            // Store for cache if we don't get the full result
-            if (smallResult?.result && smallResult.result.length > 0) {
-              housesCache.current[cacheKey] = smallResult.result;
-              cacheTimestamp.current = currentTime;
-            }
-          } catch (smallError) {
-            // Ignore cancellation errors for the small request
-            if (
-              smallError.name !== "CanceledError" &&
-              smallError.name !== "AbortError"
-            ) {
-              throw smallError; // Re-throw non-cancellation errors
-            }
-          }
-          // Wait a moment before fetching the full set
-          await new Promise((resolve) => setTimeout(resolve, 300));
-
-          // Second request with a different controller
-          const fullController = new AbortController();
-          abortController.current = fullController; // Store for cleanup
-
-          try {
-            const fullResult = await dispatch(
-              fetchedHouses(1, 16, { signal: fullController.signal })
-            );
-
-            // Update cache with full result
-            if (fullResult?.result && fullResult.result.length > 0) {
-              housesCache.current[cacheKey] = fullResult.result;
-              cacheTimestamp.current = currentTime;
-            }
-          } catch (fullError) {
-            // Only log non-cancellation errors
-            if (
-              fullError.name !== "CanceledError" &&
-              fullError.name !== "AbortError"
-            ) {
-              console.error("Failed to fetch full house data:", fullError);
-            }
-          }
+          setIsLoading(false);
+          return;
         }
+  
+        // Single request with longer timeout
+        const result = await dispatch(
+          fetchedHouses(1, 8, { 
+            signal: controller.signal,
+            longTimeout: true // Flag for longer timeout
+          })
+        );
+        
+        // Clear the controller in finally block
+        abortController.current = null;
+
+        // Only update cache if we got valid results
+        if (result?.result && Array.isArray(result.result) && result.result.length > 0) {
+          housesCache.current[cacheKey] = result.result;
+          cacheTimestamp.current = currentTime;
+        }
+  
       } catch (error) {
-        // Only log non-cancellation errors
-        if (error.name !== "CanceledError" && error.name !== "AbortError") {
+        // Only log real errors
+        if (!error.name?.includes('Cancel') && !error.name?.includes('Abort')) {
           console.error("Failed to fetch houses:", error);
         }
       } finally {
+        // Clear the controller in finally block
+        abortController.current = null;
         setIsLoading(false);
       }
     }
   };
-
-  // Implement proper caching mechanism with async/await
+  
+  // Update useEffect to handle cleanup the request better
   useEffect(() => {
+    const controller = new AbortController();
+    abortController.current = controller;
+    
     fetchInitialData();
-    // Cleanup function
+  
     return () => {
-      if (abortController.current) {
+      // Only abort if there's an ongoing request
+      if (abortController.current === controller) {
         abortController.current.abort();
+        abortController.current = null;
       }
     };
   }, [dispatch, location]);
 
+  
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [allHouses]);
