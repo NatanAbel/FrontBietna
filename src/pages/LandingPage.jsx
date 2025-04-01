@@ -88,6 +88,16 @@ function LandingPage({
     return [];
   }, [allHouses]);
 
+  const clickRandomHouse = (e, houseId) => {
+    e.preventDefault();
+    e.stopPropagation();
+     // Clear related houses before navigation
+     if (houseId) {
+      // Clear related houses before navigation
+      navigate(`/housesDetails/${houseId}`);
+    }
+  }
+
   const fetchInitialData = async () => {
     if (location === "/" && !hasInitialFetchOccurred.current) {
       hasInitialFetchOccurred.current = true;
@@ -235,7 +245,7 @@ function LandingPage({
                 >
                   {displayedHouses.map((house) => (
                     <SwiperSlide key={house._id}>
-                      <div className="details-card-wrapper"  onClick={() => navigate(`/housesDetails/${house._id}`)} >
+                      <div className="details-card-wrapper"  onClick={(e) =>clickRandomHouse(e, house._id)} >
                         <div className="house-card-content">
                           <img
                             src={house.images[0]}

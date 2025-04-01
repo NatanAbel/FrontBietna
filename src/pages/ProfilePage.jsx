@@ -1,6 +1,5 @@
 import DOMPurify from "dompurify";
 import React, { useEffect, useRef, useState } from "react";
-import ReactDOM from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { selectLoginToken, selectUser } from "../store/auth/selectors";
 import AccountForm from "../components/user/AccountForm.jsx";

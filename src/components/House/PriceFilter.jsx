@@ -40,10 +40,10 @@ function PriceFilter({
     }
   };
 
-  const dropdownRentMinPrices = [1500, 2000, 3000, 4000, 5000];
-  const dropdownRentMaxPrices = [6000, 7000, 8000, 9000, 10000];
-  const dropdownBuyMinPrices = [50000, 100000, 150000, 200000, 250000, 300000];
-  const dropdownBuyMaxPrices = [400000, 450000, 500000, 550000, 600000, 700000];
+  const dropdownRentMinPrices = [0, 1500, 2000, 3000, 4000, 5000];
+  const dropdownRentMaxPrices = [0, 6000, 7000, 8000, 9000, 10000];
+  const dropdownBuyMinPrices = [0, 50000, 100000, 150000, 200000, 250000, 300000];
+  const dropdownBuyMaxPrices = [0, 400000, 450000, 500000, 550000, 600000, 700000];
 
   const handlePriceChange = (value, isMin)=>{
     if(isMin === "minPrice"){

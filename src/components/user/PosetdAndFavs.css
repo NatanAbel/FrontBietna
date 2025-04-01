@@ -1,0 +1,18 @@
+.btn-delete , .btn-update {
+    font-size: 1.2rem;
+    position: absolute;
+    right: 1rem;
+    top: 0.5rem;
+    color: black;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+
+.btn-update{
+right: .4rem;
+}
+
+.btn-delete{
+    right: 1.8rem;
+}

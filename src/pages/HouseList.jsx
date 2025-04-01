@@ -165,8 +165,8 @@ function HouseList({ forRent, forSale, handleAvailabilityClick }) {
     if (availableHouses.length > 0) {
       setMinPrice(0);
       setMaxPrice(0);
-      setBath(1);
-      setBeds(1);
+      setBath(0);
+      setBeds(0);
       setArea("");
       setCity("");
       setHouseType([]);

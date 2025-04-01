@@ -60,42 +60,99 @@ function DetailsPage({ backButton }) {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [selectedThumbnailIndex, setSelectedThumbnailIndex] = useState(null);
   const [homeRelated, setHomeRelated] = useState([]);
-  const { allHouses, totalHouses } = houses;
+  const { allHouses } = houses;
   const navigate = useNavigate();
 
   const handleModalImage = (index) => {
     setSelectedThumbnailIndex(index);
   };
 
+  // Helper function to calculate match score
+  const getMatchScore = (home, currentHouse) => {
+    let score = 0;
+
+    // Highest priority: same city
+    if (home.city === currentHouse.city) score += 100;
+
+    // Price range matches
+    if (currentHouse.availability?.forSale) {
+      const priceDiff = Math.abs(home.price - currentHouse.price);
+      if (priceDiff <= 25000) score += 50;
+      else if (priceDiff <= 50000) score += 25;
+    }
+
+    // Rental price matches
+    if (currentHouse.availability?.forRent) {
+      const rentalDiff = Math.abs(home.rentalPrice - currentHouse.rentalPrice);
+      if (rentalDiff <= 5000) score += 50;
+      else if (rentalDiff <= 10000) score += 25;
+    }
+
+    // Additional matching criteria
+    if (home.homeType === currentHouse.homeType) score += 20;
+    if (home.bedrooms === currentHouse.bedrooms) score += 15;
+    if (home.bathrooms === currentHouse.bathrooms) score += 15;
+
+    return score;
+  };
+
   const relatedHouses = (house) => {
-    if (!house) return; // Check if house exists
-    const matchedHome = allHouses.filter((home) => {
-      if (home.country === house.country) {
-        return (
-          (home._id !== house._id && // Ensure the house isn't the same
-            home.city === house.city) || // Match the city
-          Math.abs(home.price - house.price) <= 50000 || // Example price range criteria
-          Math.abs(home.rentalPrice - house.rentalPrice) <= 10000
-        );
-      }
-      return false;
+    if (!house || !allHouses || !Array.isArray(allHouses)) return;
+
+    // Single filter operation that combines all conditions
+    const matchedHomes = allHouses.filter((home) => {
+      // First, ensure we're not including the current house
+      if (home._id === house._id) return false;
+
+      // Then check if it's in the same country
+      if (home.country !== house.country) return false;
+
+      // Check if any of our matching criteria are met
+      const isSameCity = home.city === house.city;
+      const isInPriceRange =
+        house.availability?.forSale &&
+        Math.abs(home.price - house.price) <= 50000;
+      const isInRentalRange =
+        house.availability?.forRent &&
+        Math.abs(home.rentalPrice - house.rentalPrice) <= 10000;
+      const isSameAvailabilityType =
+        home.availability?.forRent === house.availability?.forRent &&
+        home.availability?.forSale === house.availability?.forSale;
+
+      // Return true if any matching criteria is met AND it's the same availability type
+      return (
+        isSameAvailabilityType &&
+        (isSameCity || isInPriceRange || isInRentalRange)
+      );
     });
-    const removeSelectedHouse = matchedHome.filter(
-      (home) => home._id !== house._id
-    );
-    // Update homeRelated with matched homes except the selected house
-    setHomeRelated(removeSelectedHouse);
+
+    // Sort by relevance (city match first, then price range)
+    const sortedHomes = matchedHomes.sort((a, b) => {
+      const aScore = getMatchScore(a, house);
+      const bScore = getMatchScore(b, house);
+      return bScore - aScore;
+    });
+
+    setHomeRelated(sortedHomes);
   };
 
+  const clickRelatedHouse = (e, houseId) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Clear related houses before navigation
+    if (houseId) {
+      // Clear related houses before navigation
+      setHomeRelated([]);
+      navigate(`/housesDetails/${houseId}`);
+    }
+  };
+
+  // Capitalize the first letter of the text
   const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
-
-  const updateHouse = () => {
-    navigate(`/update/${house._id}`);
-  };
 
   useEffect(() => {
     dispatch(fetchDetailsPage(houseId));
-    dispatch(fetchedHouses(1, 30));
+    dispatch(fetchedHouses(1, 12));
     // Scroll to the top of the page
     // window.scrollTo(0, 0);
   }, [dispatch, houseId]);
@@ -111,9 +168,11 @@ function DetailsPage({ backButton }) {
 
   useEffect(() => {
     if (house && allHouses.length > 0) {
+      // Reset related houses when navigating to a new house
+      setHomeRelated([]);
       relatedHouses(house);
     }
-  }, [houses, allHouses]);
+  }, [house?._id, allHouses]);
 
   return (
     <div className="details-container">
@@ -135,9 +194,6 @@ function DetailsPage({ backButton }) {
                 className="back-icon"
               />
               Back
-            </button>
-            <button onClick={updateHouse} className="update-button">
-              Update
             </button>
           </div>
           <div className="details-wrapper">
@@ -446,33 +502,39 @@ function DetailsPage({ backButton }) {
                 touchAngle={45} // More forgiving touch angle
                 simulateTouch={true}
               >
-                {homeRelated.slice(0, 8).map((house) => (
-                  <SwiperSlide key={house._id}>
-                    <div className="details-card-wrapper">
-                      <div
-                        className="related-card-link"
-                        onClick={() => navigate(`/housesDetails/${house._id}`)}
-                      >
-                        <img
-                          src={house.images[0]}
-                          alt="images"
-                          className="swiper-img"
-                          loading="lazy"
-                        />
-                        <div className="details-card">
-                          <h2>{house.address}</h2>
-                          <p>
-                            {" "}
-                            $
-                            {house.availability.forRent
-                              ? house.rentalPrice.toLocaleString()
-                              : house.price.toLocaleString()}
-                          </p>
+                {homeRelated.length > 0 ? (
+                  homeRelated.slice(0, 8).map((house) => (
+                    <SwiperSlide key={house._id}>
+                      <div className="details-card-wrapper">
+                        <div
+                          className="related-card-link"
+                          onClick={(e) => clickRelatedHouse(e, house._id)}
+                        >
+                          <img
+                            src={house.images[0]}
+                            alt="images"
+                            className="swiper-img"
+                            loading="lazy"
+                          />
+                          <div className="details-card">
+                            <h2>{house.address}</h2>
+                            <p>
+                              {" "}
+                              $
+                              {house.availability.forRent
+                                ? house.rentalPrice.toLocaleString()
+                                : house.price.toLocaleString()}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </SwiperSlide>
-                ))}
+                    </SwiperSlide>
+                  ))
+                ) : (
+                  <p className="no-related-houses">
+                    Sorry, no related houses found!
+                  </p>
+                )}
               </Swiper>
             </div>
           </div>

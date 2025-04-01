@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import "./PosetdAndFavs.css"
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { selectIsAuthenticated } from '../../store/auth/selectors';
 import DOMPurify from "dompurify";
 import { debounce } from "lodash";
 import { useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons';
 
  // Escape HTML for additional safety
  const escapeHTML = (unsafe) =>
@@ -20,7 +21,7 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 function PostedHouses({publishedHouses, user, handleDeleteHouse}) {
   const [isLoading, setIsLoading] = useState(true);
   const isAuthenticated = useSelector(selectIsAuthenticated)
-
+  const navigate = useNavigate();
   // Ensures that the handleDeleteHouse function is called at most once every second, even if the delete button is clicked multiple times. (Prevents Spamming)
   const debouncedDelete = useMemo(
     () =>
@@ -42,6 +43,20 @@ function PostedHouses({publishedHouses, user, handleDeleteHouse}) {
       console.error("Unauthorized deletion attempt.");
     }
   };
+
+  const updateHouse = (houseId, houseOwnerId) => {
+    // Check if user exists and has published property
+ if (user && houseOwnerId === user._id) {
+ 
+ const canUpdate = publishedHouses.some((house) => house._id === houseId);
+
+ if (canUpdate) {
+   navigate(`/update/${houseId}`);
+ } else {
+   console.log("User cannot update this house");
+ }
+}
+ };
 
   useEffect(() => {
     return () => {
@@ -69,11 +84,14 @@ function PostedHouses({publishedHouses, user, handleDeleteHouse}) {
           return (<div className="card-container" key={house._id}>
             <div className="card-img">
             <button
-                    className="btn-faHeart"
+                    className="btn-delete"
                     onClick={() =>handleDelete(house._id, house.postedBy)}
                   >
                     <FontAwesomeIcon className="profile-icon" icon={faTrash} />
                   </button>
+                  <button onClick={() => updateHouse(house._id,house.postedBy)} className="btn-update">
+                  <FontAwesomeIcon icon={faPenToSquare} />
+            </button>
               <p className="card-img-text">
                 {house.availability?.forRent ? "For rent" : "For Sale"}
               </p>

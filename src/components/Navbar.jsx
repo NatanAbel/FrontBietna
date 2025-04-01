@@ -19,7 +19,7 @@ function Navbar() {
   }, [user]);
 
   return (
-    <div className="container navbar-wrapper">
+    <div className="container navbar-wrapper ">
       <nav className="navbar navbar-expand-lg navbar-light nav-container fixed-top">
         <div className="container-fluid px-2">
           <a className="navbar-brand text-dark" href="/">
@@ -33,7 +33,6 @@ function Navbar() {
             aria-controls="navbarNavDropdown"
             aria-expanded="false"
             aria-label="Toggle navigation"
-            
           >
             <span className="navbar-toggler-icon"></span>
           </button>
@@ -48,7 +47,15 @@ function Navbar() {
                   Home
                 </a>
               </li>
-
+              <li className="nav-item  d-flex align-items-center nav-hover">
+                <a
+                  className="nav-link active text-dark "
+                  aria-current="page"
+                  href="/houses/allHouses"
+                >
+                  Houses
+                </a>
+              </li>
               {user ? (
                 <>
                 <li className="nav-item  d-flex align-items-center nav-hover">
@@ -73,6 +80,7 @@ function Navbar() {
                     className="rounded-circle"
                     style={{ height: '40px', width: '40px', objectFit: 'cover' }}
                     src={user.profilePicture}
+                    loading="lazy"
                     alt="profile"
                   />
                 </a>
