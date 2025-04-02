@@ -235,16 +235,16 @@ function LandingPage({
                   navigation={displayedHouses.length > 1 }
                   modules={[EffectCoverflow, Pagination, Navigation]}
                   className="mySwiper"
-                  touchEventsTarget="container"
-                  preventClicks={false}
-                  preventClicksPropagation={false}
-                  touchStartPreventDefault={false}
+                  touchEventsTarget="wrapper"
+                  preventClicks={true}
+                  preventClicksPropagation={true}
+                  touchStartPreventDefault={true}
                   watchSlidesProgress={true}
                   initialSlide={0}
-                  threshold={5} // Lower threshold for swipe detection
-                  touchRatio={1} // Increase touch ratio
+                  threshold={10} // Lower threshold for swipe detection
+                  touchRatio={1.5} // Increase touch ratio
                   touchAngle={45} // More forgiving touch angle
-                  simulateTouch={true}
+                  simulateTouch={false}
                 >
                   {displayedHouses.map((house) => (
                     <SwiperSlide key={house._id}>
