@@ -60,6 +60,7 @@ function DetailsPage({ backButton }) {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [selectedThumbnailIndex, setSelectedThumbnailIndex] = useState(null);
   const [homeRelated, setHomeRelated] = useState([]);
+  const [swiperKey, setSwiperKey] = useState(0);
   const { allHouses } = houses;
   const navigate = useNavigate();
 
@@ -121,7 +122,7 @@ function DetailsPage({ backButton }) {
 
       // Return true if any matching criteria is met AND it's the same availability type
       return (
-        isSameAvailabilityType &&
+        isSameAvailabilityType && 
         (isSameCity || isInPriceRange || isInRentalRange)
       );
     });
@@ -171,6 +172,7 @@ function DetailsPage({ backButton }) {
       // Reset related houses when navigating to a new house
       setHomeRelated([]);
       relatedHouses(house);
+      setSwiperKey(prev => prev + 1);
     }
   }, [house?._id, allHouses]);
 
@@ -477,10 +479,12 @@ function DetailsPage({ backButton }) {
                 <p className="related-country-status">{house.country}</p>
               </div>
               <Swiper
-                effect={"coverflow"}
+                key={swiperKey}
+                effect={homeRelated.length > 1 ? "coverflow" : "slide"}
                 grabCursor={true}
                 centeredSlides={true}
                 slidesPerView={"auto"}
+                initialSlide={0}
                 coverflowEffect={{
                   rotate: 30,
                   stretch: 0,
@@ -488,8 +492,8 @@ function DetailsPage({ backButton }) {
                   modifier: 1,
                   slideShadows: true,
                 }}
-                pagination={true}
-                navigation={true}
+                pagination={homeRelated.length > 1}
+                navigation={homeRelated.length > 1}
                 modules={[EffectCoverflow, Pagination, Navigation]}
                 className="mySwiper"
                 touchEventsTarget="container"
@@ -501,6 +505,18 @@ function DetailsPage({ backButton }) {
                 touchRatio={1} // Increase touch ratio
                 touchAngle={45} // More forgiving touch angle
                 simulateTouch={true}
+                // Add breakpoints for better mobile handling
+                breakpoints={{
+                  320: {
+                    slidesPerView: 1,
+                    centeredSlides: true,
+                    effect: "slide",
+                  },
+                  480: {
+                    slidesPerView: "auto",
+                    effect: homeRelated.length > 1 ? "coverflow" : "slide",
+                  },
+                }}
               >
                 {homeRelated.length > 0 ? (
                   homeRelated.slice(0, 8).map((house) => (
