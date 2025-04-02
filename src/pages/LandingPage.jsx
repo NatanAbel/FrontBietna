@@ -28,8 +28,9 @@ function LandingPage({
   const [search, setSearch] = useState("");
   const [country, setCountry] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  // const [displayedHouses, setDisplayedHouses] = useState([]);
   const { allHouses } = house;
+  const [swiperKey, setSwiperKey] = useState(0);
+
   const navigate = useNavigate();
   const location = useLocation().pathname;
   const hasInitialFetchOccurred = useRef(false);
@@ -83,6 +84,7 @@ function LandingPage({
           .reduce((acc, char) => acc + char.charCodeAt(0), 0);
         return hashA - hashB;
       });
+      setSwiperKey(prev => prev + 1);
       return shuffled.slice(0, 8);
     }
     return [];
@@ -217,6 +219,7 @@ function LandingPage({
             {!isLoading ? (
               <div className="cards-swiper-container">
                 <Swiper
+                key={swiperKey}
                   effect={displayedHouses.length > 1 ? "coverflow" : "slide"}
                   grabCursor={true}
                   centeredSlides={true}

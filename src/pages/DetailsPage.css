@@ -33,7 +33,7 @@
     z-index: 1000;
   }
   
-  .back-button , .update-button{
+  .back-button {
     max-width: 100px;
     padding:.5rem 1rem;
     background-color: rgba(160, 157, 152, 0.755);
@@ -47,7 +47,7 @@
     padding-right: .4rem;
   }
 
-  .back-button:hover, .update-button:hover {
+  .back-button:hover{
     background-color: #9b9d9f;
 }
 
