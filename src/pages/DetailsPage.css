@@ -438,8 +438,15 @@
     background-size: cover;
     max-width: 300px;
     max-height: 300px;
-    /* margin: .5rem 2.5rem; */
-    margin:1.5rem;
+    margin:0 1.5rem;
+  }
+
+  .single-house-swiper .swiper-slide {
+    background-position: center;
+    background-size: cover;
+    max-width: 300px;
+    max-height: 300px;
+    margin:0 auto;
   }
   
   .swiper-img {
@@ -456,11 +463,13 @@
     border-top-left-radius: 200px;
     border-top-right-radius: 200px; 
     z-index: 2;
+    
   }
 
   .related-card-link{
     z-index: 4;
     cursor: pointer;
+    width: 100%;
   }
   
   .details-card-wrapper .details-card {

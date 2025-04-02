@@ -242,17 +242,6 @@ function LandingPage({
                   touchRatio={1} // Increase touch ratio
                   touchAngle={45} // More forgiving touch angle
                   simulateTouch={true}
-                  breakpoints={{
-                    320: {
-                      slidesPerView: 1,
-                      centeredSlides: true,
-                      effect: "slide",
-                    },
-                    480: {
-                      slidesPerView: "auto",
-                      effect: displayedHouses.length > 1 ? "coverflow" : "slide",
-                    },
-                  }}
                 >
                   {displayedHouses.map((house) => (
                     <SwiperSlide key={house._id}>

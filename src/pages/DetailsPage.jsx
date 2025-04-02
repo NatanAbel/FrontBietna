@@ -495,7 +495,7 @@ function DetailsPage({ backButton }) {
                 pagination={homeRelated.length > 1}
                 navigation={homeRelated.length > 1}
                 modules={[EffectCoverflow, Pagination, Navigation]}
-                className="mySwiper"
+                className={homeRelated.length > 1 ? "mySwiper" : "single-house-swiper"}
                 touchEventsTarget="container"
                 preventClicks={false}
                 preventClicksPropagation={false}
@@ -505,18 +505,6 @@ function DetailsPage({ backButton }) {
                 touchRatio={1} // Increase touch ratio
                 touchAngle={45} // More forgiving touch angle
                 simulateTouch={true}
-                // Add breakpoints for better mobile handling
-                breakpoints={{
-                  320: {
-                    slidesPerView: 1,
-                    centeredSlides: true,
-                    effect: "slide",
-                  },
-                  480: {
-                    slidesPerView: "auto",
-                    effect: homeRelated.length > 1 ? "coverflow" : "slide",
-                  },
-                }}
               >
                 {homeRelated.length > 0 ? (
                   homeRelated.slice(0, 8).map((house) => (
