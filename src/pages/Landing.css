@@ -111,6 +111,13 @@
     border-radius: 0;
     padding: .5rem;
   }
+
+  .landing-gallery-wrapper > .cards-swiper-container .house-card-content{
+    cursor: pointer;
+  }
+  .landing-gallery-wrapper > .cards-swiper-container .house-card-content:hover{
+    transform: scale(1.025);
+  }
   
   .landing-gallery_image {
     border-top-left-radius: 200px; 

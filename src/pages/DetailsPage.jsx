@@ -482,8 +482,8 @@ function DetailsPage({ backButton }) {
                 key={swiperKey}
                 effect={homeRelated.length > 1 ? "coverflow" : "slide"}
                 grabCursor={true}
-                centeredSlides={homeRelated.length > 1}
-                slidesPerView={homeRelated.length > 1}
+                centeredSlides={true}
+                slidesPerView={homeRelated.length > 1 ? "auto" : 1}
                 initialSlide={0}
                 coverflowEffect={{
                   rotate: 30,

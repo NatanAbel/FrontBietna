@@ -217,10 +217,10 @@ function LandingPage({
             {!isLoading ? (
               <div className="cards-swiper-container">
                 <Swiper
-                  effect={"coverflow"}
+                  effect={displayedHouses.length > 1 ? "coverflow" : "slide"}
                   grabCursor={true}
                   centeredSlides={true}
-                  slidesPerView={"auto"}
+                  slidesPerView={displayedHouses.length > 1 ? "auto" : 1}
                   coverflowEffect={{
                     rotate: 30,
                     stretch: 0,
@@ -228,8 +228,8 @@ function LandingPage({
                     modifier: 1,
                     slideShadows: true,
                   }}
-                  pagination={true}
-                  navigation={true}
+                  pagination={displayedHouses.length > 1 }
+                  navigation={displayedHouses.length > 1 }
                   modules={[EffectCoverflow, Pagination, Navigation]}
                   className="mySwiper"
                   touchEventsTarget="container"
@@ -242,6 +242,17 @@ function LandingPage({
                   touchRatio={1} // Increase touch ratio
                   touchAngle={45} // More forgiving touch angle
                   simulateTouch={true}
+                  breakpoints={{
+                    320: {
+                      slidesPerView: 1,
+                      centeredSlides: true,
+                      effect: "slide",
+                    },
+                    480: {
+                      slidesPerView: "auto",
+                      effect: displayedHouses.length > 1 ? "coverflow" : "slide",
+                    },
+                  }}
                 >
                   {displayedHouses.map((house) => (
                     <SwiperSlide key={house._id}>
