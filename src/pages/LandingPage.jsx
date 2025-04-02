@@ -84,7 +84,6 @@ function LandingPage({
           .reduce((acc, char) => acc + char.charCodeAt(0), 0);
         return hashA - hashB;
       });
-      setSwiperKey(prev => prev + 1);
       return shuffled.slice(0, 8);
     }
     return [];
@@ -176,6 +175,9 @@ function LandingPage({
 
   
   useEffect(() => {
+    if (allHouses?.length > 0) {
+      setSwiperKey(prev => prev + 1);
+    }
     window.scrollTo(0, 0);
   }, [allHouses]);
 
@@ -244,7 +246,7 @@ function LandingPage({
                   threshold={10} // Lower threshold for swipe detection
                   touchRatio={1.5} // Increase touch ratio
                   touchAngle={45} // More forgiving touch angle
-                  simulateTouch={false}
+                  simulateTouch={true}
                 >
                   {displayedHouses.map((house) => (
                     <SwiperSlide key={house._id}>
