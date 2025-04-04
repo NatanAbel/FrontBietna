@@ -90,41 +90,35 @@ function LandingPage({
   }, [allHouses]);
 
   const clickRandomHouse = (e, houseId) => {
-    // Don't do anything if no houseId
     if (!houseId) return;
-  
-    // For touch events, we need to handle differently
-    const isTouchEvent = e.type.startsWith('touch');
-    
+
+    const isTouchEvent = e.type.includes("touch");
+
     if (!isTouchEvent) {
       e.preventDefault();
       e.stopPropagation();
     }
-  
-    // Add a small delay for touch events to ensure Swiper has finished processing
-    if (isTouchEvent) {
-      setTimeout(() => {
-        navigate(`/housesDetails/${houseId}`);
-      }, 50);
-    } else {
+
+    // Use requestAnimationFrame for smoother touch handling
+    requestAnimationFrame(() => {
       navigate(`/housesDetails/${houseId}`);
-    }
-  }
+    });
+  };
 
   const fetchInitialData = async () => {
     if (location === "/" && !hasInitialFetchOccurred.current) {
       hasInitialFetchOccurred.current = true;
       setIsLoading(true);
-  
+
       // Create controller outside of try block
       const controller = new AbortController();
       abortController.current = controller;
-  
+
       try {
         const cacheKey = "landingPageHouses";
         const currentTime = Date.now();
         const CACHE_DURATION = 5 * 60 * 1000;
-  
+
         // Check cache first
         if (
           housesCache.current[cacheKey] &&
@@ -133,32 +127,35 @@ function LandingPage({
         ) {
           dispatch({
             type: "houses/housesFetched",
-            payload: { allHouses: housesCache.current[cacheKey] }
+            payload: { allHouses: housesCache.current[cacheKey] },
           });
           setIsLoading(false);
           return;
         }
-  
+
         // Single request with longer timeout
         const result = await dispatch(
-          fetchedHouses(1, 8, { 
+          fetchedHouses(1, 8, {
             signal: controller.signal,
-            longTimeout: true // Flag for longer timeout
+            longTimeout: true, // Flag for longer timeout
           })
         );
-        
+
         // Clear the controller in finally block
         abortController.current = null;
 
         // Only update cache if we got valid results
-        if (result?.result && Array.isArray(result.result) && result.result.length > 0) {
+        if (
+          result?.result &&
+          Array.isArray(result.result) &&
+          result.result.length > 0
+        ) {
           housesCache.current[cacheKey] = result.result;
           cacheTimestamp.current = currentTime;
         }
-  
       } catch (error) {
         // Only log real errors
-        if (!error.name?.includes('Cancel') && !error.name?.includes('Abort')) {
+        if (!error.name?.includes("Cancel") && !error.name?.includes("Abort")) {
           console.error("Failed to fetch houses:", error);
         }
       } finally {
@@ -168,14 +165,14 @@ function LandingPage({
       }
     }
   };
-  
+
   // Update useEffect to handle cleanup the request better
   useEffect(() => {
     const controller = new AbortController();
     abortController.current = controller;
-    
+
     fetchInitialData();
-  
+
     return () => {
       // Only abort if there's an ongoing request
       if (abortController.current === controller) {
@@ -185,10 +182,9 @@ function LandingPage({
     };
   }, [dispatch, location]);
 
-  
   useEffect(() => {
     if (allHouses?.length > 0) {
-      setSwiperKey(prev => prev + 1);
+      setSwiperKey((prev) => prev + 1);
     }
     window.scrollTo(0, 0);
   }, [allHouses]);
@@ -233,7 +229,7 @@ function LandingPage({
             {!isLoading ? (
               <div className="cards-swiper-container">
                 <Swiper
-                key={swiperKey}
+                  key={swiperKey}
                   effect={displayedHouses.length > 1 ? "coverflow" : "slide"}
                   grabCursor={true}
                   centeredSlides={true}
@@ -245,28 +241,38 @@ function LandingPage({
                     modifier: 1,
                     slideShadows: true,
                   }}
-                  pagination={displayedHouses.length > 1 }
-                  navigation={displayedHouses.length > 1 }
+                  pagination={displayedHouses.length > 1}
+                  navigation={displayedHouses.length > 1}
                   modules={[EffectCoverflow, Pagination, Navigation]}
                   className="mySwiper"
-                  touchEventsTarget="wrapper"
+                  touchEventsTarget="container"
                   preventClicks={false}
                   preventClicksPropagation={false}
-                  touchStartPreventDefault={false}
+                  touchStartPreventDefault={true}
                   watchSlidesProgress={true}
                   threshold={5} // Lower threshold for swipe detection
                   touchRatio={1} // Increase touch ratio
                   touchAngle={45} // More forgiving touch angle
                   simulateTouch={true}
                   initialSlide={0}
-                  followFinger={false}
-                  longSwipesRatio={0.1}
-                  touchMoveStopPropagation={false}
+                  allowTouchMove={true}
+                  onInit={(swiper) => {
+                    // Force swiper to update after initialization
+                    setTimeout(() => {
+                      swiper.update();
+                    }, 100);
+                  }}
                 >
                   {displayedHouses.map((house) => (
                     <SwiperSlide key={house._id}>
-                      <div className="details-card-wrapper"  onClick={(e) =>clickRandomHouse(e, house._id)} onTouchStart={(e) => e.stopPropagation()}
-    onTouchEnd={(e) => clickRandomHouse(e, house._id)}>
+                      <div
+                        className="details-card-wrapper"
+                        onClick={(e) => clickRandomHouse(e, house._id)}
+                        onTouchEnd={(e) => {
+                          e.stopPropagation();
+                          clickRandomHouse(e, house._id);
+                        }}
+                      >
                         <div className="house-card-content">
                           <img
                             src={house.images[0]}
