@@ -90,16 +90,25 @@ function LandingPage({
   }, [allHouses]);
 
   const clickRandomHouse = (e, houseId) => {
+    // Don't do anything if no houseId
     if (!houseId) return;
-    // Prevent default behavior only for non-touch events
-    if (!e.touches) {
+  
+    // For touch events, we need to handle differently
+    const isTouchEvent = e.type.startsWith('touch');
+    
+    if (!isTouchEvent) {
       e.preventDefault();
       e.stopPropagation();
     }
-    // RequestAnimationFrame to ensure smooth touch handling
-    requestAnimationFrame(() => {
+  
+    // Add a small delay for touch events to ensure Swiper has finished processing
+    if (isTouchEvent) {
+      setTimeout(() => {
+        navigate(`/housesDetails/${houseId}`);
+      }, 50);
+    } else {
       navigate(`/housesDetails/${houseId}`);
-    });
+    }
   }
 
   const fetchInitialData = async () => {
@@ -179,14 +188,7 @@ function LandingPage({
   
   useEffect(() => {
     if (allHouses?.length > 0) {
-      // Reset key when houses data changes
       setSwiperKey(prev => prev + 1);
-      // Force a small delay to ensure proper initialization
-      const timer = setTimeout(() => {
-        setSwiperKey(prev => prev + 1);
-      }, 100);
-      
-      return () => clearTimeout(timer);
     }
     window.scrollTo(0, 0);
   }, [allHouses]);
@@ -247,7 +249,7 @@ function LandingPage({
                   navigation={displayedHouses.length > 1 }
                   modules={[EffectCoverflow, Pagination, Navigation]}
                   className="mySwiper"
-                  touchEventsTarget="container"
+                  touchEventsTarget="wrapper"
                   preventClicks={false}
                   preventClicksPropagation={false}
                   touchStartPreventDefault={false}
@@ -257,11 +259,14 @@ function LandingPage({
                   touchAngle={45} // More forgiving touch angle
                   simulateTouch={true}
                   initialSlide={0}
-                  
+                  followFinger={false}
+                  longSwipesRatio={0.1}
+                  touchMoveStopPropagation={false}
                 >
                   {displayedHouses.map((house) => (
                     <SwiperSlide key={house._id}>
-                      <div className="details-card-wrapper"  onClick={(e) =>clickRandomHouse(e, house._id)} >
+                      <div className="details-card-wrapper"  onClick={(e) =>clickRandomHouse(e, house._id)} onTouchStart={(e) => e.stopPropagation()}
+    onTouchEnd={(e) => clickRandomHouse(e, house._id)}>
                         <div className="house-card-content">
                           <img
                             src={house.images[0]}
