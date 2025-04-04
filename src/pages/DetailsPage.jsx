@@ -138,14 +138,19 @@ function DetailsPage({ backButton }) {
   };
 
   const clickRelatedHouse = (e, houseId) => {
-    e.preventDefault();
-    e.stopPropagation();
-    // Clear related houses before navigation
-    if (houseId) {
-      // Clear related houses before navigation
-      setHomeRelated([]);
-      navigate(`/housesDetails/${houseId}`);
+   
+    if (!houseId) return;
+    // Prevent default behavior only for non-touch events
+    if (!e.touches) {
+      e.preventDefault();
+      e.stopPropagation();
     }
+
+    setHomeRelated([]);
+    // RequestAnimationFrame to ensure smooth touch handling
+    requestAnimationFrame(() => {
+      navigate(`/housesDetails/${houseId}`);
+    });
   };
 
   // Capitalize the first letter of the text

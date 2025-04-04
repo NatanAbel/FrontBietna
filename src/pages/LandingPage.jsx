@@ -90,13 +90,16 @@ function LandingPage({
   }, [allHouses]);
 
   const clickRandomHouse = (e, houseId) => {
-    e.preventDefault();
-    e.stopPropagation();
-     // Clear related houses before navigation
-     if (houseId) {
-      // Clear related houses before navigation
-      navigate(`/housesDetails/${houseId}`);
+    if (!houseId) return;
+    // Prevent default behavior only for non-touch events
+    if (!e.touches) {
+      e.preventDefault();
+      e.stopPropagation();
     }
+    // RequestAnimationFrame to ensure smooth touch handling
+    requestAnimationFrame(() => {
+      navigate(`/housesDetails/${houseId}`);
+    });
   }
 
   const fetchInitialData = async () => {
@@ -176,7 +179,14 @@ function LandingPage({
   
   useEffect(() => {
     if (allHouses?.length > 0) {
+      // Reset key when houses data changes
       setSwiperKey(prev => prev + 1);
+      // Force a small delay to ensure proper initialization
+      const timer = setTimeout(() => {
+        setSwiperKey(prev => prev + 1);
+      }, 100);
+      
+      return () => clearTimeout(timer);
     }
     window.scrollTo(0, 0);
   }, [allHouses]);
@@ -237,16 +247,17 @@ function LandingPage({
                   navigation={displayedHouses.length > 1 }
                   modules={[EffectCoverflow, Pagination, Navigation]}
                   className="mySwiper"
-                  touchEventsTarget="wrapper"
-                  preventClicks={true}
-                  preventClicksPropagation={true}
-                  touchStartPreventDefault={true}
+                  touchEventsTarget="container"
+                  preventClicks={false}
+                  preventClicksPropagation={false}
+                  touchStartPreventDefault={false}
                   watchSlidesProgress={true}
-                  initialSlide={0}
-                  threshold={10} // Lower threshold for swipe detection
-                  touchRatio={1.5} // Increase touch ratio
+                  threshold={5} // Lower threshold for swipe detection
+                  touchRatio={1} // Increase touch ratio
                   touchAngle={45} // More forgiving touch angle
                   simulateTouch={true}
+                  initialSlide={0}
+                  
                 >
                   {displayedHouses.map((house) => (
                     <SwiperSlide key={house._id}>
