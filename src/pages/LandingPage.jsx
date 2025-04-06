@@ -41,7 +41,6 @@ function LandingPage({
   // Add abort controller for request cancellation
   const abortController = useRef(null);
   const swiperRef = useRef(null);
-  const isInitialized = useRef(false);
 
   const handleCountryClick = (chosenCounrty) => {
     const sanitizedCountry = DOMPurify.sanitize(chosenCounrty);
@@ -93,28 +92,24 @@ function LandingPage({
 
   const clickRandomHouse = (e, houseId) => {
     if (!houseId) return;
-  
-    // Prevent default only for non-touch events
-    if (!e.type.includes('touch')) {
-      e.preventDefault();
-    }
+    // Prevent default behavior for both click and touch
+    e.preventDefault();
     e.stopPropagation();
-  
-    // Ensure we're clicking on the active slide
+    // Ensure we're on the active slide before navigating
     if (swiperRef.current) {
       const activeIndex = swiperRef.current.activeIndex;
-      const slides = swiperRef.current.slides;
-      const clickedSlide = e.target.closest('.swiper-slide');
-      const clickedIndex = Array.from(slides).indexOf(clickedSlide);
+
+      const clickedSlideIndex = Array.from(swiperRef.current.slides).findIndex(
+        slide => slide.contains(e.target)
+      );
   
-      if (activeIndex === clickedIndex) {
-        // Use requestAnimationFrame for smoother navigation
-        requestAnimationFrame(() => {
-          navigate(`/housesDetails/${houseId}`);
-        });
+      if (activeIndex === clickedSlideIndex) {
+        navigate(`/housesDetails/${houseId}`);
+      } else {
+        // If not on active slide, slide to it first
+        swiperRef.current.slideTo(clickedSlideIndex, 300, false);
       }
     } else {
-      // Fallback if swiper ref is not available
       navigate(`/housesDetails/${houseId}`);
     }
   };
@@ -196,14 +191,20 @@ function LandingPage({
     };
   }, [dispatch, location]);
 
-// Update the useEffect for handling house data
-useEffect(() => {
-  if (allHouses?.length > 0) {
-    setSwiperKey(prev => prev + 1);
-    isInitialized.current = false; // Reset initialization flag when houses change
-  }
-  window.scrollTo(0, 0);
-}, [allHouses]);
+  useEffect(() => {
+    if (allHouses?.length > 0) {
+      setSwiperKey(prev => prev + 1);
+      
+      // Reset to first slide when houses data changes
+      if (swiperRef.current) {
+        setTimeout(() => {
+          swiperRef.current.update();
+          swiperRef.current.slideTo(0);
+        }, 100);
+      }
+    }
+    window.scrollTo(0, 0);
+  }, [allHouses]);
 
   return (
     <div className="landing-container">
@@ -261,10 +262,10 @@ useEffect(() => {
                   navigation={displayedHouses.length > 1}
                   modules={[EffectCoverflow, Pagination, Navigation]}
                   className="mySwiper"
-                  touchEventsTarget="wrapper"
-                  preventClicks={false}
+                  touchEventsTarget="container"
+                  preventClicks={true}
                   preventClicksPropagation={false}
-                  touchStartPreventDefault={true}
+                  touchStartPreventDefault={falseb}
                   watchSlidesProgress={true}
                   threshold={5} // Lower threshold for swipe detection
                   touchRatio={1} // Increase touch ratio
@@ -272,19 +273,15 @@ useEffect(() => {
                   simulateTouch={true}
                   initialSlide={0}
                   allowTouchMove={true}
-                  speed={0} 
                   onSwiper={(swiper) => {
                     swiperRef.current = swiper;
-                    if (!isInitialized.current) {
-                      // Force immediate update and slide to first position
-                      requestAnimationFrame(() => {
+                    // Initialize the swiper right after it's mounted
+                    setTimeout(() => {
+                      if (swiperRef.current) {
                         swiper.update();
                         swiper.slideTo(0, 0);
-                        isInitialized.current = true;
-                        // Reset speed after initialization
-                        swiper.params.speed = 300;
-                      });
-                    }
+                      }
+                    }, 100);
                   }}
                 >
                   {displayedHouses.map((house) => (
@@ -292,14 +289,8 @@ useEffect(() => {
                       <div
                         className="details-card-wrapper"
                         onClick={(e) => clickRandomHouse(e, house._id)}
-                        onTouchEnd={(e) => clickRandomHouse(e, house._id)}
-                        role="button"
-                        tabIndex={0}
-                        style={{
-                          touchAction: "pan-y pinch-zoom",
-                          cursor: "pointer",
-                          WebkitTapHighlightColor: "transparent",
-                        }}
+                        onTouchEnd={(e) => clickRandomHouse(e, house._id)
+                        }
                       >
                         <div className="house-card-content">
                           <img
@@ -309,6 +300,10 @@ useEffect(() => {
                             )}`}
                             className="swiper-img"
                             loading="lazy"
+                            onLoad={() => {
+                              // Trigger swiper update after images have loaded
+                              if (swiperRef.current) swiperRef.current.update();
+                            }}
                           />
                           <div className="details-card">
                             <div>

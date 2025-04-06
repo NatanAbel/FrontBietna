@@ -112,31 +112,9 @@
     padding: .5rem;
   }
 
-  .landing-gallery-wrapper > .cards-swiper-container .details-card-wrapper {
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-  touch-action: pan-y pinch-zoom;
-  }
-
-  .landing-gallery-wrapper > .cards-swiper-container .details-card-wrapper > .swiper-slide{
-    touch-action: pan-y pinch-zoom;
-  }
-
-  .landing-gallery-wrapper > .cards-swiper-container >.swiper-slide-active .details-card-wrapper{
-    pointer-events: auto;
-  }
-
   .landing-gallery-wrapper > .cards-swiper-container .house-card-content{
-    pointer-events: auto;
-    touch-action: pan-y pinch-zoom;
     cursor: pointer;
   }
-
-  .landing-gallery-wrapper > .cards-swiper-container .house-card-content > .swiper-img {
-    -webkit-user-drag: none;
-    user-select: none;
-  }
-
   .landing-gallery-wrapper > .cards-swiper-container .house-card-content:hover{
     transform: scale(1.025);
   }
