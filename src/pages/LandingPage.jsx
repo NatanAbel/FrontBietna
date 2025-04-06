@@ -263,9 +263,9 @@ function LandingPage({
                   modules={[EffectCoverflow, Pagination, Navigation]}
                   className="mySwiper"
                   touchEventsTarget="container"
-                  preventClicks={true}
+                  preventClicks={false}
                   preventClicksPropagation={false}
-                  touchStartPreventDefault={false}
+                  touchStartPreventDefault={true}
                   watchSlidesProgress={true}
                   threshold={5} // Lower threshold for swipe detection
                   touchRatio={1} // Increase touch ratio
@@ -277,10 +277,8 @@ function LandingPage({
                     swiperRef.current = swiper;
                     // Initialize the swiper right after it's mounted
                     setTimeout(() => {
-                      if (swiperRef.current) {
-                        swiper.update();
-                        swiper.slideTo(0, 0);
-                      }
+                      swiper.update();
+                      swiper.slideTo(0, 0);
                     }, 100);
                   }}
                 >
@@ -300,10 +298,6 @@ function LandingPage({
                             )}`}
                             className="swiper-img"
                             loading="lazy"
-                            onLoad={() => {
-                              // Trigger swiper update after images have loaded
-                              if (swiperRef.current) swiperRef.current.update();
-                            }}
                           />
                           <div className="details-card">
                             <div>
