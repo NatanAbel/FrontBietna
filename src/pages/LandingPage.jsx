@@ -41,6 +41,7 @@ function LandingPage({
   // Add abort controller for request cancellation
   const abortController = useRef(null);
   const swiperRef = useRef(null);
+  const isInitialized = useRef(false);
 
   const handleCountryClick = (chosenCounrty) => {
     const sanitizedCountry = DOMPurify.sanitize(chosenCounrty);
@@ -92,24 +93,28 @@ function LandingPage({
 
   const clickRandomHouse = (e, houseId) => {
     if (!houseId) return;
-    // Prevent default behavior for both click and touch
-    e.preventDefault();
+  
+    // Prevent default only for non-touch events
+    if (!e.type.includes('touch')) {
+      e.preventDefault();
+    }
     e.stopPropagation();
-    // Ensure we're on the active slide before navigating
+  
+    // Ensure we're clicking on the active slide
     if (swiperRef.current) {
       const activeIndex = swiperRef.current.activeIndex;
-
-      const clickedSlideIndex = Array.from(swiperRef.current.slides).findIndex(
-        slide => slide.contains(e.target)
-      );
+      const slides = swiperRef.current.slides;
+      const clickedSlide = e.target.closest('.swiper-slide');
+      const clickedIndex = Array.from(slides).indexOf(clickedSlide);
   
-      if (activeIndex === clickedSlideIndex) {
-        navigate(`/housesDetails/${houseId}`);
-      } else {
-        // If not on active slide, slide to it first
-        swiperRef.current.slideTo(clickedSlideIndex, 300, false);
+      if (activeIndex === clickedIndex) {
+        // Use requestAnimationFrame for smoother navigation
+        requestAnimationFrame(() => {
+          navigate(`/housesDetails/${houseId}`);
+        });
       }
     } else {
+      // Fallback if swiper ref is not available
       navigate(`/housesDetails/${houseId}`);
     }
   };
@@ -191,20 +196,14 @@ function LandingPage({
     };
   }, [dispatch, location]);
 
-  useEffect(() => {
-    if (allHouses?.length > 0) {
-      setSwiperKey(prev => prev + 1);
-      
-      // Reset to first slide when houses data changes
-      if (swiperRef.current) {
-        setTimeout(() => {
-          swiperRef.current.update();
-          swiperRef.current.slideTo(0);
-        }, 100);
-      }
-    }
-    window.scrollTo(0, 0);
-  }, [allHouses]);
+// Update the useEffect for handling house data
+useEffect(() => {
+  if (allHouses?.length > 0) {
+    setSwiperKey(prev => prev + 1);
+    isInitialized.current = false; // Reset initialization flag when houses change
+  }
+  window.scrollTo(0, 0);
+}, [allHouses]);
 
   return (
     <div className="landing-container">
@@ -262,7 +261,7 @@ function LandingPage({
                   navigation={displayedHouses.length > 1}
                   modules={[EffectCoverflow, Pagination, Navigation]}
                   className="mySwiper"
-                  touchEventsTarget="container"
+                  touchEventsTarget="wrapper"
                   preventClicks={false}
                   preventClicksPropagation={false}
                   touchStartPreventDefault={true}
@@ -273,13 +272,19 @@ function LandingPage({
                   simulateTouch={true}
                   initialSlide={0}
                   allowTouchMove={true}
+                  speed={0} 
                   onSwiper={(swiper) => {
                     swiperRef.current = swiper;
-                    // Initialize the swiper right after it's mounted
-                    setTimeout(() => {
-                      swiper.update();
-                      swiper.slideTo(0, 0);
-                    }, 100);
+                    if (!isInitialized.current) {
+                      // Force immediate update and slide to first position
+                      requestAnimationFrame(() => {
+                        swiper.update();
+                        swiper.slideTo(0, 0);
+                        isInitialized.current = true;
+                        // Reset speed after initialization
+                        swiper.params.speed = 300;
+                      });
+                    }
                   }}
                 >
                   {displayedHouses.map((house) => (
@@ -287,8 +292,14 @@ function LandingPage({
                       <div
                         className="details-card-wrapper"
                         onClick={(e) => clickRandomHouse(e, house._id)}
-                        onTouchEnd={(e) => clickRandomHouse(e, house._id)
-                        }
+                        onTouchEnd={(e) => clickRandomHouse(e, house._id)}
+                        role="button"
+                        tabIndex={0}
+                        style={{
+                          touchAction: "pan-y pinch-zoom",
+                          cursor: "pointer",
+                          WebkitTapHighlightColor: "transparent",
+                        }}
                       >
                         <div className="house-card-content">
                           <img
