@@ -265,7 +265,7 @@ function LandingPage({
                   touchEventsTarget="container"
                   preventClicks={true}
                   preventClicksPropagation={false}
-                  touchStartPreventDefault={falseb}
+                  touchStartPreventDefault={false}
                   watchSlidesProgress={true}
                   threshold={5} // Lower threshold for swipe detection
                   touchRatio={1} // Increase touch ratio
