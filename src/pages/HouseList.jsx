@@ -350,6 +350,7 @@ function HouseList({ forRent, forSale, handleAvailabilityClick }) {
     searchDisplay,
     searchResult,
     state,
+    pathname  
   ]);
 
   useEffect(() => {
