@@ -115,18 +115,18 @@ function Search({
 
   const searchFilter = async () => {
     try {
+      let currentPage = 1;
+      let limit = 9;
+      
       const response = await axios.get(
         `${API_URL}/houses/search/result?page=${currentPage}&limit=${limit}&search=${encodeURIComponent(
           searchForm
         )}`
       );
       const responseResult = response.data.result;
+
       if (searchForm && responseResult !== undefined) {
         setSearchResult(responseResult);
-      } else {
-        if (check) {
-          setResult([]);
-        }
       }
     } catch (e) {
       console.log(e);
@@ -144,6 +144,7 @@ function Search({
       (address, index, array) => array.indexOf(address) === index
     );
 
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const addressStartsWith =
@@ -157,14 +158,7 @@ function Search({
         handleSearch(search, resultsToDisplay);
       }
       setDropdownVisible(false);
-    } else {
-      if (check) {
-        setSearchDisplay(false);
-        setResult([]);
-      } else {
-        handleSearch(search, searchResult);
-      }
-    }
+    } 
   };
 
   const mobFilterIcon = () => {
@@ -228,7 +222,7 @@ function Search({
   // }
 
   const shouldShow = pathname !== "/";
-
+  
   return (
     <form
       onSubmit={handleSubmit}

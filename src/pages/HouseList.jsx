@@ -314,16 +314,16 @@ function HouseList({ forRent, forSale, handleAvailabilityClick }) {
     }
   }, [dispatch, fetchHouses, navigate, pathname, resetToFirstPage, state]);
 
-  useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true;
-      return;
-    }
+  // useEffect(() => {
+  //   if (!isMounted.current) {
+  //     isMounted.current = true;
+  //     return;
+  //   }
     
-    if (state?.search || state?.country) {
-      houseData();
-    }
-  }, [pathname, state, houseData]);
+  //   if (state?.search || state?.country) {
+  //     houseData();
+  //   }
+  // }, [pathname, state, houseData]);
 
   useEffect(() => {
     // Skip the first render since LandingPage already fetched

@@ -523,6 +523,8 @@ function DetailsPage({ backButton }) {
                             src={house.images[0]}
                             alt="images"
                             className="swiper-img"
+                            width="300"
+                            height="300"
                             loading="lazy"
                           />
                           <div className="details-card">

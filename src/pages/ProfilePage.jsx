@@ -1,5 +1,8 @@
 import DOMPurify from "dompurify";
 import React, { useEffect, useRef, useState } from "react";
+import "./Profile.css";
+import "../components/user/Account.css";
+import "./HouseList.css";
 import { useDispatch, useSelector } from "react-redux";
 import { selectLoginToken, selectUser } from "../store/auth/selectors";
 import AccountForm from "../components/user/AccountForm.jsx";
@@ -13,8 +16,6 @@ import {
 } from "../store/auth/slice";
 import Favourites from "../components/user/Favourites.jsx";
 import { useNavigate } from "react-router-dom";
-import "./Profile.css";
-import "../components/user/Account.css";
 import {
   getStorage,
   ref,

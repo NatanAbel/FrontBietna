@@ -6,6 +6,7 @@ import { selecthouses } from "../store/houses/selectors";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Search from "../components/Search.jsx";
 import "./Landing.css";
+import "./DetailsPage.css";
 import PropTypes from "prop-types"; // For prop validation
 import DOMPurify from "dompurify";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -47,12 +48,11 @@ function LandingPage({
     setCountry(sanitizedCountry);
     navigate("/houses/allHouses", { state: { country: sanitizedCountry } });
   };
-
   const handleSearch = useCallback(
     (searchInput, searchResults) => {
       // Sanitize search inputs and results
       const sanitizedSearchInput = DOMPurify.sanitize(searchInput);
-      if (searchResults !== undefined) {
+      if (searchResults.length > 0 && searchInput !== "") {
         const sanitizedSearchResults = searchResults.map((result) =>
           DOMPurify.sanitize(result)
         );
@@ -63,11 +63,7 @@ function LandingPage({
             results: sanitizedSearchResults,
           },
         });
-      } else {
-        navigate("/houses/allHouses", {
-          state: { search: sanitizedSearchInput, results: [] },
-        });
-      }
+      } 
     },
     [navigate]
   );
@@ -252,7 +248,7 @@ function LandingPage({
                   centeredSlides={true}
                   slidesPerView={displayedHouses.length > 1 ? "auto" : 1}
                   coverflowEffect={{
-                    rotate: 30,
+                    rotate: 35,
                     stretch: 0,
                     depth: 100,
                     modifier: 1,
@@ -267,7 +263,7 @@ function LandingPage({
                   preventClicksPropagation={false}
                   touchStartPreventDefault={true}
                   watchSlidesProgress={true}
-                  threshold={5} // Lower threshold for swipe detection
+                  threshold={10} // Lower threshold for swipe detection
                   touchRatio={1} // Increase touch ratio
                   touchAngle={45} // More forgiving touch angle
                   simulateTouch={true}
@@ -276,10 +272,18 @@ function LandingPage({
                   onSwiper={(swiper) => {
                     swiperRef.current = swiper;
                     // Initialize the swiper right after it's mounted
-                    setTimeout(() => {
-                      swiper.update();
-                      swiper.slideTo(0, 0);
-                    }, 100);
+                    if (swiper) {
+                      swiperRef.current = swiper;
+                      // Use a more reliable initialization approach
+                      window.requestAnimationFrame(() => {
+                        try {
+                          swiper.update();
+                          swiper.slideTo(0, 0); // Add speed parameter (0 for instant)
+                        } catch (error) {
+                          console.warn('Swiper initialization warning:', error);
+                        }
+                      });
+                    }
                   }}
                 >
                   {displayedHouses.map((house) => (
@@ -297,6 +301,8 @@ function LandingPage({
                               house.address
                             )}`}
                             className="swiper-img"
+                            width="300"
+                            height="300"
                             loading="lazy"
                           />
                           <div className="details-card">
@@ -345,6 +351,9 @@ function LandingPage({
                 <img
                   className="card-buy-image"
                   src="/images/house-for-sell.jpg"
+                  width="160"
+                  height="120"
+                  loading="lazy"
                 />
               </div>
               <p>
@@ -377,8 +386,10 @@ function LandingPage({
               <h4>House To Rent</h4>
               <div className="card-buy-img">
                 <img
-                  style={{ width: "160px", height: "120px", margin: "15px" }}
                   src="/images/house-for-rent.jpg"
+                  width="160"
+                  height="120"
+                  loading="lazy"
                 />
               </div>
               <p>
@@ -408,7 +419,8 @@ function LandingPage({
             <p>Address: 123 Street, City, Country</p>
           </div>
           <div className="contact-us-img">
-            <img src="/images/contact-us-img.jpeg" alt="contact us image" />
+            <img src="/images/contact-us-img.jpeg" alt="contact us image" loading="lazy" width="800" height="450"/>
+            
           </div>
         </div>
       </main>

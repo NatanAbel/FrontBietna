@@ -1,23 +1,40 @@
-import React, { useCallback } from "react";
+import React, { Suspense, useCallback } from "react";
 import axios from "axios";
 import Navbar from "../components/Navbar.jsx";
-import LandingPage from "../pages/LandingPage.jsx";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer.jsx";
-import DetailsPage from "./DetailsPage.jsx";
-import UpdatePage from "./UpdatePage.jsx";
-import NewHousePage from "./NewHousePage.jsx";
-import HouseList from "./HouseList.jsx";
 import { useEffect, useRef, useState } from "react";
-import SignupPage from "./SignupPage.jsx";
-import LoginPage from "./LoginPage.jsx";
 import { useDispatch } from "react-redux";
 import { bootstrapThunkLogin } from "../store/auth/thunks";
-import ProfilePage from "./ProfilePage.jsx";
 import PrivateRoute from "../components/user/PrivateRoute.jsx";
-import ErrorPage from "./ErrorPage.jsx";
+
+const LandingPage = React.lazy(() => import("./LandingPage.jsx"));
+const DetailsPage = React.lazy(() => import("./DetailsPage.jsx"));
+const UpdatePage = React.lazy(() => import("./UpdatePage.jsx"));
+const NewHousePage = React.lazy(() => import("./NewHousePage.jsx"));
+const HouseList = React.lazy(() => import("./HouseList.jsx"));
+const SignupPage = React.lazy(() => import("./SignupPage.jsx"));
+const LoginPage = React.lazy(() => import("./LoginPage.jsx"));
+const ProfilePage = React.lazy(() => import("./ProfilePage.jsx"));
+const ErrorPage = React.lazy(() => import("./ErrorPage.jsx"));
 
 axios.defaults.withCredentials = true;
+
+// Add error boundaries
+class ErrorBoundary extends React.Component {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <div>Something went wrong. Please refresh the page.</div>;
+    }
+    return this.props.children;
+  }
+}
 
 function AppRoutes() {
   const dispatch = useDispatch();
@@ -90,6 +107,8 @@ function AppRoutes() {
   return (
     <div className="app-container">
       <Navbar />
+      <ErrorBoundary>
+      <Suspense fallback={<div>Loading...</div>}>
       <Routes>
         <Route
           path="/"
@@ -173,6 +192,8 @@ function AppRoutes() {
         />
         <Route path="*" element={<ErrorPage />} />
       </Routes>
+      </Suspense>
+      </ErrorBoundary>
       <Footer handleAvailabilityClick={handleAvailabilityClick} />
     </div>
   );
