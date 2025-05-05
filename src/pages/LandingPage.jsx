@@ -23,6 +23,9 @@ function LandingPage({
   forSale,
   setForSale,
   handleAvailabilityClick,
+  searchInput,
+  handleSearch,
+  handleSearchResult,
 }) {
   const dispatch = useDispatch();
   const house = useSelector(selecthouses);
@@ -48,25 +51,7 @@ function LandingPage({
     setCountry(sanitizedCountry);
     navigate("/houses/allHouses", { state: { country: sanitizedCountry } });
   };
-  const handleSearch = useCallback(
-    (searchInput, searchResults) => {
-      // Sanitize search inputs and results
-      const sanitizedSearchInput = DOMPurify.sanitize(searchInput);
-      if (searchResults.length > 0 && searchInput !== "") {
-        const sanitizedSearchResults = searchResults.map((result) =>
-          DOMPurify.sanitize(result)
-        );
-        // Navigate to the HouseList page with the search input
-        navigate("/houses/allHouses", {
-          state: {
-            search: sanitizedSearchInput,
-            results: sanitizedSearchResults,
-          },
-        });
-      } 
-    },
-    [navigate]
-  );
+  
 
   const displayedHouses = useMemo(() => {
     if (allHouses?.length > 0) {
@@ -222,13 +207,14 @@ function LandingPage({
           <div className="landing-search-input">
             <MemoizedSearch
               houses={allHouses}
-              search={search}
-              setSearch={setSearch}
+              searchInput={searchInput}
+              // setSearch={setSearch}
               handleSearch={handleSearch}
               forRent={forRent}
               setForRent={setForRent}
               forSale={forSale}
               setForSale={setForSale}
+              handleSearchResult={handleSearchResult}
             />
           </div>
         </div>

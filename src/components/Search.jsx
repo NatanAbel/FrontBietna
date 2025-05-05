@@ -17,28 +17,21 @@ import { selecthouses } from "../store/houses/selectors";
 import axios from "axios";
 import FilterCountry from "./House/FilterCountry";
 import "./SearchFilters.css";
+import { housesFetched } from "../store/houses/slice";
 
 const API_URL = import.meta.env.VITE_BACK_URL;
 
 function Search({
   currentPage,
   limit,
-  search = "",
-  setSearch,
-  searchHouses = "",
-  setSearchHouses,
-  searchFilterHouse,
-  houses,
+  searchInput ,
+  handleSearch,
   check = false,
   houseList,
   setResult,
-  onSubmit,
-  handleSearch,
-  result,
+  handleSearchResult,
   forRent,
-  setForRent,
   forSale,
-  setForSale,
   minPrice,
   setMinPrice,
   maxPrice,
@@ -64,12 +57,14 @@ function Search({
   squareAreaRange,
   handleSearchClick,
   handlePageClick,
-  setSearchDisplay,
+  // setSearchDisplay,
 }) {
-  const [searchForm, setSearchForm] = useState("");
+  const dispatch = useDispatch();
+  const {allHouses} = useSelector(selecthouses);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const location = useLocation();
   const [searchResult, setSearchResult] = useState([]);
+  const [searchForm, setSearchForm] = useState("");
   const [mobielFilter, setMobielFilter] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showFilters, setShowFilters] = useState(false);
@@ -84,48 +79,40 @@ function Search({
   const handleChange = (e) => {
     // Sanitize user input
     const value = sanitizeInput(e.target.value.toLowerCase());
-    setSearchForm(value);
     setDropdownVisible(true);
-
-    if (check) {
-      setSearchHouses(value);
-      if (value === "") {
-        setDropdownVisible(false);
-        setResult([]); // Clear the results when input is empty
-        setSearchHouses("");
-        setSearchResult([]);
-        setSearchDisplay(false);
-      }
-    } else {
-      setSearch(value);
+    setSearchForm(value);
+    handleSearch(value);
+    if (value === "" ) {
+      setDropdownVisible(false);
+      // setResult([]); // Clear the results when input is empty
+      handleSearch(value);
+      setSearchResult([]);
+      // setSearchDisplay(false);
     }
+    
   };
 
   const handleItemClick = (address) => {
     // Sanitize selected address
     const sanitizedAddress = sanitizeInput(address);
-    setSearchForm(sanitizedAddress);
     setDropdownVisible(false);
-    if (check) {
-      setSearchHouses(sanitizedAddress);
-    } else {
-      setSearch(sanitizedAddress);
-    }
+    setSearchForm(sanitizedAddress);
+    handleSearch(sanitizedAddress);
   };
 
   const searchFilter = async () => {
     try {
       let currentPage = 1;
       let limit = 9;
-      
+
       const response = await axios.get(
         `${API_URL}/houses/search/result?page=${currentPage}&limit=${limit}&search=${encodeURIComponent(
           searchForm
         )}`
       );
       const responseResult = response.data.result;
-
-      if (searchForm && responseResult !== undefined) {
+      
+      if (searchInput && responseResult !== undefined) {
         setSearchResult(responseResult);
       }
     } catch (e) {
@@ -134,6 +121,7 @@ function Search({
   };
 
   const resultsToDisplay = searchResult.slice(0, 5);
+
 
   const resultToCheck =
     searchForm && resultsToDisplay.map((house) => house.address.toLowerCase());
@@ -145,20 +133,40 @@ function Search({
     );
 
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    const addressStartsWith =
-      searchForm && uniqueAddresses.filter((adrs) => adrs.includes(searchForm));
+    // const addressStartsWith =
+    //   searchInput && uniqueAddresses.filter((adrs) => adrs.includes(searchInput));
 
-    if (searchForm.length > 0 && addressStartsWith.length !== 0) {
-      if (check) {
-        setSearchDisplay(true);
-        setResult(resultsToDisplay);
-      } else {
-        handleSearch(search, resultsToDisplay);
-      }
-      setDropdownVisible(false);
-    } 
+    if (searchForm.length > 0 ) {
+        
+        const response = await axios.get(`${API_URL}/houses/search/result`, {
+          params: {
+            page : 1,
+            limit : 9,
+            search : searchForm,
+          },
+          timeout: process.env.NODE_ENV === "production" ? 45000 : 15000,
+        });
+
+        // Check if message is included in the response (no results case)
+        if (response.data.message) {
+          dispatch(
+            housesFetched({
+              message: response.data.message,
+              allHouses: [],
+              uniqueAreas: [],
+              uniqueCities: [],
+              totalHouses: 0,
+              pageCount: 1,
+            })
+          );
+        } else {
+          dispatch(housesFetched(response.data)); // Dispatch actual houses data
+        }
+        handleSearchResult(response.data.result);
+        setDropdownVisible(false);
+    }
   };
 
   const mobFilterIcon = () => {
@@ -232,7 +240,7 @@ function Search({
         {
           <div className="search-input">
             <input
-              value={search ? search : searchHouses}
+              value={searchInput}
               type="search"
               placeholder="Search-houses"
               onChange={handleChange}
@@ -280,7 +288,7 @@ function Search({
           >
             <div className="search-input">
               <input
-                value={search ? search : searchHouses}
+                value={searchInput}
                 type="search"
                 placeholder="Search-houses"
                 onChange={handleChange}

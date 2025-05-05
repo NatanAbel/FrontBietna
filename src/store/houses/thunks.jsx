@@ -119,7 +119,6 @@ export const searchFiltersFetched =
   (
     page,
     limit,
-    search,
     country,
     forRent,
     forSale,
@@ -145,7 +144,6 @@ export const searchFiltersFetched =
           params: {
             page,
             limit,
-            search,
             country,
             forRent,
             forSale,
@@ -206,7 +204,7 @@ export const searchFiltersFetched =
             data: e.response?.data,
           });
         }
-      } // console.log(e);
+      } 
     };
     return executeSearchRequest();
   };

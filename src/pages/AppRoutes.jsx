@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { bootstrapThunkLogin } from "../store/auth/thunks";
 import PrivateRoute from "../components/user/PrivateRoute.jsx";
+import DOMPurify from "dompurify";
 
 const LandingPage = React.lazy(() => import("./LandingPage.jsx"));
 const DetailsPage = React.lazy(() => import("./DetailsPage.jsx"));
@@ -40,24 +41,72 @@ function AppRoutes() {
   const dispatch = useDispatch();
   const [forSale, setForSale] = useState(false);
   const [forRent, setForRent] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
   const navigate = useNavigate();
   const location = useLocation().pathname;
   const effectRun = useRef(false);
 
-  const handleAvailabilityClick = useCallback( (availabilityType) => {
-    if (availabilityType === "forRent") {
-      setForRent(true);
-      setForSale(false);
-      // setting key and value to localStorage
-      localStorage.setItem("availabilityType", forRent ? "" : "forRent");
-      navigate("/houses/rent");
-    } else if (availabilityType === "forSale") {
-      setForSale(true);
-      setForRent(false);
-      localStorage.setItem("availabilityType", forSale ? "" : "forSale");
-      navigate("/houses/buy");
+  const handleAvailabilityClick = useCallback(
+    (availabilityType) => {
+      if (availabilityType === "forRent") {
+        setForRent(true);
+        setForSale(false);
+        // setting key and value to localStorage
+        localStorage.setItem("availabilityType", forRent ? "" : "forRent");
+        navigate("/houses/rent");
+      } else if (availabilityType === "forSale") {
+        setForSale(true);
+        setForRent(false);
+        localStorage.setItem("availabilityType", forSale ? "" : "forSale");
+        navigate("/houses/buy");
+      }
+    },
+    [navigate]
+  );
+
+  const handleSearch = useCallback((searchInput) => {
+    // Sanitize search inputs and results
+    const sanitizedSearchInput = DOMPurify.sanitize(searchInput);
+    if (searchInput !== "") {
+      setSearchInput(sanitizedSearchInput);
+    } else {
+      setSearchInput("");
+      setSearchResult([]);
     }
-  }, [navigate]);
+  }, []);
+
+  const handleSearchResult = useCallback(
+    (results) => {
+
+      if (location === "/") {
+        navigate("/houses/allHouses");
+      }
+
+      if (results.length > 0 && results !== undefined) {
+        const sanitizedResults = results.map((result) => ({
+          ...result,
+
+          address: DOMPurify.sanitize(result.address),
+          description: DOMPurify.sanitize(result.description),
+          city: DOMPurify.sanitize(result.city),
+          country: DOMPurify.sanitize(result.country),
+          homeType: DOMPurify.sanitize(result.homeType),
+          features: Array.isArray(result.features)
+            ? result.features.map((feature) => DOMPurify.sanitize(feature))
+            : [],
+          images: Array.isArray(result.images)
+            ? result.images.map((img) => DOMPurify.sanitize(img))
+            : [],
+        }));
+
+        setSearchResult(sanitizedResults);
+      }
+
+      
+    },
+    [navigate, location]
+  );
 
   useEffect(() => {
     // React 18 Strict Mode
@@ -108,91 +157,106 @@ function AppRoutes() {
     <div className="app-container">
       <Navbar />
       <ErrorBoundary>
-      <Suspense fallback={<div>Loading...</div>}>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <LandingPage
-              forRent={forRent}
-              setForRent={setForRent}
-              forSale={forSale}
-              setForSale={setForSale}
-              handleAvailabilityClick={handleAvailabilityClick}
+        <Suspense fallback={<div>Loading...</div>}>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <LandingPage
+                  forRent={forRent}
+                  setForRent={setForRent}
+                  forSale={forSale}
+                  setForSale={setForSale}
+                  handleAvailabilityClick={handleAvailabilityClick}
+                  searchInput={searchInput}
+                  handleSearch={handleSearch}
+                  handleSearchResult={handleSearchResult}
+                />
+              }
             />
-          }
-        />
-        <Route path="/houses">
-          <Route
-            path="allHouses"
-            element={
-              <HouseList
-                forRent={forRent}
-                setForRent={setForRent}
-                forSale={forSale}
-                setForSale={setForSale}
-                handleAvailabilityClick={handleAvailabilityClick}
+            <Route path="/houses">
+              <Route
+                path="allHouses"
+                element={
+                  <HouseList
+                    forRent={forRent}
+                    setForRent={setForRent}
+                    forSale={forSale}
+                    setForSale={setForSale}
+                    handleAvailabilityClick={handleAvailabilityClick}
+                    searchInput={searchInput}
+                    handleSearch={handleSearch}
+                    searchResult={searchResult}
+                    handleSearchResult={handleSearchResult}
+                  />
+                }
               />
-            }
-          />
-          <Route
-            path="rent"
-            element={
-              <HouseList
-                forRent={forRent}
-                setForRent={setForRent}
-                forSale={forSale}
-                setForSale={setForSale}
-                handleAvailabilityClick={handleAvailabilityClick}
+              <Route
+                path="rent"
+                element={
+                  <HouseList
+                    forRent={forRent}
+                    setForRent={setForRent}
+                    forSale={forSale}
+                    setForSale={setForSale}
+                    handleAvailabilityClick={handleAvailabilityClick}
+                    searchInput={searchInput}
+                    handleSearch={handleSearch}
+                    searchResult={searchResult}
+                    handleSearchResult={handleSearchResult}
+                  />
+                }
               />
-            }
-          />
-          <Route
-            path="buy"
-            element={
-              <HouseList
-                forRent={forRent}
-                setForRent={setForRent}
-                forSale={forSale}
-                setForSale={setForSale}
-                handleAvailabilityClick={handleAvailabilityClick}
+              <Route
+                path="buy"
+                element={
+                  <HouseList
+                    forRent={forRent}
+                    setForRent={setForRent}
+                    forSale={forSale}
+                    setForSale={setForSale}
+                    handleAvailabilityClick={handleAvailabilityClick}
+                    searchInput={searchInput}
+                    handleSearch={handleSearch}
+                    searchResult={searchResult}
+                    handleSearchResult={handleSearchResult}
+                  />
+                }
               />
-            }
-          />
-        </Route>
-        <Route
-          path="/housesDetails/:houseId"
-          element={<DetailsPage backButton={backButton} />}
-        />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route
-          path="/update/:houseId"
-          element={
-            <PrivateRoute>
-              <UpdatePage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/house/new"
-          element={
-            <PrivateRoute>
-              <NewHousePage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <PrivateRoute>
-              <ProfilePage />
-            </PrivateRoute>
-          }
-        />
-        <Route path="*" element={<ErrorPage />} />
-      </Routes>
-      </Suspense>
+            </Route>
+            <Route
+              path="/housesDetails/:houseId"
+              element={<DetailsPage backButton={backButton} />}
+            />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route
+              path="/update/:houseId"
+              element={
+                <PrivateRoute>
+                  <UpdatePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/house/new"
+              element={
+                <PrivateRoute>
+                  <NewHousePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <ProfilePage />
+                </PrivateRoute>
+              }
+            />
+            <Route path="*" element={<ErrorPage />} />
+          </Routes>
+        </Suspense>
       </ErrorBoundary>
       <Footer handleAvailabilityClick={handleAvailabilityClick} />
     </div>

@@ -19,14 +19,11 @@ const compare_name = (player_a, player_b) => {
 const MemoizedSearch = React.memo(Search);
 const MemoizedHouseCards = React.memo(HouseCards);
 
-function HouseList({ forRent, forSale, handleAvailabilityClick }) {
+function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, handleSearch, searchResult,handleSearchResult }) {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
   const house = useSelector(selecthouses);
   const location = useLocation();
-  const navigate = useNavigate();
-  const [search, setSearch] = useState("");
-  const [searchResult, setSearchResult] = useState([]);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
   const [beds, setBeds] = useState(0);
@@ -40,8 +37,6 @@ function HouseList({ forRent, forSale, handleAvailabilityClick }) {
   const [squareAreaMin, setSquareAreaMin] = useState(0);
   const [squareAreaMax, setSquareAreaMax] = useState(0);
   const [limit, setLimit] = useState(9);
-  // const currentPage = useRef(1);
-  const [searchDisplay, setSearchDisplay] = useState(false);
   const [houses, setHouses] = useState([]);
   const [country, setCountry] = useState("");
   // Add a mount ref to prevent double fetching
@@ -200,9 +195,9 @@ function HouseList({ forRent, forSale, handleAvailabilityClick }) {
     currentPage.current = 1;
   }, []);
 
+  // function that checks if the filters are applied
   const hasFilters = useCallback(() => {
     return (
-      search.trim() !== "" ||
       forRent ||
       forSale ||
       minPrice > 0 ||
@@ -218,12 +213,10 @@ function HouseList({ forRent, forSale, handleAvailabilityClick }) {
       squareAreaMax > 0
     );
   }, [
-    search, forRent, forSale, minPrice, maxPrice, 
+     forRent, forSale, minPrice, maxPrice, 
     beds, bath, area, city, country, 
     houseType, features, squareAreaMin, squareAreaMax
   ]);
-
-
 
    // Create a debounced fetch function
   const fetchHouses = useCallback(
@@ -233,11 +226,11 @@ function HouseList({ forRent, forSale, handleAvailabilityClick }) {
 // - Improves performance by reducing server load and network requests
     debounce(() => {
       if (hasFilters()) {
+        
         dispatch(
           searchFiltersFetched(
             currentPage.current,
             limit,
-            search,
             country,
             forRent,
             forSale,
@@ -253,12 +246,12 @@ function HouseList({ forRent, forSale, handleAvailabilityClick }) {
             squareAreaMax
           )
         );
-      } else {
+      } else if(searchResult.length === 0 && searchInput === ""){
         dispatch(fetchedHouses(currentPage.current, limit));
       }
     }, 300),
     [
-      dispatch, hasFilters, limit, search, country, forRent, forSale,
+      dispatch, hasFilters, limit, searchResult, country, forRent, forSale,
       minPrice, maxPrice, beds, bath, area, city,
       houseType, features, squareAreaMin, squareAreaMax
     ]
@@ -271,59 +264,12 @@ function HouseList({ forRent, forSale, handleAvailabilityClick }) {
   }, [fetchHouses]);
 
   const houseData = useCallback(async () => {
-    setIsLoading(true);
-    try {
-       // Handle navigation state
-      if (state?.search && state.results) {
-        setSearch(state.search);
-        setSearchResult(state.results);
+    fetchHouses();
+    window.scrollTo(0, 0);
+    resetToFirstPage();
+    setIsLoading(false);
+  }, [dispatch, fetchHouses, resetToFirstPage]);
 
-        dispatch(
-          searchFiltersFetched(
-            1,
-            9,
-            state.search
-          )
-        );
-
-        // Clear the state after using it - IMPORTANT to prevent infinite loops
-        navigate(pathname, { replace: true, state: null });
-      } else if (state?.country) {
-        setCountry(state.country);
-
-        dispatch(
-          searchFiltersFetched(
-            1,
-            9,
-            "",
-            state.country
-          )
-        );
-
-        navigate(pathname, { replace: true, state: null });
-      } else {
-        // No special state, just fetch houses normally
-        window.scrollTo(0, 0);
-        resetToFirstPage();
-        fetchHouses();
-      }
-    } catch (error) {
-      console.error("Error fetching house data:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [dispatch, fetchHouses, navigate, pathname, resetToFirstPage, state]);
-
-  // useEffect(() => {
-  //   if (!isMounted.current) {
-  //     isMounted.current = true;
-  //     return;
-  //   }
-    
-  //   if (state?.search || state?.country) {
-  //     houseData();
-  //   }
-  // }, [pathname, state, houseData]);
 
   useEffect(() => {
     // Skip the first render since LandingPage already fetched
@@ -347,16 +293,15 @@ function HouseList({ forRent, forSale, handleAvailabilityClick }) {
     squareAreaMin,
     squareAreaMax,
     pageCount,
-    searchDisplay,
     searchResult,
-    state,
-    pathname  
   ]);
-
+ 
+  
   useEffect(() => {
     if (!message && allHouses.length > 0) {
       setHouses(allHouses); // Update the houses state with fetched data
     } else {
+      
       // const paginationBtn = document.querySelector('.pagination-button');
       // paginationBtn.style.display = 'none';
       // window.scrollTo(0, 0);
@@ -369,12 +314,11 @@ function HouseList({ forRent, forSale, handleAvailabilityClick }) {
       <MemoizedSearch
         currentPage={currentPage.current}
         limit={limit}
-        searchHouses={search}
-        setSearchHouses={setSearch}
+        searchInput={searchInput}
+        handleSearch={handleSearch}
         check
         houseList={houses}
-        setResult={setSearchResult}
-        result={searchResult}
+        handleSearchResult={handleSearchResult}
         forRent={forRent}
         forSale={forSale}
         handleAvailabilityClick={handleAvailabilityClick}
@@ -403,7 +347,6 @@ function HouseList({ forRent, forSale, handleAvailabilityClick }) {
         squareAreaMax={squareAreaMax}
         squareAreaRange={squareAreaRange}
         handlePageClick={handlePageClick}
-        setSearchDisplay={setSearchDisplay}
       />
 
       <MemoizedHouseCards
