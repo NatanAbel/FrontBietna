@@ -26,10 +26,7 @@ export const fetchedHouses =
             headers: {
               "Cache-Control": "public, max-age=300",
             },
-            timeout:
-              options.longTimeout && process.env.NODE_ENV === "production"
-                ? 45000
-                : 15000,
+            timeout:30000,
             withCredentials: true,
           }
         );
@@ -158,7 +155,7 @@ export const searchFiltersFetched =
             squareAreaMin,
             squareAreaMax,
           },
-          timeout: process.env.NODE_ENV === "production" ? 45000 : 15000,
+          timeout: 30000,
         });
 
         // Check if message is included in the response (no results case)

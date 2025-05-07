@@ -300,8 +300,9 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
   useEffect(() => {
     if (!message && allHouses.length > 0) {
       setHouses(allHouses); // Update the houses state with fetched data
+      setNoResults("");
     } else {
-      
+      setNoResults(message);
       // const paginationBtn = document.querySelector('.pagination-button');
       // paginationBtn.style.display = 'none';
       // window.scrollTo(0, 0);
