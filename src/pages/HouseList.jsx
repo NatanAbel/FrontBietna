@@ -307,6 +307,7 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
       // paginationBtn.style.display = 'none';
       // window.scrollTo(0, 0);
     }
+    setIsLoading(false);
     checkHighestPrice();
   }, [allHouses, message,checkHighestPrice]);
 
