@@ -258,8 +258,7 @@ function LandingPage({
                   onSwiper={(swiper) => {
                     swiperRef.current = swiper;
                     // Initialize the swiper right after it's mounted
-                    if (swiper) {
-                      swiperRef.current = swiper;
+                    if (swiperRef.current) {
                       // Use a more reliable initialization approach
                       window.requestAnimationFrame(() => {
                         try {
