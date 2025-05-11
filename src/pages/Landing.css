@@ -114,6 +114,9 @@
 
   .landing-gallery-wrapper > .cards-swiper-container .house-card-content{
     cursor: pointer;
+    transition: transform 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
   }
   .landing-gallery-wrapper > .cards-swiper-container .house-card-content:hover{
     transform: scale(1.025);
@@ -316,6 +319,10 @@
   .contact-us-img{
     display: none;
   }
+
+  .landing-gallery-wrapper > .cards-swiper-container .house-card-content:hover {
+    transform: none;
+  }
 }
 
 @media screen and (width <= 424px) {
@@ -327,6 +334,10 @@
 
   .header-content h1{
     font-size: 1.5rem;
+  }
+
+  .landing-gallery-wrapper > .cards-swiper-container .house-card-content:hover {
+    transform: none;
   }
 
   .my-button{

@@ -463,13 +463,18 @@
     border-top-left-radius: 200px;
     border-top-right-radius: 200px; 
     z-index: 2;
-    
+    touch-action: manipulation; 
+    -webkit-tap-highlight-color: transparent; 
+    cursor: pointer;
   }
 
   .related-card-link{
     z-index: 4;
     cursor: pointer;
     width: 100%;
+    transition: transform 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
   
   .details-card-wrapper .details-card {
@@ -608,6 +613,20 @@
     .details-left-info, .details-right-info{
       width: 100%;
     }
+
+    .details-card-wrapper {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .swiper-slide {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .related-card-link:hover {
+      transform: none;
+    }
   }
 
 
@@ -684,5 +703,9 @@
     .card-related-houses{
       margin: 1rem 0;
       padding-inline: 0rem;
+    }
+
+    .related-card-link:hover {
+      transform: none;
     }
   }
