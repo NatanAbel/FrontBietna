@@ -1,6 +1,6 @@
 *, *::before, *::after{
   box-sizing: border-box;
-  outline: 2px solid green;
+  /* outline: 2px solid green; */
 }
 :root {
   --primary-btn: linear-gradient(0deg, #F37352, #EE326C);
