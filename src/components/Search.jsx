@@ -1,7 +1,7 @@
 import DOMPurify from "dompurify"; // Import DOMPurify
 import { faFilter, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import FilterAvailability from "./House/FilterAvailability";
 import PriceFilter from "./House/PriceFilter";
@@ -18,6 +18,7 @@ import axios from "axios";
 import FilterCountry from "./House/FilterCountry";
 import "./SearchFilters.css";
 import { housesFetched } from "../store/houses/slice";
+import { debounce } from "../utils/debounce";
 
 const API_URL = import.meta.env.VITE_BACK_URL;
 
@@ -70,6 +71,7 @@ function Search({
   const [showFilters, setShowFilters] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isResize, setIsResize] = useState(window.innerWidth >= 1813);
+  const [selectedAddresses, setSelectedAddresses] = useState([]);
   const dropdownRef = useRef(null);
   const { pathname } = location;
 
@@ -87,7 +89,10 @@ function Search({
       // setResult([]); // Clear the results when input is empty
       handleSearch(value);
       setSearchResult([]);
+      setSelectedAddresses([]);
       // setSearchDisplay(false);
+    }else{
+      searchFilter(value);
     }
     
   };
@@ -100,7 +105,33 @@ function Search({
     handleSearch(sanitizedAddress);
   };
 
-  const searchFilter = async () => {
+
+    // Create a separate function to process the results
+const processSearchResults = (results, searchForm) => {
+  if (!results || !searchForm) return;
+  // Get the first 5 results
+  const resultsToDisplay = results.slice(0, 5);
+  
+  // Get addresses from results
+  const resultToCheck = resultsToDisplay.map((house) => 
+    house.address.toLowerCase()
+  );
+  
+  // Get unique addresses
+  const uniqueAddresses = resultToCheck.filter(
+    (address, index, array) => array.indexOf(address) === index
+  );
+
+  setSelectedAddresses(uniqueAddresses)
+
+  // Update state with processed results
+  setDropdownVisible(true);
+  setSearchResult(resultsToDisplay);
+};
+
+
+  const searchFilter = useCallback(
+    debounce (async (searchForm) => {
     try {
       let currentPage = 1;
       let limit = 9;
@@ -112,26 +143,19 @@ function Search({
       );
       const responseResult = response.data.result;
       
-      if (searchInput && responseResult !== undefined) {
+      
+      if (searchForm && responseResult !== undefined) {
         setSearchResult(responseResult);
+        // Process the results after setting them
+        processSearchResults(responseResult, searchForm);
       }
+      
     } catch (e) {
       console.log(e);
     }
-  };
+  },300),[]);
 
-  const resultsToDisplay = searchResult.slice(0, 5);
-
-
-  const resultToCheck =
-    searchForm && resultsToDisplay.map((house) => house.address.toLowerCase());
-
-  const uniqueAddresses =
-    searchForm &&
-    resultToCheck.filter(
-      (address, index, array) => array.indexOf(address) === index
-    );
-
+  
 
   const handleSubmit = async(e) => {
     e.preventDefault();
@@ -183,12 +207,6 @@ function Search({
   };
 
   useEffect(() => {
-    if (searchForm) {
-      searchFilter();
-    }
-  }, [searchForm]);
-
-  useEffect(() => {
     //Handlle mobile devices filters for dropdown menu's to display without dropdown buttons.
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -225,10 +243,6 @@ function Search({
   }, [showFilters]);
 
 
-  // const toggleOtherFiters = () => {
-  //   setShowFilters(!showFilters)
-  // }
-
   const shouldShow = pathname !== "/";
   
   return (
@@ -262,8 +276,8 @@ function Search({
                   !shouldShow ? "dropDown-search" : "dropDown-search-small"
                 }
               >
-                {uniqueAddresses &&
-                  uniqueAddresses.map((address) => (
+                {selectedAddresses.length > 0 &&
+                  selectedAddresses.map((address) => (
                     <div key={address} className="search-list-wrapper ">
                       <li
                         className="search-list"
@@ -310,8 +324,8 @@ function Search({
                     !shouldShow ? "dropDown-search" : "dropDown-search-small"
                   }
                 >
-                  {uniqueAddresses &&
-                    uniqueAddresses.map((address) => (
+                  {selectedAddresses.length > 0 &&
+                    selectedAddresses.map((address) => (
                       <div key={address} className="search-list-wrapper">
                         <li
                           className="search-list"

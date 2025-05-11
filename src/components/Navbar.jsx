@@ -7,6 +7,7 @@ import { fetchLogOut } from "../store/auth/thunks";
 function Navbar() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const {pathname} = useLocation()
   const user = useSelector(selectUser);
 
   const handleLogout = ()=>{
@@ -89,7 +90,7 @@ function Navbar() {
                   aria-labelledby="navbarDropdownMenuLink"
                 >
                   <li>
-                    <a className="dropdown-item" href="/profile">
+                    <a className="dropdown-item" href="/profile" onClick={(e) => pathname === "/profile" && e.preventDefault()} >
                       Profile
                     </a>
                   </li>

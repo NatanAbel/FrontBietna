@@ -251,7 +251,7 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
       }
     }, 300),
     [
-      dispatch, hasFilters, limit, searchResult, country, forRent, forSale,
+      dispatch, hasFilters, limit, searchResult,country, forRent, forSale,
       minPrice, maxPrice, beds, bath, area, city,
       houseType, features, squareAreaMin, squareAreaMax
     ]

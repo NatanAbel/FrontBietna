@@ -73,23 +73,23 @@ function LandingPage({
 
   const clickRandomHouse = (e, houseId) => {
     if (!houseId) return;
-    // Prevent default behavior for both click and touch
-    e.preventDefault();
-    e.stopPropagation();
-    // Ensure we're on the active slide before navigating
+    
+    // For mobile devices, use touch events
+    if (e.type === 'touchend') {
+      e.preventDefault();
+      navigate(`/housesDetails/${houseId}`);
+      return;
+    }
+    
+    // For desktop devices
     if (swiperRef.current) {
       const activeIndex = swiperRef.current.activeIndex;
-
       const clickedSlideIndex = Array.from(swiperRef.current.slides).findIndex(
         slide => slide.contains(e.target)
       );
-  
-      if (activeIndex === clickedSlideIndex) {
-        navigate(`/housesDetails/${houseId}`);
-      } else {
-        // If not on active slide, slide to it first
-        swiperRef.current.slideTo(clickedSlideIndex, 300, false);
-      }
+      
+      // Allow navigation regardless of active slide
+      navigate(`/housesDetails/${houseId}`);
     } else {
       navigate(`/housesDetails/${houseId}`);
     }
@@ -247,10 +247,10 @@ function LandingPage({
                   touchEventsTarget="container"
                   preventClicks={false}
                   preventClicksPropagation={false}
-                  touchStartPreventDefault={true}
+                  touchStartPreventDefault={false}
                   watchSlidesProgress={true}
-                  threshold={10} // Lower threshold for swipe detection
-                  touchRatio={1} // Increase touch ratio
+                  threshold={5} // Lower threshold for swipe detection
+                  touchRatio={1.5} // Increase touch ratio
                   touchAngle={45} // More forgiving touch angle
                   simulateTouch={true}
                   initialSlide={0}
