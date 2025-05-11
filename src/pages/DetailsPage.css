@@ -469,7 +469,7 @@
   }
 
   .related-card-link{
-    z-index: 4;
+    z-index: 1000;
     cursor: pointer;
     width: 100%;
     transition: transform 0.2s ease;
