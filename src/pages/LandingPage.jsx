@@ -34,6 +34,7 @@ function LandingPage({
   const [isLoading, setIsLoading] = useState(true);
   const { allHouses } = house;
   const [swiperKey, setSwiperKey] = useState(0);
+  const [isSwiperInitialized, setIsSwiperInitialized] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation().pathname;
@@ -51,7 +52,6 @@ function LandingPage({
     setCountry(sanitizedCountry);
     navigate("/houses/allHouses", { state: { country: sanitizedCountry } });
   };
-  
 
   const displayedHouses = useMemo(() => {
     if (allHouses?.length > 0) {
@@ -73,22 +73,12 @@ function LandingPage({
 
   const clickRandomHouse = (e, houseId) => {
     if (!houseId) return;
-    
-    // For mobile devices, use touch events
-    if (e.type === 'touchend') {
+    // Prevent default only for touch events
+    if (e.type === "touchend") {
       e.preventDefault();
-      navigate(`/housesDetails/${houseId}`);
-      return;
     }
-    
-    // For desktop devices
-    if (swiperRef.current) {
-      const activeIndex = swiperRef.current.activeIndex;
-      const clickedSlideIndex = Array.from(swiperRef.current.slides).findIndex(
-        slide => slide.contains(e.target)
-      );
-      
-      // Allow navigation regardless of active slide
+    // For both mobile and desktop
+    if (swiperRef.current && isSwiperInitialized) {
       navigate(`/housesDetails/${houseId}`);
     } else {
       navigate(`/housesDetails/${houseId}`);
@@ -173,15 +163,12 @@ function LandingPage({
   }, [dispatch, location]);
 
   useEffect(() => {
-    if (allHouses?.length > 0) {
-      setSwiperKey(prev => prev + 1);
-      
+    if (allHouses?.length > 0 && swiperRef.current) {
+      setSwiperKey((prev) => prev + 1);
       // Reset to first slide when houses data changes
       if (swiperRef.current) {
-        setTimeout(() => {
-          swiperRef.current.update();
-          swiperRef.current.slideTo(0);
-        }, 100);
+        swiperRef.current.update();
+        swiperRef.current.slideTo(0);
       }
     }
     window.scrollTo(0, 0);
@@ -257,17 +244,14 @@ function LandingPage({
                   allowTouchMove={true}
                   onSwiper={(swiper) => {
                     swiperRef.current = swiper;
-                    // Initialize the swiper right after it's mounted
-                    if (swiperRef.current) {
-                      // Use a more reliable initialization approach
-                      window.requestAnimationFrame(() => {
-                        try {
-                          swiper.update();
-                          swiper.slideTo(0, 0); // Add speed parameter (0 for instant)
-                        } catch (error) {
-                          console.warn('Swiper initialization warning:', error);
-                        }
-                      });
+                    // Initialize the swiper immediately
+                    if (swiper) {
+                      swiperRef.current = swiper;
+                      setIsSwiperInitialized(true);
+
+                      // Force an immediate update and slide to first position
+                      swiper.update();
+                      swiper.slideTo(0, 0);
                     }
                   }}
                 >
@@ -276,8 +260,8 @@ function LandingPage({
                       <div
                         className="details-card-wrapper"
                         onClick={(e) => clickRandomHouse(e, house._id)}
-                        onTouchEnd={(e) => clickRandomHouse(e, house._id)
-                        }
+                        onTouchEnd={(e) => clickRandomHouse(e, house._id)}
+                        style={{ touchAction: "manipulation" }}
                       >
                         <div className="house-card-content">
                           <img
@@ -404,8 +388,13 @@ function LandingPage({
             <p>Address: 123 Street, City, Country</p>
           </div>
           <div className="contact-us-img">
-            <img src="/images/contact-us-img.jpeg" alt="contact us image" loading="lazy" width="800" height="450"/>
-            
+            <img
+              src="/images/contact-us-img.jpeg"
+              alt="contact us image"
+              loading="lazy"
+              width="800"
+              height="450"
+            />
           </div>
         </div>
       </main>
