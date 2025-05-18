@@ -26,8 +26,10 @@ export const fetchedHouses =
             headers: {
               "Cache-Control": "public, max-age=300",
             },
-            timeout:30000,
             withCredentials: true,
+            timeout: options.longTimeout &&( process.env.NODE_ENV === "production"
+            ? 45000
+            : 15000)
           }
         );
 
@@ -155,7 +157,9 @@ export const searchFiltersFetched =
             squareAreaMin,
             squareAreaMax,
           },
-          timeout: 30000,
+          timeout:  options.longTimeout && process.env.NODE_ENV === "production"
+          ? 45000
+          : 15000,
         });
 
         // Check if message is included in the response (no results case)
@@ -221,6 +225,9 @@ export const handleFavourites = (houseId) => async (dispatch, getState) => {
           Authorization: `Bearer ${token}`,
         },
         withCredentials: true, // Important for refresh token
+        timeout:  options.longTimeout && process.env.NODE_ENV === "production"
+        ? 45000
+        : 15000,
       });
 
       if (res.status === 200) {
