@@ -251,7 +251,7 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
       }
     }, 300),
     [
-      dispatch, hasFilters, limit, searchResult,country, forRent, forSale,
+      dispatch, hasFilters, limit, searchResult,searchInput,country, forRent, forSale,
       minPrice, maxPrice, beds, bath, area, city,
       houseType, features, squareAreaMin, squareAreaMax
     ]
@@ -267,7 +267,7 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
     fetchHouses();
     window.scrollTo(0, 0);
     resetToFirstPage();
-    setIsLoading(false);
+    // setIsLoading(false);
   }, [dispatch, fetchHouses, resetToFirstPage]);
 
 
@@ -301,14 +301,11 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
     if (!message && allHouses.length > 0) {
       setHouses(allHouses); // Update the houses state with fetched data
       setNoResults("");
+      setIsLoading(false);
+      checkHighestPrice();
     } else {
       setNoResults(message);
-      // const paginationBtn = document.querySelector('.pagination-button');
-      // paginationBtn.style.display = 'none';
-      // window.scrollTo(0, 0);
     }
-    setIsLoading(false);
-    checkHighestPrice();
   }, [allHouses, message,checkHighestPrice]);
 
   return (
@@ -363,7 +360,7 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
       />
 
       <div className="pagination-button">
-        {!message && (
+        {!message && allHouses.length > 0 && !isLoading && (
           <ReactPaginate
             breakLabel={"..."}
             nextLabel={"next >"}

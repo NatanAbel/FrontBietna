@@ -17,6 +17,7 @@ export const fetchedHouses =
     let retryCount = 0;
 
     const executeRequest = async () => {
+      const startTime = performance.now();
       try {
         dispatch(startLoading());
         const response = await axios.get(
@@ -27,9 +28,9 @@ export const fetchedHouses =
               "Cache-Control": "public, max-age=300",
             },
             withCredentials: true,
-            timeout: options.longTimeout &&( process.env.NODE_ENV === "production"
-            ? 45000
-            : 15000)
+            timeout: options.longTimeout && process.env.NODE_ENV === "production"
+              ? 15000
+              : 10000,
           }
         );
 
@@ -157,9 +158,9 @@ export const searchFiltersFetched =
             squareAreaMin,
             squareAreaMax,
           },
-          timeout:  options.longTimeout && process.env.NODE_ENV === "production"
-          ? 45000
-          : 15000,
+          timeout:  process.env.NODE_ENV === "production"
+          ? 15000
+        : 10000,
         });
 
         // Check if message is included in the response (no results case)
@@ -225,9 +226,9 @@ export const handleFavourites = (houseId) => async (dispatch, getState) => {
           Authorization: `Bearer ${token}`,
         },
         withCredentials: true, // Important for refresh token
-        timeout:  options.longTimeout && process.env.NODE_ENV === "production"
-        ? 45000
-        : 15000,
+        timeout: process.env.NODE_ENV === "production"
+        ? 15000
+        : 10000,
       });
 
       if (res.status === 200) {
