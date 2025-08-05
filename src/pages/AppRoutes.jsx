@@ -42,7 +42,7 @@ function AppRoutes() {
   const [forSale, setForSale] = useState(false);
   const [forRent, setForRent] = useState(false);
   const [searchInput, setSearchInput] = useState("");
-  const [searchResult, setSearchResult] = useState([]);
+  const [searchTriggered, setSearchTriggered] = useState(false);
   const navigate = useNavigate();
   const location = useLocation().pathname;
   const effectRun = useRef(false);
@@ -72,53 +72,35 @@ function AppRoutes() {
       setSearchInput(sanitizedSearchInput);
     } else {
       setSearchInput("");
-      setSearchResult([]);
+      setSearchTriggered(false);
     }
   }, []);
 
-  const handleSearchResult = useCallback(
-    (results) => {
-
-      if (location === "/") {
-        navigate("/houses/allHouses");
-      }
-
-      if (results.length > 0 && results !== undefined) {
-        const sanitizedResults = results.map((result) => ({
-          ...result,
-
-          address: DOMPurify.sanitize(result.address),
-          description: DOMPurify.sanitize(result.description),
-          city: DOMPurify.sanitize(result.city),
-          country: DOMPurify.sanitize(result.country),
-          homeType: DOMPurify.sanitize(result.homeType),
-          features: Array.isArray(result.features)
-            ? result.features.map((feature) => DOMPurify.sanitize(feature))
-            : [],
-          images: Array.isArray(result.images)
-            ? result.images.map((img) => DOMPurify.sanitize(img))
-            : [],
-        }));
-
-        setSearchResult(sanitizedResults);
-      }
-
-      
-    },
-    [navigate, location]
-  );
-
+  const handleSearchResult = useCallback(() => {
+    setSearchTriggered(true);
+    if (location === "/") {
+      // Clear the Redux store before navigating to prevent showing stale data
+      dispatch({
+        type: "house/housesFetched",
+        payload: {
+          result: [],
+          uniqueAreas: [],
+          uniqueCities: [],
+          totalHouses: 0,
+          pageCount: 1,
+          message: "",
+        },
+      });
+      navigate("/houses/allHouses");
+    }
+  }, [navigate, location, dispatch]);
+  console.log("searchTriggered", searchTriggered);
   useEffect(() => {
     // React 18 Strict Mode
     if (effectRun.current === true || process.env.NODE_ENV !== "development") {
       dispatch(bootstrapThunkLogin());
     }
-    return () => (effectRun.current = true);
-  }, [dispatch]);
-
-  // Set initial availability based on local storage
-  useEffect(() => {
-    // Retrieve availabilityType from local storage
+    // Set initial availability based on local storage
     const availabilityType = localStorage.getItem("availabilityType");
     if (availabilityType === "forRent") {
       setForRent(true);
@@ -127,6 +109,8 @@ function AppRoutes() {
       setForSale(true);
       setForRent(false);
     }
+
+    return () => (effectRun.current = true);
   }, []);
 
   //
@@ -144,7 +128,6 @@ function AppRoutes() {
       setForSale(true);
       localStorage.setItem("availabilityType", "forSale");
     }
-
     // Scroll to the top of the page
     window.scrollTo(0, 0);
   }, [location]);
@@ -186,7 +169,7 @@ function AppRoutes() {
                     handleAvailabilityClick={handleAvailabilityClick}
                     searchInput={searchInput}
                     handleSearch={handleSearch}
-                    searchResult={searchResult}
+                    searchTriggered={searchTriggered}
                     handleSearchResult={handleSearchResult}
                   />
                 }
@@ -202,7 +185,7 @@ function AppRoutes() {
                     handleAvailabilityClick={handleAvailabilityClick}
                     searchInput={searchInput}
                     handleSearch={handleSearch}
-                    searchResult={searchResult}
+                    searchTriggered={searchTriggered}
                     handleSearchResult={handleSearchResult}
                   />
                 }
@@ -218,7 +201,7 @@ function AppRoutes() {
                     handleAvailabilityClick={handleAvailabilityClick}
                     searchInput={searchInput}
                     handleSearch={handleSearch}
-                    searchResult={searchResult}
+                    searchTriggered={searchTriggered}
                     handleSearchResult={handleSearchResult}
                   />
                 }

@@ -2,7 +2,7 @@ import DOMPurify from "dompurify"; // Import DOMPurify
 import { faFilter, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import FilterAvailability from "./House/FilterAvailability";
 import PriceFilter from "./House/PriceFilter";
 import Roomfilter from "./House/Roomfilter";
@@ -11,13 +11,10 @@ import CitiesFilter from "./House/CitiesFilter";
 import HouseType from "./House/HouseType";
 import FeatureFilter from "./House/FeatureFilter";
 import SquareAreaFilter from "./House/SquareAreaFilter";
-import { useDispatch, useSelector } from "react-redux";
-import { searchFiltersFetched } from "../store/houses/thunks";
-import { selecthouses } from "../store/houses/selectors";
+import { useDispatch } from "react-redux";
 import axios from "axios";
 import FilterCountry from "./House/FilterCountry";
 import "./SearchFilters.css";
-import { housesFetched } from "../store/houses/slice";
 import { debounce } from "../utils/debounce";
 
 const API_URL = import.meta.env.VITE_BACK_URL;
@@ -25,11 +22,9 @@ const API_URL = import.meta.env.VITE_BACK_URL;
 function Search({
   currentPage,
   limit,
-  searchInput ,
+  searchInput,
   handleSearch,
-  check = false,
   houseList,
-  setResult,
   handleSearchResult,
   forRent,
   forSale,
@@ -56,20 +51,15 @@ function Search({
   squareAreaMin,
   squareAreaMax,
   squareAreaRange,
-  handleSearchClick,
   handlePageClick,
-  // setSearchDisplay,
 }) {
   const dispatch = useDispatch();
-  const {allHouses} = useSelector(selecthouses);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const location = useLocation();
-  const [searchResult, setSearchResult] = useState([]);
   const [searchForm, setSearchForm] = useState("");
   const [mobielFilter, setMobielFilter] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showFilters, setShowFilters] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
   const [isResize, setIsResize] = useState(window.innerWidth >= 1813);
   const [selectedAddresses, setSelectedAddresses] = useState([]);
   const dropdownRef = useRef(null);
@@ -84,17 +74,13 @@ function Search({
     setDropdownVisible(true);
     setSearchForm(value);
     handleSearch(value);
-    if (value === "" ) {
+    if (value === "") {
       setDropdownVisible(false);
-      // setResult([]); // Clear the results when input is empty
       handleSearch(value);
-      setSearchResult([]);
       setSelectedAddresses([]);
-      // setSearchDisplay(false);
-    }else{
+    } else {
       searchFilter(value);
     }
-    
   };
 
   const handleItemClick = (address) => {
@@ -105,91 +91,58 @@ function Search({
     handleSearch(sanitizedAddress);
   };
 
+  // Create a separate function to process the results
+  const processSearchResults = (results, searchForm) => {
+    if (!results || !searchForm) return;
+    // Get the first 5 results
+    const resultsToDisplay = results.slice(0, 5);
 
-    // Create a separate function to process the results
-const processSearchResults = (results, searchForm) => {
-  if (!results || !searchForm) return;
-  // Get the first 5 results
-  const resultsToDisplay = results.slice(0, 5);
-  
-  // Get addresses from results
-  const resultToCheck = resultsToDisplay.map((house) => 
-    house.address.toLowerCase()
-  );
-  
-  // Get unique addresses
-  const uniqueAddresses = resultToCheck.filter(
-    (address, index, array) => array.indexOf(address) === index
-  );
+    // Get addresses from results
+    const resultToCheck = resultsToDisplay.map((house) =>
+      house.address.toLowerCase()
+    );
 
-  setSelectedAddresses(uniqueAddresses)
+    // Get unique addresses
+    const uniqueAddresses = resultToCheck.filter(
+      (address, index, array) => array.indexOf(address) === index
+    );
 
-  // Update state with processed results
-  setDropdownVisible(true);
-  setSearchResult(resultsToDisplay);
-};
+    setSelectedAddresses(uniqueAddresses);
 
+    // Update state with processed results
+    setDropdownVisible(true);
+  };
 
   const searchFilter = useCallback(
-    debounce (async (searchForm) => {
-    try {
-      let currentPage = 1;
-      let limit = 9;
+    debounce(async (searchForm) => {
+      try {
+        let currentPage = 1;
+        let limit = 9;
 
-      const response = await axios.get(
-        `${API_URL}/houses/search/result?page=${currentPage}&limit=${limit}&search=${encodeURIComponent(
-          searchForm
-        )}`
-      );
-      const responseResult = response.data.result;
-      
-      
-      if (searchForm && responseResult !== undefined) {
-        setSearchResult(responseResult);
-        // Process the results after setting them
-        processSearchResults(responseResult, searchForm);
-      }
-      
-    } catch (e) {
-      console.log(e);
-    }
-  },300),[]);
+        const response = await axios.get(
+          `${API_URL}/houses/search/result?page=${currentPage}&limit=${limit}&search=${encodeURIComponent(
+            searchForm
+          )}`
+        );
+        const responseResult = response.data.result;
 
-  
-
-  const handleSubmit = async(e) => {
-    e.preventDefault();
-    // const addressStartsWith =
-    //   searchInput && uniqueAddresses.filter((adrs) => adrs.includes(searchInput));
-
-    if (searchForm.length > 0 ) {
-        
-        const response = await axios.get(`${API_URL}/houses/search/result`, {
-          params: {
-            page : 1,
-            limit : 9,
-            search : searchForm,
-          },
-          timeout: process.env.NODE_ENV === "production" ? 45000 : 15000,
-        });
-
-        // Check if message is included in the response (no results case)
-        if (response.data.message) {
-          dispatch(
-            housesFetched({
-              message: response.data.message,
-              allHouses: [],
-              uniqueAreas: [],
-              uniqueCities: [],
-              totalHouses: 0,
-              pageCount: 1,
-            })
-          );
-        } else {
-          dispatch(housesFetched(response.data)); // Dispatch actual houses data
+        if (searchForm && responseResult !== undefined) {
+          // Process the results after setting them
+          processSearchResults(responseResult, searchForm);
         }
-        handleSearchResult(response.data.result);
-        setDropdownVisible(false);
+      } catch (e) {
+        console.log(e);
+      }
+    }, 300),
+    []
+  );
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (searchForm.length > 0) {
+      handleSearchResult();
+      handleSearch(searchForm);
+      setDropdownVisible(false);
     }
   };
 
@@ -216,7 +169,6 @@ const processSearchResults = (results, searchForm) => {
       if (width >= 768 && width <= 1813) {
         setIsResize(false);
       } else {
-        // setShowDropdown(false);
         setIsResize(width >= 1813);
       }
     };
@@ -229,7 +181,6 @@ const processSearchResults = (results, searchForm) => {
     const handleClickOutside = () => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowFilters(false);
-        // setShowDropdown(false);
       }
     };
 
@@ -242,9 +193,8 @@ const processSearchResults = (results, searchForm) => {
     };
   }, [showFilters]);
 
-
   const shouldShow = pathname !== "/";
-  
+
   return (
     <form
       onSubmit={handleSubmit}

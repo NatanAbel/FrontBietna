@@ -7,7 +7,7 @@ const initialState = {
   uniqueCities: [],
   totalHouses: 0,
   pageCount: 1,
-  message:""
+  message: "",
 };
 
 export const houseSlice = createSlice({
@@ -22,10 +22,10 @@ export const houseSlice = createSlice({
       state.allHouses = houseData.result;
       state.uniqueAreas = houseData.uniqueAreas;
       state.uniqueCities = houseData.uniqueCities;
-      state.totalHouses = houseData.totalHouses
+      state.totalHouses = houseData.totalHouses;
       state.pageCount = houseData.pageCount;
       state.loading = false;
-      state.message = action.payload.message || ""
+      state.message = action.payload.message || "";
     },
   },
 });

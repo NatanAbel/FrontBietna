@@ -19,7 +19,7 @@ const compare_name = (player_a, player_b) => {
 const MemoizedSearch = React.memo(Search);
 const MemoizedHouseCards = React.memo(HouseCards);
 
-function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, handleSearch, searchResult,handleSearchResult }) {
+function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, handleSearch, searchTriggered,handleSearchResult }) {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
   const house = useSelector(selecthouses);
@@ -36,7 +36,7 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
   const [features, setFeatures] = useState([]);
   const [squareAreaMin, setSquareAreaMin] = useState(0);
   const [squareAreaMax, setSquareAreaMax] = useState(0);
-  const [limit, setLimit] = useState(9);
+  const [limit, setLimit] = useState(3);
   const [houses, setHouses] = useState([]);
   const [country, setCountry] = useState("");
   // Add a mount ref to prevent double fetching
@@ -200,6 +200,7 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
     return (
       forRent ||
       forSale ||
+      searchInput||
       minPrice > 0 ||
       maxPrice > 0 ||
       beds > 0 ||
@@ -213,7 +214,7 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
       squareAreaMax > 0
     );
   }, [
-     forRent, forSale, minPrice, maxPrice, 
+     forRent, forSale, searchInput, minPrice, maxPrice, 
     beds, bath, area, city, country, 
     houseType, features, squareAreaMin, squareAreaMax
   ]);
@@ -226,11 +227,11 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
 // - Improves performance by reducing server load and network requests
     debounce(() => {
       if (hasFilters()) {
-        
         dispatch(
           searchFiltersFetched(
             currentPage.current,
             limit,
+            searchInput,
             country,
             forRent,
             forSale,
@@ -241,17 +242,17 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
             area,
             city,
             houseType,
-            features,
+            features, 
             squareAreaMin,
             squareAreaMax
           )
         );
-      } else if(searchResult.length === 0 && searchInput === ""){
+      } else{
         dispatch(fetchedHouses(currentPage.current, limit));
       }
     }, 300),
     [
-      dispatch, hasFilters, limit, searchResult,searchInput,country, forRent, forSale,
+      hasFilters, limit, country,searchInput, forRent, forSale,
       minPrice, maxPrice, beds, bath, area, city,
       houseType, features, squareAreaMin, squareAreaMax
     ]
@@ -268,15 +269,9 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
     window.scrollTo(0, 0);
     resetToFirstPage();
     // setIsLoading(false);
-  }, [dispatch, fetchHouses, resetToFirstPage]);
-
+  }, [fetchHouses]);
 
   useEffect(() => {
-    // Skip the first render since LandingPage already fetched
-    if (!isMounted.current) {
-      isMounted.current = true;
-      return;
-    }
     houseData();
   }, [
     forRent,
@@ -293,9 +288,8 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
     squareAreaMin,
     squareAreaMax,
     pageCount,
-    searchResult,
+    searchTriggered, 
   ]);
- 
   
   useEffect(() => {
     if (!message && allHouses.length > 0) {

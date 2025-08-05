@@ -161,7 +161,7 @@ function DetailsPage({ backButton }) {
     dispatch(fetchedHouses(1, 12));
     // Scroll to the top of the page
     // window.scrollTo(0, 0);
-  }, [dispatch, houseId]);
+  }, [ houseId]);
 
   useEffect(() => {
     // avoiding scrolling while modal is open
@@ -470,6 +470,7 @@ function DetailsPage({ backButton }) {
                   <textarea
                     row="10"
                     col="50"
+                    className="contact-us-info"
                     placeholder="Which property are you interested in? Please provide details..."
                   ></textarea>
                 </div>

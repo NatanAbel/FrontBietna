@@ -160,7 +160,7 @@ function LandingPage({
         abortController.current = null;
       }
     };
-  }, [dispatch, location]);
+  }, [location]);
 
   useEffect(() => {
     if (allHouses?.length > 0 && swiperRef.current) {
