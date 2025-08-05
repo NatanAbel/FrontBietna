@@ -36,15 +36,14 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
   const [features, setFeatures] = useState([]);
   const [squareAreaMin, setSquareAreaMin] = useState(0);
   const [squareAreaMax, setSquareAreaMax] = useState(0);
-  const [limit, setLimit] = useState(3);
   const [houses, setHouses] = useState([]);
   const [country, setCountry] = useState("");
-  // Add a mount ref to prevent double fetching
-  const isMounted = useRef(false);
-  const currentPage = useRef(1);
 
   const { allHouses, pageCount, message } = house;
 
+  // useRef to store the limit and currentPage values for pagination
+  const limit = useRef(5);
+  const currentPage = useRef(1);
   // Skip variable with 0 value uses as the first argument of silce method to display houses
   const skip = 0;
 
@@ -230,7 +229,7 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
         dispatch(
           searchFiltersFetched(
             currentPage.current,
-            limit,
+            limit.current,
             searchInput,
             country,
             forRent,
@@ -248,11 +247,11 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
           )
         );
       } else{
-        dispatch(fetchedHouses(currentPage.current, limit));
+        dispatch(fetchedHouses(currentPage.current, limit.current));
       }
     }, 300),
     [
-      hasFilters, limit, country,searchInput, forRent, forSale,
+      hasFilters, limit.current, country,searchInput, forRent, forSale,
       minPrice, maxPrice, beds, bath, area, city,
       houseType, features, squareAreaMin, squareAreaMax
     ]
@@ -306,7 +305,7 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
     <div className="container-houses">
       <MemoizedSearch
         currentPage={currentPage.current}
-        limit={limit}
+        limit={limit.current}
         searchInput={searchInput}
         handleSearch={handleSearch}
         check
@@ -346,7 +345,7 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
         filteredHouse={filteredHouse}
         noResults={message}
         skip={skip}
-        limit={limit}
+        limit={limit.current}
         isLoading={isLoading}
         handlePageClick={handlePageClick}
         pageCount={pageCount}
