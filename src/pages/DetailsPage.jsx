@@ -122,7 +122,7 @@ function DetailsPage({ backButton }) {
 
       // Return true if any matching criteria is met AND it's the same availability type
       return (
-        isSameAvailabilityType && 
+        isSameAvailabilityType &&
         (isSameCity || isInPriceRange || isInRentalRange)
       );
     });
@@ -138,7 +138,6 @@ function DetailsPage({ backButton }) {
   };
 
   const clickRelatedHouse = (e, houseId) => {
-   
     if (!houseId) return;
     // Prevent default behavior only for non-touch events
     if (!e.touches) {
@@ -161,7 +160,7 @@ function DetailsPage({ backButton }) {
     dispatch(fetchedHouses(1, 12));
     // Scroll to the top of the page
     // window.scrollTo(0, 0);
-  }, [ houseId]);
+  }, [houseId]);
 
   useEffect(() => {
     // avoiding scrolling while modal is open
@@ -177,7 +176,7 @@ function DetailsPage({ backButton }) {
       // Reset related houses when navigating to a new house
       setHomeRelated([]);
       relatedHouses(house);
-      setSwiperKey(prev => prev + 1);
+      setSwiperKey((prev) => prev + 1);
     }
   }, [house?._id, allHouses]);
 
@@ -501,7 +500,9 @@ function DetailsPage({ backButton }) {
                 pagination={homeRelated.length > 1}
                 navigation={homeRelated.length > 1}
                 modules={[EffectCoverflow, Pagination, Navigation]}
-                className={homeRelated.length > 1 ? "mySwiper" : "single-house-swiper"}
+                className={
+                  homeRelated.length > 1 ? "mySwiper" : "single-house-swiper"
+                }
                 touchEventsTarget="container"
                 preventClicks={false}
                 preventClicksPropagation={false}

@@ -94,7 +94,7 @@ function AppRoutes() {
       navigate("/houses/allHouses");
     }
   }, [navigate, location, dispatch]);
-  console.log("searchTriggered", searchTriggered);
+
   useEffect(() => {
     // React 18 Strict Mode
     if (effectRun.current === true || process.env.NODE_ENV !== "development") {

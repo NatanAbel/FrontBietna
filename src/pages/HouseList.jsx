@@ -10,7 +10,6 @@ import "./HouseList.css";
 import HouseCards from "../components/House/HouseCards.jsx";
 import { debounce } from "../utils/debounce.js";
 
-
 const compare_name = (player_a, player_b) => {
   return player_a.address.localeCompare(player_b.address);
 };
@@ -19,7 +18,15 @@ const compare_name = (player_a, player_b) => {
 const MemoizedSearch = React.memo(Search);
 const MemoizedHouseCards = React.memo(HouseCards);
 
-function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, handleSearch, searchTriggered,handleSearchResult }) {
+function HouseList({
+  forRent,
+  forSale,
+  handleAvailabilityClick,
+  searchInput,
+  handleSearch,
+  searchTriggered,
+  handleSearchResult,
+}) {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
   const house = useSelector(selecthouses);
@@ -77,11 +84,11 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
   }, []);
 
   const houseTypeFilter = useCallback((selectedType) => {
-    setHouseType(prevHouseType => {
-       // Check if the clicked feature is already in the enumHouseType array
+    setHouseType((prevHouseType) => {
+      // Check if the clicked feature is already in the enumHouseType array
       const isHouseTypeSelected = prevHouseType.includes(selectedType);
       if (!isHouseTypeSelected) {
-         // If the feature is not selected, add it to the enumHouseType array
+        // If the feature is not selected, add it to the enumHouseType array
         return [...prevHouseType, selectedType];
       } else {
         // If the feature is already selected, remove it from the enumHouseType array
@@ -90,13 +97,12 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
     });
   }, []);
 
-
   const featureHouseFilter = useCallback((selectedFeature) => {
-    setFeatures(prevFeatures => {
+    setFeatures((prevFeatures) => {
       // Check if the clicked feature is already in the enumHouseType array
       const isFeatureSelected = prevFeatures.includes(selectedFeature);
       if (!isFeatureSelected) {
-          // If the feature is not selected, add it to the enumHouseType array
+        // If the feature is not selected, add it to the enumHouseType array
         return [...prevFeatures, selectedFeature];
       } else {
         // If the feature is already selected, remove it from the enumHouseType array
@@ -119,7 +125,7 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
     // storring all house prices in a variable
     let allHousesPrice = [];
 
-     // filtering based on the status of houses and store its price to allHousesPrice array
+    // filtering based on the status of houses and store its price to allHousesPrice array
     sortedHouses.filter((house) => {
       if (forRent && house.availability.forRent) {
         return allHousesPrice.push(house.rentalPrice);
@@ -144,31 +150,34 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
   }, [forRent, forSale, minPrice, sortedHouses]);
 
   // setting the minimum price of forSale and forRent based on the user clicks on the price dropdown
-  const calculateMinPrice = useCallback((availability) => {
-    const availableHouses = sortedHouses.filter((house) => {
-      if (availability === "forRent") {
-        return house.availability.forRent;
-      } else if (availability === "forSale") {
-        return house.availability.forSale;
-      } else if (availability === "allHouses") {
-        return house;
-      }
-      return false;
-    });
+  const calculateMinPrice = useCallback(
+    (availability) => {
+      const availableHouses = sortedHouses.filter((house) => {
+        if (availability === "forRent") {
+          return house.availability.forRent;
+        } else if (availability === "forSale") {
+          return house.availability.forSale;
+        } else if (availability === "allHouses") {
+          return house;
+        }
+        return false;
+      });
 
-    if (availableHouses.length > 0) {
-      setMinPrice(0);
-      setMaxPrice(0);
-      setBath(0);
-      setBeds(0);
-      setArea("");
-      setCity("");
-      setHouseType([]);
-      setFeatures([]);
-      setSquareAreaMin(0);
-      setSquareAreaMax(0);
-    }
-  }, [sortedHouses]);
+      if (availableHouses.length > 0) {
+        setMinPrice(0);
+        setMaxPrice(0);
+        setBath(0);
+        setBeds(0);
+        setArea("");
+        setCity("");
+        setHouseType([]);
+        setFeatures([]);
+        setSquareAreaMin(0);
+        setSquareAreaMax(0);
+      }
+    },
+    [sortedHouses]
+  );
 
   // Memoize the filteredHouse variable using useMemo hook use to memoize the filtered house data based on the dependencies that cause the filtering to change.
   const filteredHouse = useMemo(() => {
@@ -183,12 +192,7 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
         return false;
       }
     });
-  }, [
-    houses,
-    pathname,
-    forRent,
-    forSale
-  ]);
+  }, [houses, pathname, forRent, forSale]);
 
   const resetToFirstPage = useCallback(() => {
     currentPage.current = 1;
@@ -199,7 +203,7 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
     return (
       forRent ||
       forSale ||
-      searchInput||
+      searchInput ||
       minPrice > 0 ||
       maxPrice > 0 ||
       beds > 0 ||
@@ -213,17 +217,28 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
       squareAreaMax > 0
     );
   }, [
-     forRent, forSale, searchInput, minPrice, maxPrice, 
-    beds, bath, area, city, country, 
-    houseType, features, squareAreaMin, squareAreaMax
+    forRent,
+    forSale,
+    searchInput,
+    minPrice,
+    maxPrice,
+    beds,
+    bath,
+    area,
+    city,
+    country,
+    houseType,
+    features,
+    squareAreaMin,
+    squareAreaMax,
   ]);
 
-   // Create a debounced fetch function
+  // Create a debounced fetch function
   const fetchHouses = useCallback(
     // Create a debounced fetch function that delays API calls until user input stabilizes
-// - Prevents excessive API calls when filters change rapidly
-// - Waits 300ms after the last change before fetching
-// - Improves performance by reducing server load and network requests
+    // - Prevents excessive API calls when filters change rapidly
+    // - Waits 300ms after the last change before fetching
+    // - Improves performance by reducing server load and network requests
     debounce(() => {
       if (hasFilters()) {
         dispatch(
@@ -241,27 +256,43 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
             area,
             city,
             houseType,
-            features, 
+            features,
             squareAreaMin,
             squareAreaMax
           )
         );
-      } else{
+      } else {
         dispatch(fetchedHouses(currentPage.current, limit.current));
       }
     }, 300),
     [
-      hasFilters, limit.current, country,searchInput, forRent, forSale,
-      minPrice, maxPrice, beds, bath, area, city,
-      houseType, features, squareAreaMin, squareAreaMax
+      hasFilters,
+      limit.current,
+      country,
+      searchInput,
+      forRent,
+      forSale,
+      minPrice,
+      maxPrice,
+      beds,
+      bath,
+      area,
+      city,
+      houseType,
+      features,
+      squareAreaMin,
+      squareAreaMax,
     ]
   );
 
-  const handlePageClick = useCallback((e) => {
-    currentPage.current = e.selected + 1;
-    window.scrollTo(0, 0);
-    fetchHouses();
-  }, [fetchHouses]);
+  const handlePageClick = useCallback(
+    (e) => {
+      currentPage.current = e.selected + 1;
+      window.scrollTo(0, 0);
+      fetchHouses();
+    },
+    [fetchHouses]
+  );
 
   const houseData = useCallback(async () => {
     fetchHouses();
@@ -287,9 +318,9 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
     squareAreaMin,
     squareAreaMax,
     pageCount,
-    searchTriggered, 
+    searchTriggered,
   ]);
-  
+
   useEffect(() => {
     if (!message && allHouses.length > 0) {
       setHouses(allHouses); // Update the houses state with fetched data
@@ -299,7 +330,7 @@ function HouseList({ forRent, forSale, handleAvailabilityClick, searchInput, han
     } else {
       setNoResults(message);
     }
-  }, [allHouses, message,checkHighestPrice]);
+  }, [allHouses, message, checkHighestPrice]);
 
   return (
     <div className="container-houses">

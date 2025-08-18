@@ -7,13 +7,14 @@
 ---
 
 ## 🧰 Tech Stack
-
+- JavaScript
 - React
 - React Router
 - Axios
 - Bootstrap
 - Firebase (for image storage)
 - CSS
+- HTML
 
 ---
 
