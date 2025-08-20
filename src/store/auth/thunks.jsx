@@ -34,7 +34,7 @@ export const bootstrapThunkLogin = () => async (dispatch, getState) => {
     // if (!token) return
 
     if (isAuthenticated) {
-      const refreshResponse = await loginAxios.post("/auth/refresh",{
+      const refreshResponse = await loginAxios.post("/auth/refresh",{},{
         headers: {
           Accept: "application/json",
           "Cache-Control": "no-cache",

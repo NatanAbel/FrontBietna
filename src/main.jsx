@@ -7,6 +7,10 @@ import store,{persistor}  from "./store/index.js";
 import { BrowserRouter as Router } from "react-router-dom";
 import React from "react";
 import { disableReactDevTools } from "@fvilers/disable-react-devtools";
+import { loginAxios } from "./utils/interceptorApi";  
+
+// Prime CSRF cookie when app starts
+loginAxios.get("/api/health").catch(() => {});
 
 if (process.env.NODE_ENV === "production") {
   // Disable react dev tools in production
