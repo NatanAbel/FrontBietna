@@ -36,6 +36,7 @@ import {
 } from "@fortawesome/free-regular-svg-icons";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import { Circles } from "react-loader-spinner";
+import { loginAxios } from "../utils/interceptorApi.js";
 
 const API_URL = import.meta.env.VITE_BACK_URL;
 const PROFILE_IMG_DEFAULT_URL = import.meta.env.VITE_PROFILE_DEFAULT_URL;
@@ -121,7 +122,7 @@ function ProfilePage() {
 
   const handleDeleteHouse = async (house_id) => {
     try {
-      const res = await axios.delete(`${API_URL}/houses/${house_id}/delete`, {
+      const res = await loginAxios.delete(`/houses/${house_id}/delete`, {
         headers: {
           Authorization: "Bearer " + token,
         },
@@ -168,7 +169,7 @@ function ProfilePage() {
     const body = { favorites: houseId };
 
     try {
-      const res = await axios.put(`${API_URL}/auth/update/profile`, body, {
+      const res = await loginAxios.put(`/auth/update/profile`, body, {
         headers: {
           Authorization: "Bearer " + token,
         },
@@ -191,7 +192,7 @@ function ProfilePage() {
 
   const deleteUser = async () => {
     try {
-      const res = await axios.delete(`${API_URL}/auth/delete`, {
+      const res = await loginAxios.delete(`/auth/delete`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -331,8 +332,8 @@ function ProfilePage() {
     // const formData = new FormData();
     formData.append("profileImage", file); // Append the selected file to FormData
     try {
-      const res = await axios.put(
-        `${API_URL}/auth/profile-picture/update`,
+      const res = await loginAxios.put(
+        `/auth/profile-picture/update`,
         formData,
         {
           headers: {
@@ -373,8 +374,8 @@ function ProfilePage() {
   const removeProfilePic = async () => {
     if (prevProfileImg !== PROFILE_IMG_DEFAULT_URL) {
       const body = { profilePicture: PROFILE_IMG_DEFAULT_URL };
-      const res = await axios.put(
-        `${API_URL}/auth/profile-picture/update`,
+      const res = await loginAxios.put(
+        `/auth/profile-picture/update`,
         body,
         {
           headers: {

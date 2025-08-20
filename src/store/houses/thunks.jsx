@@ -3,6 +3,7 @@ import { housesFetched, startLoading } from "./slice";
 import { current } from "@reduxjs/toolkit";
 import { toggleFavorites } from "../auth/slice";
 import { bootstrapThunkLogin, fetchLogOut } from "../auth/thunks";
+import { loginAxios } from "../../utils/interceptorApi";
 
 const API_URL = import.meta.env.VITE_BACK_URL;
 
@@ -223,7 +224,7 @@ export const handleFavourites = (houseId) => async (dispatch, getState) => {
       const token = getState().auth.token;
 
       // Use loginAxios instance which handles credentials
-      const res = await axios.put(`${API_URL}/auth/update/profile`, body, {
+      const res = await loginAxios.put(`/auth/update/profile`, body, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -13,6 +13,7 @@ import { messageResponse } from "../../store/auth/slice";
 import { faCircleXmark } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DOMPurify from "dompurify";
+import { loginAxios } from "../../utils/interceptorApi";
 
 const API_URL = import.meta.env.VITE_BACK_URL;
 
@@ -363,13 +364,13 @@ function HouseForm(props) {
 
     try {
       const response = isUpdating
-        ? await axios.put(`${API_URL}/houses/${houseId}/update`, formData, {
+        ? await loginAxios.put(`/houses/${houseId}/update`, formData, {
             headers: {
               "Content-Type": "multipart/form-data",
               Authorization: `Bearer ${token}`,
             },
           })
-        : await axios.post(`${API_URL}/houses/new`, formData, {
+        : await loginAxios.post(`/houses/new`, formData, {
             headers: {
               "Content-Type": "multipart/form-data",
               Authorization: `Bearer ${token}`,
@@ -481,8 +482,8 @@ function HouseForm(props) {
 
   const handleDeleteImage = async (imageUrl) => {
     try {
-      const response = await axios.delete(
-        `${API_URL}/houses/${houseId}/image`,
+      const response = await loginAxios.delete(
+        `/houses/${houseId}/image`,
         {
           headers: { Authorization: `Bearer ${token}` },
           data: { imageUrl },

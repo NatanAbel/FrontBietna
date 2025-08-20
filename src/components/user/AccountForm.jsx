@@ -7,6 +7,7 @@ import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { selectLoginToken } from "../../store/auth/selectors";
 import DOMPurify from "dompurify";
 import validator from "validator";
+import { loginAxios } from "../../utils/interceptorApi";
 
 const API_URL = import.meta.env.VITE_BACK_URL;
 
@@ -114,8 +115,8 @@ function AccountForm({
 
     if (Object.keys(changedFields).length > 0) {
       try {
-        const res = await axios.put(
-          `${API_URL}/auth/update/profile`,
+        const res = await loginAxios.put(
+          `/auth/update/profile`,
           changedFields,
           {
             headers: {

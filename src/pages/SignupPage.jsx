@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "../store/auth/selectors";
 import { messageResponse, statusResponse } from "../store/auth/slice";
+import { loginAxios } from "../utils/interceptorApi.js";
 
 const API_URL = import.meta.env.VITE_BACK_URL;
 
@@ -24,7 +25,7 @@ function SignupPage() {
 
     try {
       const body = { userName, firstName, lastName, email, password };
-      const res = await axios.post(`${API_URL}/auth/signup`, body);
+      const res = await loginAxios.post(`/auth/signup`, body);
       setUserName("");
       setEmail("");
       setPassword("");

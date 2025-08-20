@@ -20,13 +20,35 @@ export const loginAxios = axios.create({
   }]
 });
 
-// Add request interceptor with timing
+// ---- Helper: read cookie ----
+function readCookie(name) {
+  if (typeof document === 'undefined') return undefined; // guard SSR
+  const match = document.cookie.split('; ').find(c => c.startsWith(name + '='));
+  return match?.split('=')[1];
+}
+
+// ---- Request interceptor (timing + CSRF header) ----
 loginAxios.interceptors.request.use((config) => {
   config.metadata = { startTime: performance.now() };
+
+  // Attach CSRF token from cookie if available
+  const xsrf = readCookie('XSRF-TOKEN');
+  if (xsrf) {
+    config.headers['X-XSRF-TOKEN'] = xsrf;
+  }
+
   return config;
 }, (error) => {
   return Promise.reject(error);
 });
+
+// // Add request interceptor with timing
+// loginAxios.interceptors.request.use((config) => {
+//   config.metadata = { startTime: performance.now() };
+//   return config;
+// }, (error) => {
+//   return Promise.reject(error);
+// });
 
 // Add response interceptor with timing
 loginAxios.interceptors.response.use((response) => {
