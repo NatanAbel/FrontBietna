@@ -454,7 +454,9 @@
     width: 100%;
     min-height: 300px;
     border-top-left-radius: 200px;
-    border-top-right-radius: 200px; 
+    border-top-right-radius: 200px;
+    backface-visibility: hidden;
+    transform: translateZ(0); 
   }
   
   .details-card-wrapper {
